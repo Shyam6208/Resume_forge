@@ -1,0 +1,32 @@
+[
+  {
+    "id": "fresher-1",
+    "role": "Computer Science Graduate",
+    "text": "Enthusiastic and detail-oriented Computer Science graduate with a strong foundation in data structures, algorithms, and web development. Proficient in React, JavaScript, and Java through academic projects and coursework. Eager to contribute to a collaborative software development team while expanding technical expertise."
+  },
+  {
+    "id": "fresher-2",
+    "role": "Entry-Level Developer",
+    "text": "Highly motivated entry-level developer with hands-on experience building full-stack web applications using modern JavaScript frameworks and RESTful APIs. Possesses strong analytical problem-solving skills and a passion for clean code. Seeking an opportunity to deliver high-quality software solutions in a fast-paced environment."
+  },
+  {
+    "id": "fresher-3",
+    "role": "Engineering Graduate",
+    "text": "Adaptable Engineering graduate with expertise in problem-solving, project management, and object-oriented programming. Proven track record of successfully completing team hackathons and capstone projects. Looking to leverage technical skills in a challenging entry-level engineering position."
+  },
+  {
+    "id": "fresher-4",
+    "role": "IT Graduate",
+    "text": "Information Technology graduate equipped with hands-on knowledge in database management, cloud fundamentals, and network architecture. Demonstrated ability to quickly learn new tools and tech stacks. Aspiring to support enterprise IT infrastructure and software delivery."
+  },
+  {
+    "id": "fresher-5",
+    "role": "Junior Frontend Developer",
+    "text": "Creative Junior Frontend Developer proficient in HTML5, CSS3, Tailwind CSS, and React. Passionate about crafting intuitive, accessible, and responsive user interfaces. Seeking to join an innovative design and development team to build engaging user experiences."
+  },
+  {
+    "id": "fresher-6",
+    "role": "Data & Software Enthusiast",
+    "text": "Analytical graduate with proficiency in Python, SQL, and data visualization tools. Experienced in building machine learning mini-projects and data processing pipelines. Eager to apply technical and quantitative skills to solve real-world business challenges."
+  }
+]

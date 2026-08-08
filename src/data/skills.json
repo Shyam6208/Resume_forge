@@ -1,0 +1,51 @@
+{
+  "frontend": [
+    "React", "Next.js", "TypeScript", "JavaScript (ES6+)", "HTML5", "CSS3", "Tailwind CSS", "Redux", "Zustand", "Vue.js",
+    "Nuxt.js", "Angular", "Svelte", "SvelteKit", "Bootstrap", "Material UI (MUI)", "Chakra UI", "Shadcn/UI", "Styled Components", "Sass/SCSS",
+    "Framer Motion", "Three.js", "D3.js", "Chart.js", "Recharts", "Webpack", "Vite", "Turbopack", "Babel", "PostCSS",
+    "GraphQL Client", "React Query", "SWR", "Axios", "Formik", "React Hook Form", "Zod", "Yup", "WebSockets", "Socket.io-client",
+    "WCAG Accessibility", "Progressive Web Apps (PWA)", "Cross-Browser Compatibility", "Responsive Design", "Core Web Vitals", "Jest (Frontend)", "Testing Library", "Cypress", "Playwright", "Storybook"
+  ],
+  "backend": [
+    "Node.js", "Express.js", "NestJS", "Fastify", "Python", "Django", "FastAPI", "Flask", "Go (Golang)", "Java",
+    "Spring Boot", "C#", ".NET Core", "Ruby on Rails", "PHP", "Laravel", "Rust", "RESTful APIs", "GraphQL", "gRPC",
+    "Microservices", "Serverless Architecture", "WebSockets", "Socket.io", "Kafka", "RabbitMQ", "BullMQ", "Celery", "OAuth 2.0", "JWT",
+    "SAML", "Session Management", "API Gateway", "Swagger/OpenAPI", "Prisma ORM", "TypeORM", "Sequelize", "Hibernate", "SQLAlchemy", "Mongoose",
+    "Docker Containerization", "Unit Testing (Jest/PyTest)", "Integration Testing", "Rate Limiting", "Caching Strategies", "Redis Pub/Sub", "Message Queues", "System Architecture", "Security & Encryption", "CI/CD Pipelines"
+  ],
+  "database": [
+    "PostgreSQL", "MySQL", "MongoDB", "Redis", "SQLite", "Supabase", "Firebase Firestore", "DynamoDB", "Cassandra", "Snowflake",
+    "Elasticsearch", "Neo4j", "MariaDB", "Oracle DB", "Microsoft SQL Server", "CockroachDB", "TimescaleDB", "ClickHouse", "PlanetScale", "Pinecone (Vector DB)",
+    "Database Normalization", "Indexing & Optimization", "ACID Transactions", "Database Replication", "ETL Pipelines", "Data Warehouse Modeling", "Prisma", "Drizzle ORM", "Liquibase", "Flyway"
+  ],
+  "cloud": [
+    "AWS (Amazon Web Services)", "AWS S3", "AWS EC2", "AWS Lambda", "AWS RDS", "AWS EKS", "Google Cloud Platform (GCP)", "Google Cloud Run", "Microsoft Azure", "Vercel",
+    "Netlify", "Heroku", "Render", "DigitalOcean", "Docker", "Kubernetes", "Helm", "Terraform", "CloudFormation", "Ansible",
+    "Nginx", "Caddy", "Cloudflare", "CDN Management", "CI/CD (GitHub Actions)", "GitLab CI", "Jenkins", "Prometheus", "Grafana", "Datadog"
+  ],
+  "programming": [
+    "TypeScript", "JavaScript", "Python", "Java", "C++", "C#", "Go", "Rust", "PHP", "Ruby",
+    "Swift", "Kotlin", "Dart", "SQL", "HTML/CSS", "Shell / Bash", "PowerShell", "R", "Scala", "Elixir",
+    "Haskell", "Lua", "MATLAB", "Assembly", "Groovy", "Solidity", "Objective-C", "Perl", "Julia", "F#",
+    "Vite Scripting", "YAML", "JSON", "XML", "GraphQL Query Language", "RegEx", "Object-Oriented Programming (OOP)", "Functional Programming", "Data Structures", "Algorithms"
+  ],
+  "softSkills": [
+    "Problem Solving", "Critical Thinking", "Effective Communication", "Team Leadership", "Project Management",
+    "Agile / Scrum Methodologies", "Cross-Functional Collaboration", "Time Management", "Adaptability", "Mentorship & Coaching",
+    "Conflict Resolution", "Negotiation", "Stakeholder Management", "Emotional Intelligence", "Attention to Detail",
+    "Decision Making", "Strategic Thinking", "Public Speaking & Presentation", "Active Listening", "Workplace Empathy",
+    "Stress Management", "Creativity", "Remote Work Collaboration", "User Advocacy", "Technical Writing",
+    "Growth Mindset", "Resource Allocation", "Prioritization", "Self-Motivation", "Analytical Mindset"
+  ],
+  "tools": [
+    "Git", "GitHub", "GitLab", "Bitbucket", "VS Code", "IntelliJ IDEA", "Postman", "Insomnia",
+    "Figma", "Adobe XD", "Jira", "Confluence", "Trello", "Asana", "Notion", "Slack",
+    "Linux / Unix CLI", "Bash / Zsh", "Homebrew", "npm / pnpm / yarn", "Docker Desktop", "Sentry", "LogRocket",
+    "Google Tag Manager", "Google Analytics 4", "Tableau", "PowerBI", "Jupyter Notebooks", "PyCharm", "WebStorm",
+    "Xcode", "Android Studio", "Chrome DevTools", "Charles Proxy", "Lighthouse", "Swagger Editor", "Datadog", "New Relic", "Vite", "Webpack"
+  ],
+  "languages": [
+    "English", "Spanish", "French", "German", "Mandarin Chinese", "Hindi", "Japanese", "Arabic", "Portuguese", "Russian",
+    "Italian", "Korean", "Dutch", "Turkish", "Polish", "Swedish", "Vietnamese", "Bengali", "Gujarati", "Marathi"
+  ]
+}

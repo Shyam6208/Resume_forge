@@ -1,0 +1,27 @@
+[
+  {
+    "id": "fe-1",
+    "role": "Senior Frontend Developer",
+    "text": "Creative and performance-focused Senior Frontend Developer with 5+ years of experience building web apps with React, Next.js, and TypeScript. Expert in state management, responsive UI design, web performance optimization, and accessibility (WCAG). Reduced bundle size by 35% across core company applications."
+  },
+  {
+    "id": "fe-2",
+    "role": "Frontend Web Engineer",
+    "text": "Frontend Engineer passionate about building seamless user experiences with modern JavaScript frameworks, Tailwind CSS, and HTML5. Demonstrated ability to collaborate with product managers and UI designers to turn complex wireframes into responsive production interfaces."
+  },
+  {
+    "id": "fe-3",
+    "role": "React & Next.js Developer",
+    "text": "Specialized React Developer skilled in Next.js App Router, SSR, Tailwind CSS, and custom design systems. Experienced in optimizing Core Web Vitals, achieving 95+ Lighthouse performance scores, and integrating GraphQL APIs."
+  },
+  {
+    "id": "fe-4",
+    "role": "UI/UX Engineer",
+    "text": "UI Engineer bridging the gap between product design and frontend engineering. Proficient in Design Systems, Framer Motion animations, component library development, and micro-interactions that elevate brand perception and user engagement."
+  },
+  {
+    "id": "fe-5",
+    "role": "Junior Frontend Developer",
+    "text": "Detail-oriented Frontend Developer with 2 years of hands-on experience building clean, responsive web pages. Strong foundation in JavaScript (ES6+), React, REST API integration, and version control with Git."
+  }
+]

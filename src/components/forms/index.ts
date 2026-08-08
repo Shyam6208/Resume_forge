@@ -1,0 +1,14 @@
+export { PersonalInfoForm } from "./PersonalInfoForm";
+export { SummaryForm } from "./SummaryForm";
+export { ExperienceForm } from "./ExperienceForm";
+export { EducationForm } from "./EducationForm";
+export { ProjectsForm } from "./ProjectsForm";
+export { SkillsForm } from "./SkillsForm";
+export { CertificationsForm } from "./CertificationsForm";
+export { AchievementsForm } from "./AchievementsForm";
+export { LanguagesForm } from "./LanguagesForm";
+export { InterestsForm } from "./InterestsForm";
+export { VolunteerForm } from "./VolunteerForm";
+export { PublicationsForm } from "./PublicationsForm";
+export { ReferencesForm } from "./ReferencesForm";
+export { PhotoUpload } from "./PhotoUpload";

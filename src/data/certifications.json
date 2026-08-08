@@ -1,0 +1,74 @@
+[
+  {
+    "id": "cert-1",
+    "name": "AWS Certified Solutions Architect — Associate",
+    "organization": "Amazon Web Services",
+    "url": "https://aws.amazon.com/certification/certified-solutions-architect-associate/"
+  },
+  {
+    "id": "cert-2",
+    "name": "AWS Certified Developer — Associate",
+    "organization": "Amazon Web Services",
+    "url": "https://aws.amazon.com/certification/certified-developer-associate/"
+  },
+  {
+    "id": "cert-3",
+    "name": "Google Cloud Professional Cloud Architect",
+    "organization": "Google Cloud",
+    "url": "https://cloud.google.com/certification/cloud-architect"
+  },
+  {
+    "id": "cert-4",
+    "name": "Microsoft Certified: Azure Fundamentals (AZ-900)",
+    "organization": "Microsoft",
+    "url": "https://learn.microsoft.com/en-us/credentials/certifications/azure-fundamentals/"
+  },
+  {
+    "id": "cert-5",
+    "name": "Meta Front-End Developer Professional Certificate",
+    "organization": "Meta / Coursera",
+    "url": "https://www.coursera.org/professional-certificates/meta-front-end-developer"
+  },
+  {
+    "id": "cert-6",
+    "name": "Meta Back-End Developer Professional Certificate",
+    "organization": "Meta / Coursera",
+    "url": "https://www.coursera.org/professional-certificates/meta-back-end-developer"
+  },
+  {
+    "id": "cert-7",
+    "name": "IBM Data Science Professional Certificate",
+    "organization": "IBM / Coursera",
+    "url": "https://www.coursera.org/professional-certificates/ibm-data-science"
+  },
+  {
+    "id": "cert-8",
+    "name": "Cisco Certified Network Associate (CCNA)",
+    "organization": "Cisco",
+    "url": "https://www.cisco.com/c/en/us/training-events/training-certifications/certifications/associate/ccna.html"
+  },
+  {
+    "id": "cert-9",
+    "name": "Oracle Certified Professional: Java SE 17 Developer",
+    "organization": "Oracle",
+    "url": "https://education.oracle.com/oracle-certified-professional-java-se-17-developer/trackp_OCPJAVASE17"
+  },
+  {
+    "id": "cert-10",
+    "name": "Certified ScrumMaster (CSM)",
+    "organization": "Scrum Alliance",
+    "url": "https://www.scrumalliance.org/get-certified/scrum-master-track/certified-scrummaster"
+  },
+  {
+    "id": "cert-11",
+    "name": "HashiCorp Certified: Terraform Associate",
+    "organization": "HashiCorp",
+    "url": "https://www.credly.com/org/hashicorp/badge/hashicorp-certified-terraform-associate-003"
+  },
+  {
+    "id": "cert-12",
+    "name": "Docker Certified Associate (DCA)",
+    "organization": "Mirantis / Docker",
+    "url": "https://www.mirantis.com/training/docker-certification/"
+  }
+]

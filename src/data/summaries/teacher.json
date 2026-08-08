@@ -1,0 +1,27 @@
+[
+  {
+    "id": "t-1",
+    "role": "Experienced High School Educator",
+    "text": "Dedicated and passionate Educator with 6+ years of experience fostering engaging learning environments for high school STEM students. Skilled in curriculum development, differentiated instruction, and integration of educational technology. Improved standardized test scores by 22% across 150+ students."
+  },
+  {
+    "id": "t-2",
+    "role": "Elementary School Teacher",
+    "text": "Enthusiastic Elementary School Educator dedicated to nurturing social-emotional growth and foundational literacy. Adept at designing interactive lesson plans, conducting parent-teacher conferences, and managing inclusive classrooms."
+  },
+  {
+    "id": "t-3",
+    "role": "Online / E-Learning Specialist",
+    "text": "Innovative Online Educator with expertise in distance learning platforms (Canvas, Blackboard, Google Classroom). Passionate about leveraging digital tools to deliver interactive, student-centered learning experiences."
+  },
+  {
+    "id": "t-4",
+    "role": "STEM Curriculum Developer",
+    "text": "STEM Education Specialist with expertise in designing hands-on robotics and coding curricula. Proven track record of boosting student engagement and participation in regional science fairs."
+  },
+  {
+    "id": "t-5",
+    "role": "English & Communications Instructor",
+    "text": "Creative English Language Arts Instructor adept at teaching critical reading, essay writing, and public speaking. Committed to building empathetic and communicative student leaders."
+  }
+]

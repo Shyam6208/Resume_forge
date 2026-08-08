@@ -1,0 +1,27 @@
+[
+  {
+    "id": "mba-1",
+    "role": "MBA Graduate & Business Strategist",
+    "text": "Strategic and analytical MBA graduate specializing in Corporate Strategy, Finance, and Operations Management. Experienced in conducting market analysis, financial forecasting, and leading cross-functional project teams. Seeking a strategic consulting or business development role."
+  },
+  {
+    "id": "mba-2",
+    "role": "Product Marketing Manager (MBA)",
+    "text": "Product Marketing Specialist with an MBA in Marketing & Strategy. Proven ability to craft go-to-market strategies, analyze customer acquisition channels, and execute multi-channel digital campaigns. Increased brand engagement by 40% in previous role."
+  },
+  {
+    "id": "mba-3",
+    "role": "Financial Analyst (MBA)",
+    "text": "Detail-oriented Financial Analyst holding an MBA in Finance. Proficient in DCF valuation models, portfolio analysis, and financial reporting. Passionate about helping organizations optimize capital allocation and mitigate financial risk."
+  },
+  {
+    "id": "mba-4",
+    "role": "Operations & Project Manager",
+    "text": "Operations Manager with an MBA background in Supply Chain & Lean Process Management. Skilled in workflow automation, vendor negotiation, and cost optimization across multi-site operations."
+  },
+  {
+    "id": "mba-5",
+    "role": "Management Consultant",
+    "text": "Results-driven Business Consultant adept at solving complex organizational challenges, optimizing operational efficiency, and advising C-suite executives on growth initiatives."
+  }
+]

@@ -1,0 +1,27 @@
+[
+  {
+    "id": "da-1",
+    "role": "Senior Data Analyst",
+    "text": "Analytical Senior Data Analyst with 5+ years of experience transforming complex datasets into actionable business strategies. Expert in SQL, Python, Tableau, and PowerBI. Successfully led data analytics initiatives that boosted revenue by 18% and optimized marketing spend."
+  },
+  {
+    "id": "da-2",
+    "role": "Business Intelligence Analyst",
+    "text": "BI Analyst skilled in building interactive executive dashboards, ETL data pipelines, and data warehouse models using Snowflake and dbt. Adept at translating stakeholder requirements into clear, quantitative business metrics."
+  },
+  {
+    "id": "da-3",
+    "role": "Data & Analytics Specialist",
+    "text": "Data Analyst proficient in exploratory data analysis, statistical modeling, and A/B testing methodologies. Experienced in leveraging Python (Pandas, NumPy, Seaborn) and SQL to uncover customer behavior patterns."
+  },
+  {
+    "id": "da-4",
+    "role": "Junior Data Analyst",
+    "text": "Detail-oriented Junior Data Analyst with strong expertise in SQL querying, Excel pivot tables, and PowerBI reporting. Eager to assist cross-functional teams in driving data-backed decision making."
+  },
+  {
+    "id": "da-5",
+    "role": "Financial & Operations Analyst",
+    "text": "Results-driven Operations Analyst skilled in financial modeling, cost analysis, and process optimization. Experienced in presenting data insights to executive leadership to streamline supply chain workflows."
+  }
+]

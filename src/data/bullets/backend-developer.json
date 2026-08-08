@@ -1,0 +1,24 @@
+{
+  "responsibilities": [
+    "Engineered robust backend APIs using Node.js, Express, Go, and PostgreSQL handling over 1 million API calls daily.",
+    "Designed normalization database schemas in PostgreSQL and executed complex SQL query optimizations with EXPLAIN ANALYZE.",
+    "Integrated Redis in-memory caching mechanism to store hot session keys, reducing database CPU load by 35%.",
+    "Implemented asynchronous task processing queues using Celery and BullMQ for processing heavy background exports.",
+    "Secured API gateway endpoints against OWASP vulnerabilities, rate limiting DDoS attacks, and SQL injection risks.",
+    "Constructed automated database backup and point-in-time recovery strategy using AWS RDS automated snapshots.",
+    "Built gRPC microservice communication layer between authentication, payments, and notification subsystems.",
+    "Implemented OAuth 2.0 and SAML SSO single-sign-on integration for enterprise enterprise customers.",
+    "Designed schema migrations using Prisma and Liquibase to apply database updates seamlessly in production environments.",
+    "Deployed containerized backend applications using Docker and Kubernetes clusters on AWS EKS with auto-scaling rules.",
+    "Wrote comprehensive unit and integration test suites using Jest and PyTest, maintaining 88%+ code coverage.",
+    "Configured Prometheus and Grafana dashboards for real-time tracking of memory usage, error rates, and API latency.",
+    "Integrated third-party payment gateways (Stripe, Razorpay) with webhook verification for subscription management.",
+    "Developed custom ETL scripts in Python to process and load 10GB+ daily transaction data into Snowflake data warehouse.",
+    "Optimized file uploading service using AWS S3 presigned URLs, bypassing application server memory overhead.",
+    "Implemented WebSocket connections for real-time collaborative editing features across multi-tenant workspaces.",
+    "Conducted load testing using k6 and Apache JMeter to identify system bottlenecks under peak holiday user traffic.",
+    "Created automated API documentation using OpenAPI (Swagger) specifications for internal and client engineering teams.",
+    "Refactored monolithic backend application into decoupled microservices, increasing team deployment velocity by 40%.",
+    "Participated in on-call rotation management, troubleshooting backend infrastructure incidents with sub-15min SLA."
+  ]
+}

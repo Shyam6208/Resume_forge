@@ -1,0 +1,27 @@
+[
+  {
+    "id": "be-1",
+    "role": "Senior Backend Developer",
+    "text": "Experienced Senior Backend Engineer with 6+ years specializing in Node.js, Express, Go, and PostgreSQL. Proven track record of designing high-availability RESTful and gRPC microservices handling 50k+ requests per minute. Expert in database optimization, Redis caching, and CI/CD automation."
+  },
+  {
+    "id": "be-2",
+    "role": "Python & Django Engineer",
+    "text": "Backend Engineer proficient in Python, Django, FastAPI, and PostgreSQL. Strong focus on API design, secure authentication, background worker queues (Celery/RabbitMQ), and cloud deployment on AWS EC2/ECS."
+  },
+  {
+    "id": "be-3",
+    "role": "Java / Spring Boot Engineer",
+    "text": "Enterprise Java Developer with 4 years of experience building secure, scalable microservice architectures using Spring Boot, Hibernate, and Kafka. Experienced in financial transaction processing and regulatory compliance frameworks."
+  },
+  {
+    "id": "be-4",
+    "role": "Node.js Backend Developer",
+    "text": "Node.js Specialist focused on event-driven backend architectures, Supabase/PostgreSQL integration, and real-time WebSockets. Passionate about unit testing, API security (JWT, OAuth2), and continuous integration pipelines."
+  },
+  {
+    "id": "be-5",
+    "role": "Cloud Backend Engineer",
+    "text": "Cloud-native Backend Developer skilled in serverless architecture (AWS Lambda, DynamoDB, API Gateway). Adept at building cost-effective, auto-scaling backend infrastructure with 99.9% service uptime."
+  }
+]

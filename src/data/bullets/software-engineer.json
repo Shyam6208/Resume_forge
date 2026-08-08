@@ -1,0 +1,24 @@
+{
+  "responsibilities": [
+    "Architected and implemented high-throughput RESTful microservices using Node.js, Express, and PostgreSQL, serving 100k+ daily active users.",
+    "Engineered scalable cloud infrastructure on AWS (S3, EC2, Lambda) reducing monthly server costs by 28%.",
+    "Collaborated with cross-functional product, UX, and QA teams in 2-week Agile sprints to ship core user-facing features on schedule.",
+    "Integrated Redis caching layer for frequent database queries, reducing average API response latency from 450ms to 65ms.",
+    "Implemented OAuth2, JWT authentication, and RBAC authorization middleware protecting sensitive user data and endpoints.",
+    "Designed and executed automated CI/CD deployment pipelines using GitHub Actions and Docker, accelerating release frequency by 3x.",
+    "Refactored legacy monolithic backend codebase into modular microservices with 90%+ unit test coverage using Jest and Supertest.",
+    "Optimized complex SQL queries and indexed database tables, improving database read performance by 45%.",
+    "Mentored 4 junior engineers on software design patterns, code reviews, and Git workflow best practices.",
+    "Monitored application health and system metrics using Datadog and Sentry, maintaining 99.95% system uptime.",
+    "Built real-time notification engine using WebSockets and Redis Pub/Sub handling 10k concurrent socket connections.",
+    "Developed robust data migration scripts to transition 5M+ legacy user records to PostgreSQL schema without downtime.",
+    "Led technical design reviews and RFC proposals for company-wide API standardization initiatives.",
+    "Implemented GraphQL endpoint layer providing flexible query access to front-end client applications.",
+    "Created comprehensive API documentation using Swagger/OpenAPI specifications for external developer integration.",
+    "Integrated Stripe payment gateway and webhook handlers managing recurring subscription billings securely.",
+    "Diagnosed and resolved critical memory leak issues in production Node.js services under high stress testing.",
+    "Built automated data backup and disaster recovery scripts meeting strict SOC2 compliance standards.",
+    "Enforced strict TypeScript interfaces and schema validation using Zod across all API request payloads.",
+    "Participated in 24/7 on-call rotational shift, resolving critical production incidents with an average MTTR under 15 minutes."
+  ]
+}

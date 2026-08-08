@@ -1,0 +1,32 @@
+[
+  {
+    "id": "cl-1",
+    "title": "Software Engineer — Standard",
+    "category": "Technology",
+    "content": "Dear Hiring Manager,\n\nI am writing to express my strong interest in the Software Engineer position at [Company Name]. With a solid foundation in full-stack web development, modern JavaScript frameworks, and cloud-native architecture, I am excited about the opportunity to contribute to your engineering team.\n\nIn my previous projects, I have successfully designed scalable RESTful APIs, optimized front-end client applications for peak performance, and collaborated within Agile environments. I thrive in fast-paced engineering teams where code quality, user experience, and robust system architecture are prioritized.\n\nI admire [Company Name]'s commitment to technical innovation, and I am confident that my problem-solving skills and technical background align well with your team's goals. Thank you for your time and consideration. I look forward to the possibility of discussing how I can add value to your team.\n\nSincerely,\n[Your Name]"
+  },
+  {
+    "id": "cl-2",
+    "title": "Frontend Developer — Impact Focused",
+    "category": "Technology",
+    "content": "Dear [Hiring Manager / Recruiter Name],\n\nAs a passionate Frontend Developer with expertise in React, Next.js, and TypeScript, I was thrilled to see the opening for a Frontend Developer at [Company Name]. I have long followed [Company Name]'s product updates and am inspired by your dedication to seamless user interface experiences.\n\nThroughout my work, I have focused on translating complex design mockups into responsive, accessible, and highly optimized web interfaces. My focus on web performance optimization (reducing bundle sizes, improving Core Web Vitals, and implementing atomic design components) has consistently resulted in higher user retention and satisfaction.\n\nI would welcome the opportunity to bring my frontend expertise and enthusiasm to [Company Name]. Thank you for reviewing my application, and I look forward to connecting soon.\n\nBest regards,\n[Your Name]"
+  },
+  {
+    "id": "cl-3",
+    "title": "Fresher / Entry-Level Graduate",
+    "category": "Entry-Level",
+    "content": "Dear Hiring Team,\n\nI am writing to express my enthusiasm for the entry-level [Position Title] role at [Company Name]. As a recent graduate in Computer Science, I have developed a strong foundation in software development fundamentals, data structures, and hands-on web project creation.\n\nDuring my academic coursework and personal projects, I successfully built full-stack applications, participated in collaborative hackathons, and maintained a strong focus on clean code and continuous learning. I am eager to apply my technical knowledge and problem-solving drive to support [Company Name]'s mission.\n\nThank you for considering my application. I look forward to the opportunity to interview and demonstrate my commitment to growing with your organization.\n\nSincerely,\n[Your Name]"
+  },
+  {
+    "id": "cl-4",
+    "title": "Data Analyst — Metrics Driven",
+    "category": "Analytics",
+    "content": "Dear Hiring Manager,\n\nI am applying for the Data Analyst role at [Company Name] with great enthusiasm. With proven experience in SQL querying, Python analytics libraries, and data visualization tools like Tableau and PowerBI, I specialize in translating complex data points into clear executive strategies.\n\nIn my recent work, I designed automated ETL pipelines and executive dashboards that uncovered critical revenue growth opportunities and improved operational efficiency by 18%. I am drawn to [Company Name]'s data-driven culture and would love to help your team leverage quantitative insights to achieve key business objectives.\n\nThank you for your time and consideration. I look forward to discussing my background in greater detail.\n\nWarm regards,\n[Your Name]"
+  },
+  {
+    "id": "cl-5",
+    "title": "Creative / Career Switcher",
+    "category": "General",
+    "content": "Dear [Hiring Manager Name],\n\nI am excited to apply for the [Position Title] position at [Company Name]. Bringing a unique blend of background experiences and technical skills, I offer a fresh perspective combined with a strong dedication to continuous learning and excellence.\n\nMy background has honed my communication, critical thinking, and project coordination abilities. Combined with my recent technical training and hands-on project portfolio, I am well-prepared to make an immediate, positive impact on your team.\n\nI am eager to learn more about [Company Name]'s upcoming initiatives and how my background aligns with your vision. Thank you for your time and consideration.\n\nSincerely,\n[Your Name]"
+  }
+]

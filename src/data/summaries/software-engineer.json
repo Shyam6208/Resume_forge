@@ -1,0 +1,32 @@
+[
+  {
+    "id": "se-1",
+    "role": "Senior Software Engineer",
+    "text": "Results-oriented Senior Software Engineer with 6+ years of experience designing and architecting high-throughput distributed systems. Expert in TypeScript, Node.js, and cloud-native infrastructure on AWS. Proven track record of leading cross-functional teams, reducing server latency by 40%, and delivering business-critical features on schedule."
+  },
+  {
+    "id": "se-2",
+    "role": "Full Stack Software Engineer",
+    "text": "Versatile Full Stack Engineer with 4 years of experience building modern web applications using React, Next.js, Node.js, and PostgreSQL. Adept at translating complex product requirements into scalable, maintainable codebase architectures with high test coverage. Passionate about performance optimization and developer tooling."
+  },
+  {
+    "id": "se-3",
+    "role": "Mid-Level Software Engineer",
+    "text": "Dedicated Software Engineer with 3+ years of experience delivering robust microservices and interactive web applications. Skilled in REST API design, Docker containerization, and automated CI/CD pipelines. Strong collaborator committed to clean code principles and continuous integration."
+  },
+  {
+    "id": "se-4",
+    "role": "Backend Engineer",
+    "text": "Performance-driven Backend Engineer specializing in Go, Python, and relational database systems. Experienced in optimizing complex SQL queries, building microservice architectures, and implementing secure OAuth2 authentication flows. Adept at managing high concurrency and zero-downtime deployments."
+  },
+  {
+    "id": "se-5",
+    "role": "Software Development Engineer (SDE)",
+    "text": "Customer-focused Software Engineer with expertise in building fault-tolerant cloud applications. Possesses deep knowledge of object-oriented design, microservices, and automated testing frameworks. Experienced in working within Agile/Scrum environments to drive sprint goals."
+  },
+  {
+    "id": "se-6",
+    "role": "Lead Software Architect",
+    "text": "Visionary Lead Engineer with 8+ years of expertise in software architecture, cloud engineering, and technical leadership. Successfully mentored 15+ engineers while scaling application infrastructure to support over 1 million daily active users with 99.99% uptime."
+  }
+]

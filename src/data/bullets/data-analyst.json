@@ -1,0 +1,24 @@
+{
+  "responsibilities": [
+    "Analyzed large-scale customer datasets (5M+ rows) using SQL, Python, and Pandas to uncover growth and retention insights.",
+    "Designed and maintained interactive executive dashboards in Tableau and PowerBI used by C-level leadership for quarterly planning.",
+    "Executed A/B testing and statistical analysis on web landing pages, resulting in a 14% increase in user sign-up conversions.",
+    "Constructed automated ETL pipelines using Python and SQL scripts to aggregate data from Google Analytics, Stripe, and Hubspot.",
+    "Partnered with product and marketing teams to define Key Performance Indicators (KPIs) for new feature launches.",
+    "Performed cohort analysis and customer lifetime value (CLV) modeling to optimize digital marketing spend.",
+    "Optimized complex SQL queries, views, and CTEs in BigQuery/Snowflake, cutting dashboard load times by 50%.",
+    "Automated weekly business metrics reporting using Python scripts and Slack API webhooks, saving 6 hours per week.",
+    "Conducted exploratory data analysis (EDA) using Jupyter Notebooks, Seaborn, and Matplotlib to identify churn drivers.",
+    "Cleaned, transformed, and validated raw transactional data to ensure 99.9% data integrity across reporting systems.",
+    "Built machine learning predictive models (Random Forest, Logistic Regression) to forecast quarterly product sales.",
+    "Translated technical data findings into clear executive summaries and presentations for non-technical stakeholders.",
+    "Trained and onboarded 10+ business team members on self-serve analytics tools and basic SQL querying.",
+    "Documented data dictionary models, metric definitions, and data governance policies across the organization.",
+    "Collaborated with data engineers to design star-schema data models in Snowflake for faster reporting analytical queries.",
+    "Monitored daily data pipeline health and alerted data engineering team on schema drift or missing records.",
+    "Analyzed customer feedback survey datasets using Natural Language Processing (NLP) sentiment analysis in Python.",
+    "Audited tracking tags and Google Tag Manager events to ensure accurate web analytics event tracking.",
+    "Developed pricing optimization models that increased average revenue per user (ARPU) by 8%.",
+    "Participated in agile data sprint planning meetings, delivering data requirements and reports on 2-week iteration cycles."
+  ]
+}

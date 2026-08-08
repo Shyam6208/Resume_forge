@@ -1,0 +1,24 @@
+{
+  "responsibilities": [
+    "Developed responsive, accessible, and high-performance single page applications using React 18, Next.js, and TypeScript.",
+    "Built atomic UI component libraries with Tailwind CSS and Radix UI primitives, ensuring design consistency across 10+ internal tools.",
+    "Optimized web application bundles using dynamic imports and code splitting, improving Lighthouse performance score from 68 to 96.",
+    "Implemented client-side global state management using Zustand and Redux Toolkit with persistent local storage sync.",
+    "Collaborated with UI/UX designers in Figma to translate high-fidelity designs into pixel-perfect, mobile-first web pages.",
+    "Enforced accessibility (WCAG 2.1 AA) standards across all web components, adding screen-reader labels and keyboard navigation.",
+    "Integrated REST and GraphQL API endpoints with React Query for efficient data fetching, caching, and optimistic UI updates.",
+    "Created fluid micro-interactions and page transitions using Framer Motion, enhancing overall user engagement by 25%.",
+    "Configured Next.js Server-Side Rendering (SSR) and Incremental Static Regeneration (ISR) for optimal SEO performance.",
+    "Built interactive data visualization dashboards using Chart.js, D3.js, and Recharts for enterprise metrics tracking.",
+    "Implemented client-side form validation using React Hook Form and Zod schemas, reducing invalid form submissions by 80%.",
+    "Performed cross-browser compatibility testing across Chrome, Safari, Firefox, and Edge to ensure uniform experience.",
+    "Established automated end-to-end testing suite using Playwright and Cypress covering critical checkout user flows.",
+    "Implemented dark mode theme switching with CSS variables and Tailwind dark variants for enhanced accessibility.",
+    "Integrated Cloudinary CldUploadWidget for optimized user avatar and media uploads with client-side image cropping.",
+    "Reduced Cumulative Layout Shift (CLS) to 0.02 by pre-allocating layout dimensions and lazy-loading non-critical images.",
+    "Monitored front-end error tracking via Sentry, resolving 50+ JavaScript runtime exceptions in production.",
+    "Mentored junior frontend developers through code reviews and pair programming sessions on React best practices.",
+    "Implemented progressive web app (PWA) features including offline service workers and push notifications.",
+    "Standardized ESLint and Prettier rules across the organization to enforce uniform code styling guidelines."
+  ]
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "id": "proj-1",
+    "name": "Full-Stack E-Commerce Platform",
+    "description": "Architected and deployed a production-grade e-commerce web application featuring user authentication, product catalog filtering, cart state persistence, and Stripe payment gateway integration.",
+    "technologies": ["Next.js", "TypeScript", "Tailwind CSS", "Node.js", "PostgreSQL", "Stripe API"]
+  },
+  {
+    "id": "proj-2",
+    "name": "Real-Time Team Chat Application",
+    "description": "Built an interactive real-time messaging application supporting channels, direct messaging, user presence indicators, and instant file attachments using WebSockets.",
+    "technologies": ["React", "Node.js", "Express", "Socket.io", "MongoDB", "Tailwind CSS"]
+  },
+  {
+    "id": "proj-3",
+    "name": "Developer Portfolio & Blog Platform",
+    "description": "Designed a fast, accessible developer portfolio featuring dark mode, MDX-powered blog posts, interactive project showcases, and automated RSS feed generation.",
+    "technologies": ["Next.js 15", "MDX", "Tailwind CSS", "Framer Motion", "Vercel"]
+  },
+  {
+    "id": "proj-4",
+    "name": "Kanban Task Management App",
+    "description": "Created a drag-and-drop task management dashboard allowing users to organize tasks across customizable columns, set priority tags, and filter by completion status.",
+    "technologies": ["React", "TypeScript", "@dnd-kit", "Zustand", "Tailwind CSS"]
+  },
+  {
+    "id": "proj-5",
+    "name": "Personal Finance & Budget Tracker",
+    "description": "Developed a financial analytics web app enabling users to log daily expenses, set monthly category budgets, and visualize spending habits via dynamic charts.",
+    "technologies": ["React", "Chart.js", "Supabase", "PostgreSQL", "Tailwind CSS"]
+  },
+  {
+    "id": "proj-6",
+    "name": "Weather & Air Quality Dashboard",
+    "description": "Built a responsive weather forecasting app that retrieves real-time weather metrics, 7-day forecasts, and UV/air quality indices using OpenWeather API with geolocation fallback.",
+    "technologies": ["React", "TypeScript", "OpenWeather API", "Tailwind CSS", "Lucide Icons"]
+  },
+  {
+    "id": "proj-7",
+    "name": "Interactive Quiz & Trivia Engine",
+    "description": "Engineered a timed trivia platform featuring category selection, score calculation, leaderboards, and detailed performance breakdown upon quiz completion.",
+    "technologies": ["React", "Zod", "Zustand", "Tailwind CSS", "REST API"]
+  },
+  {
+    "id": "proj-8",
+    "name": "AI-Powered Resume Builder (ResumeForge)",
+    "description": "Developed a free professional resume builder with real-time A4 preview, rule-based ATS keyword analysis, customizable themes, and client-side PDF/DOCX export.",
+    "technologies": ["Next.js 15", "TypeScript", "Tailwind CSS", "Zustand", "Puppeteer", "docx"]
+  },
+  {
+    "id": "proj-9",
+    "name": "Job Application Tracking System",
+    "description": "Created an application tracking system (ATS) dashboard to track job applications, interview schedules, status updates, and salary negotiations.",
+    "technologies": ["Next.js", "Supabase Auth", "PostgreSQL", "Tailwind CSS", "date-fns"]
+  },
+  {
+    "id": "proj-10",
+    "name": "Social Media Analytics Aggregator",
+    "description": "Constructed a multi-account social analytics tool aggregating follower growth, engagement metrics, and top posts into unified weekly visual reports.",
+    "technologies": ["Python", "FastAPI", "React", "Chart.js", "PostgreSQL"]
+  }
+]

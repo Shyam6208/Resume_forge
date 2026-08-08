@@ -1,0 +1,32 @@
+[
+  {
+    "id": "student-1",
+    "role": "Computer Science Student",
+    "text": "Driven Computer Science student with a strong academic standing and hands-on experience in Python and C++. Active member of college coding clubs with a passion for algorithms and artificial intelligence. Seeking a summer internship to apply classroom knowledge to real-world software projects."
+  },
+  {
+    "id": "student-2",
+    "role": "Web Development Intern",
+    "text": "Proactive Information Technology student specializing in frontend development using React and CSS frameworks. Experienced in collaborating on open-source projects and campus tech initiatives. Looking for an internship opportunity to contribute to production-grade web applications."
+  },
+  {
+    "id": "student-3",
+    "role": "Data Science Student",
+    "text": "Curious and analytical student pursuing a degree in Data Science and Statistics. Skilled in Python, Pandas, SQL, and exploratory data analysis. Eager to secure a data analyst internship to assist in extracting actionable insights from complex datasets."
+  },
+  {
+    "id": "student-4",
+    "role": "Software Engineering Student",
+    "text": "Energetic Software Engineering undergraduate with experience in version control, Agile methodologies, and full-stack project building. Demonstrated strong teamwork and communication skills through varsity hackathons. Seeking a software development internship to accelerate professional growth."
+  },
+  {
+    "id": "student-5",
+    "role": "UI/UX & Design Student",
+    "text": "Design-minded student with proficiency in Figma, user research, and interactive prototyping. Passionate about creating seamless user journeys and accessible design systems. Looking to join a product design team as a UI/UX intern."
+  },
+  {
+    "id": "student-6",
+    "role": "Business & Tech Student",
+    "text": "Self-motivated Management Information Systems student bridging business strategy and technology. Proficient in SQL, Excel analytics, and project coordination. Seeking a technical product manager or business analyst internship."
+  }
+]
