@@ -5,6 +5,8 @@ import type { Resume, ResumeData, ResumeTheme, UserType, SectionKey } from "@/ty
 import { DEFAULT_THEME, DEFAULT_SECTION_ORDER } from "@/types/resume.types";
 import { SECTION_ORDER_BY_USER_TYPE } from "@/config/sections.config";
 
+export const dynamic = "force-dynamic";
+
 const DEFAULT_RESUME_DATA: ResumeData = {
   personalInfo: {
     fullName: "Alex Morgan",
