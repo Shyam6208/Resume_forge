@@ -30,7 +30,12 @@ const ProjectLibrary = dynamic(
 );
 
 import type { Resume } from "@/types/resume.types";
-import { Edit3, Eye, BarChart3, Target } from "lucide-react";
+import { Edit3, Eye, BarChart3, Target, Crosshair } from "lucide-react";
+
+const RoleOptimizerPanel = dynamic(
+  () => import("@/components/optimizer/RoleOptimizerPanel").then((m) => m.RoleOptimizerPanel),
+  { ssr: false }
+);
 
 interface EditorClientProps {
   initialResume: Resume;
@@ -107,49 +112,65 @@ export function EditorClient({ initialResume }: EditorClientProps) {
                 <ATSChecker />
               </div>
             )}
+
+            {mobileTab === "optimize" && (
+              <div className="p-4 bg-slate-900 min-h-full">
+                <RoleOptimizerPanel />
+              </div>
+            )}
           </div>
 
           {/* Bottom Mobile Tab Bar with 44px touch targets */}
-          <div className="fixed bottom-0 left-0 right-0 h-16 bg-slate-950/95 backdrop-blur border-t border-slate-800 flex items-center justify-around z-40 px-2">
+          <div className="fixed bottom-0 left-0 right-0 h-16 bg-slate-950/95 backdrop-blur border-t border-slate-800 flex items-center justify-around z-40 px-1 gap-0.5">
             <button
               type="button"
               onClick={() => setMobileTab("edit")}
-              className={`flex-1 min-h-[44px] flex flex-col items-center justify-center gap-1 text-[11px] rounded-lg transition-colors ${
+              className={`flex-1 min-h-[44px] min-w-0 flex flex-col items-center justify-center gap-0.5 text-[10px] sm:text-[11px] rounded-lg transition-colors px-1 ${
                 mobileTab === "edit" ? "text-indigo-400 font-semibold bg-indigo-500/10" : "text-slate-400 hover:text-white"
               }`}
             >
-              <Edit3 className="w-4 h-4" />
-              <span>Edit</span>
+              <Edit3 className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">Edit</span>
             </button>
             <button
               type="button"
               onClick={() => setMobileTab("preview")}
-              className={`flex-1 min-h-[44px] flex flex-col items-center justify-center gap-1 text-[11px] rounded-lg transition-colors ${
+              className={`flex-1 min-h-[44px] min-w-0 flex flex-col items-center justify-center gap-0.5 text-[10px] sm:text-[11px] rounded-lg transition-colors px-1 ${
                 mobileTab === "preview" ? "text-indigo-400 font-semibold bg-indigo-500/10" : "text-slate-400 hover:text-white"
               }`}
             >
-              <Eye className="w-4 h-4" />
-              <span>Preview</span>
+              <Eye className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">Preview</span>
             </button>
             <button
               type="button"
               onClick={() => setMobileTab("score")}
-              className={`flex-1 min-h-[44px] flex flex-col items-center justify-center gap-1 text-[11px] rounded-lg transition-colors ${
+              className={`flex-1 min-h-[44px] min-w-0 flex flex-col items-center justify-center gap-0.5 text-[10px] sm:text-[11px] rounded-lg transition-colors px-1 ${
                 mobileTab === "score" ? "text-indigo-400 font-semibold bg-indigo-500/10" : "text-slate-400 hover:text-white"
               }`}
             >
-              <BarChart3 className="w-4 h-4" />
-              <span>Score</span>
+              <BarChart3 className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">Score</span>
             </button>
             <button
               type="button"
               onClick={() => setMobileTab("ats")}
-              className={`flex-1 min-h-[44px] flex flex-col items-center justify-center gap-1 text-[11px] rounded-lg transition-colors ${
+              className={`flex-1 min-h-[44px] min-w-0 flex flex-col items-center justify-center gap-0.5 text-[10px] sm:text-[11px] rounded-lg transition-colors px-1 ${
                 mobileTab === "ats" ? "text-indigo-400 font-semibold bg-indigo-500/10" : "text-slate-400 hover:text-white"
               }`}
             >
-              <Target className="w-4 h-4" />
-              <span>ATS</span>
+              <Target className="w-3.5 h-3.5 shrink-0" />
+              <span className="truncate">ATS</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileTab("optimize")}
+              className={`flex-1 min-h-[44px] min-w-0 flex flex-col items-center justify-center gap-0.5 text-[10px] sm:text-[11px] rounded-lg transition-colors px-1 ${
+                mobileTab === "optimize" ? "text-indigo-400 font-semibold bg-indigo-500/10" : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Crosshair className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+              <span className="truncate">Optimize</span>
             </button>
           </div>
         </div>

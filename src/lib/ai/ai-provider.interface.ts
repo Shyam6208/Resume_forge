@@ -1,4 +1,5 @@
 import type { ResumeData, SectionKey, UserType } from "@/types/resume.types";
+import type { TargetRoleProfile } from "@/config/target-roles.config";
 import type {
   AIAnalysisResult,
   JDMatchResult,
@@ -7,6 +8,7 @@ import type {
   CoverLetterResult,
   InterviewPrepResult,
   SkillGapResult,
+  RoleOptimizationResult,
 } from "./types";
 
 export interface IAIProvider {
@@ -75,4 +77,14 @@ export interface IAIProvider {
     data: ResumeData,
     targetRole?: string
   ): Promise<SkillGapResult>;
+
+  /**
+   * Analyzes resume against a target role profile and generates
+   * role-specific optimization suggestions. NEVER fabricates information.
+   */
+  optimizeForTargetRole(
+    data: ResumeData,
+    targetRoleProfile: TargetRoleProfile,
+    userType?: UserType
+  ): Promise<RoleOptimizationResult>;
 }

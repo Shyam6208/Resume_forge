@@ -1,5 +1,6 @@
 import type { IAIProvider } from "../ai-provider.interface";
 import type { ResumeData, SectionKey, UserType } from "@/types/resume.types";
+import type { TargetRoleProfile } from "@/config/target-roles.config";
 import type {
   AIAnalysisResult,
   JDMatchResult,
@@ -8,6 +9,7 @@ import type {
   CoverLetterResult,
   InterviewPrepResult,
   SkillGapResult,
+  RoleOptimizationResult,
 } from "../types";
 
 export class GeminiProvider implements IAIProvider {
@@ -409,6 +411,130 @@ REQUIRED JSON OUTPUT FORMAT:
       currentMatchPercentage: 70,
       skillGaps: [],
       actionPlan: ["Expand technical portfolio with target stack projects."],
+    });
+  }
+
+  async optimizeForTargetRole(
+    data: ResumeData,
+    targetRoleProfile: TargetRoleProfile,
+    userType: UserType = "developer"
+  ): Promise<RoleOptimizationResult> {
+    const prompt = `
+You are an Expert Resume Optimizer and ATS Specialist.
+
+Your task is to analyze the candidate's resume and generate role-specific optimization suggestions for a "${targetRoleProfile.label}" position.
+
+=== ABSOLUTE RULES (NEVER VIOLATE) ===
+1. NEVER fabricate, invent, or assume ANY information not present in the resume.
+2. NEVER invent companies, job titles, degrees, certifications, projects, technologies, metrics, achievements, or employment dates.
+3. NEVER add technologies the candidate has not listed or described using.
+4. You may ONLY rewrite, reorganize, and enhance information that already exists.
+5. Missing skills must be returned in the "missingSkills" array as SUGGESTIONS ONLY.
+6. Do NOT estimate or generate ATS scores — leave scoring to the existing system.
+7. If a field has no content to improve, return the current value unchanged.
+
+=== TARGET ROLE PROFILE ===
+Role: ${targetRoleProfile.label}
+Core Skills Expected: ${targetRoleProfile.coreSkills.join(", ")}
+Secondary Skills: ${targetRoleProfile.secondarySkills.join(", ")}
+Important Keywords: ${targetRoleProfile.importantKeywords.join(", ")}
+Important Sections: ${targetRoleProfile.importantSections.join(", ")}
+
+=== CANDIDATE RESUME DATA ===
+${JSON.stringify(data, null, 2)}
+
+=== REQUIRED JSON OUTPUT FORMAT ===
+{
+  "targetRole": "${targetRoleProfile.label}",
+  "overallAssessment": "2-3 sentence assessment of how well this resume fits the target role",
+  "matchedSkills": ["skills from the resume that match the target role"],
+  "relevantProjects": ["project names from the resume relevant to this role"],
+  "relevantExperience": ["job titles/companies from the resume relevant to this role"],
+  "summary": {
+    "current": "the candidate's current summary text (or empty string if none)",
+    "suggested": "an improved role-specific summary using ONLY verified candidate info",
+    "reason": "why the improvement helps for this role"
+  },
+  "skills": {
+    "existing": ["all skills currently in the resume"],
+    "reordered": {
+      "Frontend": ["React", "JavaScript"],
+      "Backend": ["Node.js"],
+      "Database": ["MongoDB"],
+      "Tools": ["Git"]
+    },
+    "suggested": [
+      {
+        "skill": "Docker",
+        "reason": "Essential for modern ${targetRoleProfile.label} deployment workflows",
+        "learningPriority": "high",
+        "commonUseCase": "Containerizing applications for consistent deployment"
+      }
+    ]
+  },
+  "sectionChanges": [
+    {
+      "sectionKey": "experience",
+      "label": "Work Experience",
+      "currentData": null,
+      "suggestedData": null,
+      "reason": "Why this section should be improved",
+      "keyChanges": ["Changed weak verbs to action verbs", "Highlighted relevant technologies"]
+    }
+  ],
+  "keywords": {
+    "highPriority": ["keywords critical for this role"],
+    "mediumPriority": ["helpful keywords"],
+    "lowPriority": ["nice-to-have keywords"]
+  },
+  "missingSkills": [
+    {
+      "skill": "AWS",
+      "reason": "Cloud skills are expected for ${targetRoleProfile.label} roles",
+      "learningPriority": "medium",
+      "commonUseCase": "Deploying and managing cloud infrastructure"
+    }
+  ],
+  "recommendations": [
+    "Actionable recommendation 1",
+    "Actionable recommendation 2"
+  ]
+}
+
+For sectionChanges:
+- Include entries ONLY for sections that actually need improvement.
+- "currentData" must be the EXACT current data from the resume for that section.
+- "suggestedData" must be the improved version in the SAME structure as currentData.
+- For experience entries: improve bullet points with action verbs and highlight relevant tech. Do NOT change company names, job titles, or dates.
+- For project entries: improve descriptions to emphasize problem/solution/tech. Do NOT change project names or invent features.
+- Only include sections where you can make meaningful improvements.
+`;
+
+    const rawResult = await this.callGeminiAPI(prompt);
+    return this.parseJSON<RoleOptimizationResult>(rawResult, {
+      targetRole: targetRoleProfile.label,
+      overallAssessment: "Resume analysis completed. Review the suggestions below.",
+      matchedSkills: [],
+      relevantProjects: [],
+      relevantExperience: [],
+      summary: {
+        current: data.summary || "",
+        suggested: data.summary || "",
+        reason: "No changes suggested.",
+      },
+      skills: {
+        existing: [],
+        reordered: {},
+        suggested: [],
+      },
+      sectionChanges: [],
+      keywords: {
+        highPriority: [],
+        mediumPriority: [],
+        lowPriority: [],
+      },
+      missingSkills: [],
+      recommendations: ["Review your resume and ensure all relevant skills are listed."],
     });
   }
 }

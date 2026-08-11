@@ -60,7 +60,8 @@ export function usePDFExport(): UsePDFExportReturn {
         link.remove();
         window.URL.revokeObjectURL(url);
 
-        toast.success("PDF downloaded successfully!", { id: toastId });
+        toast.dismiss(toastId);
+        toast.success("PDF downloaded successfully!", { duration: 3000 });
       } catch (err: unknown) {
         console.warn("Server PDF export failed, attempting browser print fallback:", err);
 
@@ -84,7 +85,8 @@ export function usePDFExport(): UsePDFExportReturn {
                 printWindow.print();
               }, 500);
 
-              toast.success("Opened print window — Save as PDF!", { id: toastId });
+              toast.dismiss(toastId);
+              toast.success("Opened print window — Save as PDF!", { duration: 3000 });
               return;
             }
           }
@@ -93,7 +95,8 @@ export function usePDFExport(): UsePDFExportReturn {
         }
 
         const message = err instanceof Error ? err.message : "Failed to export PDF";
-        toast.error(message, { id: toastId });
+        toast.dismiss(toastId);
+        toast.error(message, { duration: 4000 });
       } finally {
         setIsExporting(false);
       }

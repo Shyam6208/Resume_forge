@@ -43,10 +43,12 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
 
       const result: InterviewPrepResult = await res.json();
       setPrepResult(result);
-      toast.success("Interview Prep generated!", { id: toastId });
+      toast.dismiss(toastId);
+      toast.success("Interview Prep generated!", { duration: 3000 });
     } catch (err: unknown) {
       console.error("Interview Prep error:", err);
-      toast.error(err instanceof Error ? err.message : "Failed to generate interview prep", { id: toastId });
+      toast.dismiss(toastId);
+      toast.error(err instanceof Error ? err.message : "Failed to generate interview prep", { duration: 4000 });
     } finally {
       setIsGenerating(false);
     }

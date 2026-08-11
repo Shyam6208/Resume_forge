@@ -77,11 +77,13 @@ export function AICoachPanel() {
 
       const data: AIAnalysisResult = await res.json();
       setAnalysis(data);
-      toast.success("AI Analysis Complete!", { id: toastId });
+      toast.dismiss(toastId);
+      toast.success("AI Analysis Complete!", { duration: 3000 });
     } catch (err: unknown) {
       console.error("AI Analysis error:", err);
       const msg = err instanceof Error ? err.message : "Failed to analyze resume";
-      toast.error(msg, { id: toastId });
+      toast.dismiss(toastId);
+      toast.error(msg, { duration: 4000 });
     } finally {
       setIsAnalyzing(false);
     }
@@ -117,11 +119,13 @@ export function AICoachPanel() {
 
       const data: JDMatchResult = await res.json();
       setJdMatch(data);
-      toast.success("JD Match Analysis Complete!", { id: toastId });
+      toast.dismiss(toastId);
+      toast.success("JD Match Analysis Complete!", { duration: 3000 });
     } catch (err: unknown) {
       console.error("JD Match error:", err);
       const msg = err instanceof Error ? err.message : "Failed to match JD";
-      toast.error(msg, { id: toastId });
+      toast.dismiss(toastId);
+      toast.error(msg, { duration: 4000 });
     } finally {
       setIsMatching(false);
     }

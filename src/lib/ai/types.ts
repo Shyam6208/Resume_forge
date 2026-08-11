@@ -118,3 +118,51 @@ export interface SkillGapResult {
   skillGaps: SkillGapItem[];
   actionPlan: string[];
 }
+
+// ============================================================
+// Role Optimization Types
+// ============================================================
+
+export interface OptimizationSectionChange {
+  sectionKey: SectionKey;
+  label: string;
+  currentData: unknown;
+  suggestedData: unknown;
+  reason: string;
+  keyChanges: string[];
+}
+
+export interface SuggestedSkill {
+  skill: string;
+  reason: string;
+  learningPriority: "high" | "medium" | "low";
+  commonUseCase: string;
+}
+
+export interface KeywordAnalysis {
+  highPriority: string[];
+  mediumPriority: string[];
+  lowPriority: string[];
+}
+
+export interface RoleOptimizationResult {
+  targetRole: string;
+  overallAssessment: string;
+  matchedSkills: string[];
+  relevantProjects: string[];
+  relevantExperience: string[];
+  summary: {
+    current: string;
+    suggested: string;
+    reason: string;
+  };
+  skills: {
+    existing: string[];
+    reordered: Record<string, string[]>;
+    suggested: SuggestedSkill[];
+  };
+  sectionChanges: OptimizationSectionChange[];
+  keywords: KeywordAnalysis;
+  missingSkills: SuggestedSkill[];
+  recommendations: string[];
+}

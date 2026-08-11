@@ -8,7 +8,7 @@ import type { SectionKey } from "@/types/resume.types";
 // --- Types ---
 
 export type LibraryType = "summary" | "bullets" | "skills" | "projects" | null;
-export type MobileTab = "edit" | "preview" | "score" | "ats";
+export type MobileTab = "edit" | "preview" | "score" | "ats" | "optimize";
 
 // --- State shape ---
 

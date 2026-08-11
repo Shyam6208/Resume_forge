@@ -125,10 +125,12 @@ export function ResumeCard({
       if (!res.ok) throw new Error("Failed to duplicate resume");
       const duplicatedResume: Resume = await res.json();
       onDuplicate(duplicatedResume);
-      toast.success("Resume duplicated successfully!", { id: toastId });
+      toast.dismiss(toastId);
+      toast.success("Resume duplicated successfully!", { duration: 3000 });
     } catch (err) {
       console.error("Duplicate error:", err);
-      toast.error("Failed to duplicate resume", { id: toastId });
+      toast.dismiss(toastId);
+      toast.error("Failed to duplicate resume", { duration: 4000 });
     } finally {
       setIsDuplicating(false);
     }
@@ -143,10 +145,12 @@ export function ResumeCard({
         method: "DELETE",
       });
       onDelete(resume.id);
-      toast.success("Resume deleted", { id: toastId });
+      toast.dismiss(toastId);
+      toast.success("Resume deleted", { duration: 3000 });
     } catch (err) {
       console.error("Delete error:", err);
-      toast.error("Failed to delete resume", { id: toastId });
+      toast.dismiss(toastId);
+      toast.error("Failed to delete resume", { duration: 4000 });
     } finally {
       setIsDeleting(false);
       setShowDeleteConfirm(false);

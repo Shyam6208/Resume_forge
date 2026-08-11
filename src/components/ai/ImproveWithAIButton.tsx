@@ -60,11 +60,13 @@ export function ImproveWithAIButton({
       const result: SectionImproveResult = await res.json();
       setImproveResult(result);
       setShowDiffModal(true);
-      toast.success("AI Improvement Ready!", { id: toastId });
+      toast.dismiss(toastId);
+      toast.success("AI Improvement Ready!", { duration: 3000 });
     } catch (err: unknown) {
       console.error("Improve section error:", err);
       const msg = err instanceof Error ? err.message : "Failed to improve section";
-      toast.error(msg, { id: toastId });
+      toast.dismiss(toastId);
+      toast.error(msg, { duration: 4000 });
     } finally {
       setIsLoading(false);
     }

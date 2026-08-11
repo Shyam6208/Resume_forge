@@ -185,11 +185,13 @@ export default function OnboardingPage() {
       const newResume = await res.json();
       setResume(newResume);
 
-      toast.success("Workspace ready!", { id: toastId });
+      toast.dismiss(toastId);
+      toast.success("Workspace ready!", { duration: 3000 });
       router.push(`/editor/${newResume.id}`);
     } catch (err) {
       console.error("Onboarding setup error:", err);
-      toast.error("Error creating resume. Redirecting to dashboard...", { id: toastId });
+      toast.dismiss(toastId);
+      toast.error("Error creating resume. Redirecting to dashboard...", { duration: 4000 });
       router.push("/dashboard");
     } finally {
       setIsCreating(false);

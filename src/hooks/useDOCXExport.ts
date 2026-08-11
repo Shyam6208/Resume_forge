@@ -53,11 +53,13 @@ export function useDOCXExport(): UseDOCXExportReturn {
         link.remove();
         window.URL.revokeObjectURL(url);
 
-        toast.success("DOCX downloaded successfully!", { id: toastId });
+        toast.dismiss(toastId);
+        toast.success("DOCX downloaded successfully!", { duration: 3000 });
       } catch (err: unknown) {
         console.error("DOCX export error:", err);
         const message = err instanceof Error ? err.message : "Failed to export DOCX";
-        toast.error(message, { id: toastId });
+        toast.dismiss(toastId);
+        toast.error(message, { duration: 4000 });
       } finally {
         setIsExporting(false);
       }

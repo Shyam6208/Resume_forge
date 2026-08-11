@@ -56,10 +56,12 @@ export function CoverLetterModal({ isOpen, onClose }: CoverLetterModalProps) {
       const result: CoverLetterResult = await res.json();
       setCoverLetter(result);
       setEditableText(result.coverLetterText);
-      toast.success("Cover Letter generated!", { id: toastId });
+      toast.dismiss(toastId);
+      toast.success("Cover Letter generated!", { duration: 3000 });
     } catch (err: unknown) {
       console.error("Cover Letter error:", err);
-      toast.error(err instanceof Error ? err.message : "Failed to generate cover letter", { id: toastId });
+      toast.dismiss(toastId);
+      toast.error(err instanceof Error ? err.message : "Failed to generate cover letter", { duration: 4000 });
     } finally {
       setIsGenerating(false);
     }
