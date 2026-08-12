@@ -1,8 +1,19 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// Routes that require authentication
-const PROTECTED_ROUTES = ["/dashboard", "/editor"];
+// Routes requiring authentication
+const PROTECTED_ROUTES = [
+  "/dashboard",
+  "/editor",
+  "/onboarding",
+  "/profile",
+  "/settings",
+  "/builder",
+  "/admin",
+];
+
+// Routes restricted for already authenticated users
+const AUTH_ROUTES = ["/login", "/signup", "/register"];
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -32,22 +43,34 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Refresh session on every request — IMPORTANT: do not remove
-  // this call. It keeps the auth token fresh for the user.
+  // Refresh session token & retrieve user
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Redirect unauthenticated users away from protected routes
   const { pathname } = request.nextUrl;
+
+  // Allow unauthenticated access to the dedicated admin login page
+  if (pathname === "/admin/login") {
+    return supabaseResponse;
+  }
+
+  // 1. Unauthenticated users trying to access protected routes
   const isProtectedRoute = PROTECTED_ROUTES.some((route) =>
     pathname.startsWith(route)
   );
 
   if (!user && isProtectedRoute) {
-    const loginUrl = new URL("/login", request.url);
+    const targetLogin = pathname.startsWith("/admin") ? "/admin/login" : "/login";
+    const loginUrl = new URL(targetLogin, request.url);
     loginUrl.searchParams.set("redirectTo", pathname);
     return NextResponse.redirect(loginUrl);
+  }
+
+  // 2. Authenticated users trying to access public auth pages (login/signup)
+  const isAuthRoute = AUTH_ROUTES.some((route) => pathname.startsWith(route));
+  if (user && isAuthRoute) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return supabaseResponse;
@@ -55,7 +78,13 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Run middleware on all routes except static files and API internals
+    /*
+     * Match all request paths except:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - Public assets (*.svg, *.png, *.jpg, *.jpeg, *.gif, *.webp)
+     */
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

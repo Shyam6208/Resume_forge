@@ -1,10 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useResumeStore } from "@/store/resume.store";
 import { useAuthStore } from "@/store/auth.store";
 import type { SectionKey } from "@/types/resume.types";
 import type { SectionImproveResult } from "@/lib/ai/types";
+import {
+  generateClientCacheKey,
+  getClientCached,
+  setClientCached,
+} from "@/lib/ai/ai-client-cache";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -36,7 +41,44 @@ export function ImproveWithAIButton({
   const [showDiffModal, setShowDiffModal] = useState(false);
   const [improveResult, setImproveResult] = useState<SectionImproveResult | null>(null);
 
-  const handleImprove = async () => {
+  // Duplicate request prevention
+  const inFlightRef = useRef(false);
+
+  const handleImprove = useCallback(async () => {
+    // Prevent duplicate concurrent requests
+    if (inFlightRef.current) return;
+
+    // Input validation — reject empty/trivial section data
+    const dataStr = JSON.stringify(currentData);
+    if (
+      !currentData ||
+      dataStr === "null" ||
+      dataStr === "{}" ||
+      dataStr === "[]" ||
+      dataStr === '""' ||
+      dataStr.length < 10
+    ) {
+      toast.error("Please add content to this section before improving with AI.");
+      return;
+    }
+
+    // Client-side cache check
+    const cacheKey = generateClientCacheKey({
+      resumeId: currentResume?.id,
+      operation: "improve-section",
+      sectionKey,
+      content: currentData,
+      targetRole: currentResume?.targetJob || currentResume?.title,
+    });
+    const cached = getClientCached<SectionImproveResult>(cacheKey);
+    if (cached) {
+      setImproveResult(cached);
+      setShowDiffModal(true);
+      toast.success("AI Improvement loaded from cache!", { duration: 2000 });
+      return;
+    }
+
+    inFlightRef.current = true;
     setIsLoading(true);
     const toastId = toast.loading(`✨ Improving ${sectionKey} section with AI...`);
 
@@ -60,6 +102,10 @@ export function ImproveWithAIButton({
       const result: SectionImproveResult = await res.json();
       setImproveResult(result);
       setShowDiffModal(true);
+
+      // Cache the result
+      setClientCached(cacheKey, result);
+
       toast.dismiss(toastId);
       toast.success("AI Improvement Ready!", { duration: 3000 });
     } catch (err: unknown) {
@@ -69,8 +115,9 @@ export function ImproveWithAIButton({
       toast.error(msg, { duration: 4000 });
     } finally {
       setIsLoading(false);
+      inFlightRef.current = false;
     }
-  };
+  }, [currentData, currentResume, sectionKey, userType]);
 
   const handleApplyChanges = () => {
     if (improveResult?.improvedData) {

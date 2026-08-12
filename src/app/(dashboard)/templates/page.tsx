@@ -1,20 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { TEMPLATES } from "@/config/templates.config";
+import { TEMPLATES as BUILTIN_TEMPLATES, TemplateConfig } from "@/config/templates.config";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Layout, Search, Sparkles, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Layout, Search, ArrowRight, CheckCircle2, Loader2, Sparkles } from "lucide-react";
 
 export default function TemplatesPage() {
+  const [templates, setTemplates] = useState<TemplateConfig[]>(BUILTIN_TEMPLATES);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
-  const categories = ["all", "minimal", "corporate", "creative", "technical"];
+  const categories = ["all", "minimal", "corporate", "fresher", "developer", "modern"];
 
-  const filteredTemplates = TEMPLATES.filter((tmpl) => {
+  useEffect(() => {
+    async function loadPublishedTemplates() {
+      try {
+        const res = await fetch("/api/templates");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.templates && Array.isArray(data.templates)) {
+            setTemplates(data.templates);
+          }
+        }
+      } catch (err) {
+        console.warn("Could not load published dynamic templates:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadPublishedTemplates();
+  }, []);
+
+  const filteredTemplates = templates.filter((tmpl) => {
     const matchesCategory =
       selectedCategory === "all" || tmpl.category.toLowerCase() === selectedCategory.toLowerCase();
     const matchesSearch =
@@ -24,7 +45,7 @@ export default function TemplatesPage() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
       {/* Top Glass Navbar */}
       <header className="sticky top-0 z-30 w-full h-16 bg-slate-950/90 backdrop-blur border-b border-slate-800 px-4 sm:px-8 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
@@ -106,7 +127,12 @@ export default function TemplatesPage() {
         </div>
 
         {/* Template Grid */}
-        {filteredTemplates.length === 0 ? (
+        {loading ? (
+          <div className="py-16 text-center text-slate-400 space-y-3">
+            <Loader2 className="w-8 h-8 text-indigo-400 animate-spin mx-auto" />
+            <p className="text-xs">Loading available templates...</p>
+          </div>
+        ) : filteredTemplates.length === 0 ? (
           <div className="py-16 text-center text-slate-400 space-y-3">
             <p className="text-sm font-semibold">No templates found matching your search criteria.</p>
             <Button
@@ -128,25 +154,34 @@ export default function TemplatesPage() {
                 key={tmpl.id}
                 className="group rounded-2xl bg-slate-900 border border-slate-800 hover:border-indigo-500/50 overflow-hidden flex flex-col justify-between transition-all shadow-md"
               >
-                {/* Mock Thumbnail */}
-                <div className="h-48 bg-slate-950 p-4 border-b border-slate-800 relative flex flex-col justify-between group-hover:bg-slate-950/80 transition-colors">
-                  <div className="h-2 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full" />
-                  <div className="space-y-2 py-2">
-                    <div className="h-2.5 w-1/3 bg-slate-700 rounded" />
-                    <div className="h-2 w-1/4 bg-indigo-500/40 rounded" />
-                    <div className="space-y-1.5 pt-2">
-                      <div className="h-2 w-full bg-slate-800 rounded" />
-                      <div className="h-2 w-5/6 bg-slate-800 rounded" />
-                      <div className="h-2 w-3/4 bg-slate-800/60 rounded" />
+                {/* Thumbnail */}
+                <div className="h-48 bg-slate-950 border-b border-slate-800 relative flex items-center justify-center overflow-hidden">
+                  {tmpl.previewImage ? (
+                    <img
+                      src={tmpl.previewImage}
+                      alt={tmpl.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full p-4 flex flex-col justify-between group-hover:bg-slate-950/80 transition-colors">
+                      <div className="h-2 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full" />
+                      <div className="space-y-2 py-2">
+                        <div className="h-2.5 w-1/3 bg-slate-700 rounded" />
+                        <div className="h-2 w-1/4 bg-indigo-500/40 rounded" />
+                        <div className="space-y-1.5 pt-2">
+                          <div className="h-2 w-full bg-slate-800 rounded" />
+                          <div className="h-2 w-5/6 bg-slate-800 rounded" />
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono">
+                        <span>A4 SINGLE PAGE</span>
+                        <span className="text-emerald-400 font-bold flex items-center gap-1">
+                          <CheckCircle2 className="w-3 h-3" />
+                          <span>ATS {tmpl.atsRating}%</span>
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono">
-                    <span>A4 SINGLE PAGE</span>
-                    <span className="text-emerald-400 font-bold flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3" />
-                      <span>ATS {tmpl.atsRating}%</span>
-                    </span>
-                  </div>
+                  )}
                 </div>
 
                 {/* Info & CTA */}

@@ -4,7 +4,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { nanoid } from "nanoid";
+import { generateUUID } from "@/utils/uuid";
 import type {
   Resume,
   ResumeData,
@@ -167,7 +167,7 @@ export const useResumeStore = create<ResumeState & ResumeActions>()(
         const { currentResume } = get();
         if (!currentResume) return null;
 
-        const newId = nanoid();
+        const newId = generateUUID();
         const duplicate: Resume = {
           ...currentResume,
           id: newId,

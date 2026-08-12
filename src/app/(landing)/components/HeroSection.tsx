@@ -6,7 +6,12 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Sparkles, CheckCircle2, FileText, ShieldCheck, Zap } from "lucide-react";
 
+import { useAuth } from "@/hooks/useAuth";
+
 export function HeroSection() {
+  const { isAuthenticated } = useAuth();
+  const buildLink = isAuthenticated ? "/onboarding" : "/login?redirectTo=/onboarding";
+
   return (
     <section className="relative min-h-screen bg-gradient-to-br from-slate-950 via-purple-950/40 to-slate-950 flex flex-col justify-center items-center overflow-hidden px-4 sm:px-6 pt-20 pb-16">
       {/* Background Animated Grid Lines & Glow Orbs */}
@@ -88,7 +93,7 @@ export function HeroSection() {
           transition={{ duration: 0.6, delay: 0.3 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2"
         >
-          <Link href="/onboarding">
+          <Link href={buildLink}>
             <Button
               type="button"
               className="h-12 px-8 text-sm bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-2xl shadow-xl shadow-indigo-600/30 transition-all transform hover:scale-105 flex items-center gap-2"

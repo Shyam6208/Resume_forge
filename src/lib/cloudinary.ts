@@ -1,4 +1,4 @@
-import { v2 as cloudinary } from "cloudinary";
+import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
 
 // Configure Cloudinary server credentials
 cloudinary.config({
@@ -46,14 +46,52 @@ export function generateUploadSignature(userId: string): UploadSignatureResult {
 }
 
 /**
- * Deletes a Cloudinary image by public ID
+ * Uploads a Buffer (image or raw asset) server-side to Cloudinary
  */
-export async function deleteCloudinaryImage(publicId: string): Promise<boolean> {
+export async function uploadBufferToCloudinary(
+  buffer: Buffer,
+  folder: string,
+  resourceType: "image" | "raw" | "auto" = "auto",
+  publicId?: string
+): Promise<{ url: string; publicId: string }> {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder,
+        resource_type: resourceType,
+        public_id: publicId,
+        overwrite: true,
+      },
+      (error, result: UploadApiResponse | undefined) => {
+        if (error || !result) {
+          console.error("Cloudinary stream upload error:", error);
+          return reject(error || new Error("Cloudinary upload failed"));
+        }
+        resolve({
+          url: result.secure_url,
+          publicId: result.public_id,
+        });
+      }
+    );
+
+    uploadStream.end(buffer);
+  });
+}
+
+/**
+ * Deletes a Cloudinary image or raw asset by public ID
+ */
+export async function deleteCloudinaryImage(
+  publicId: string,
+  resourceType: "image" | "raw" = "image"
+): Promise<boolean> {
   try {
-    const result = await cloudinary.uploader.destroy(publicId);
+    const result = await cloudinary.uploader.destroy(publicId, {
+      resource_type: resourceType,
+    });
     return result.result === "ok";
   } catch (error) {
-    console.error("Cloudinary image deletion failed:", error);
+    console.error("Cloudinary asset deletion failed:", error);
     return false;
   }
 }

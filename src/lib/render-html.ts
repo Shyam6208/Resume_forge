@@ -5,10 +5,17 @@ import {
   DevTemplate,
   CorporatePro,
 } from "@/components/templates";
+import { DynamicTemplate } from "@/components/templates/DynamicTemplate";
+import { DynamicTemplateConfig } from "@/lib/templates/template-validator";
 import type { ResumeData, ResumeTheme } from "@/types/resume.types";
 import React from "react";
 
-function renderTemplateElement(templateId: string, data: ResumeData, theme: ResumeTheme) {
+function renderTemplateElement(
+  templateId: string,
+  data: ResumeData,
+  theme: ResumeTheme,
+  templateConfig?: DynamicTemplateConfig | null
+) {
   switch (templateId) {
     case "modern-pro":
       return React.createElement(ModernPro, { data, theme });
@@ -21,7 +28,7 @@ function renderTemplateElement(templateId: string, data: ResumeData, theme: Resu
     case "corporate-pro":
       return React.createElement(CorporatePro, { data, theme });
     default:
-      return React.createElement(MinimalWhite, { data, theme });
+      return React.createElement(DynamicTemplate, { data, theme, config: templateConfig });
   }
 }
 
@@ -29,13 +36,14 @@ export async function renderResumeToHtml(
   templateId: string,
   data: ResumeData,
   theme: ResumeTheme,
-  title: string
+  title: string,
+  templateConfig?: DynamicTemplateConfig | null
 ): Promise<string> {
   // Dynamic import react-dom/server to bypass static bundler checks
   const ReactDOMServer = await import("react-dom/server");
   const renderFunc = ReactDOMServer.renderToStaticMarkup || ReactDOMServer.default?.renderToStaticMarkup;
 
-  const element = renderTemplateElement(templateId, data, theme);
+  const element = renderTemplateElement(templateId, data, theme, templateConfig);
   const markup = renderFunc ? renderFunc(element) : "";
 
   return `<!DOCTYPE html>

@@ -1,9 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useResumeStore } from "@/store/resume.store";
 import { useAuthStore } from "@/store/auth.store";
 import type { AIAnalysisResult, JDMatchResult } from "@/lib/ai/types";
+import {
+  generateClientCacheKey,
+  getClientCached,
+  setClientCached,
+} from "@/lib/ai/ai-client-cache";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,6 +43,10 @@ export function AICoachPanel() {
   const [isMatching, setIsMatching] = useState(false);
   const [jdMatch, setJdMatch] = useState<JDMatchResult | null>(null);
 
+  // Duplicate request prevention
+  const analyzeInFlight = useRef(false);
+  const matchInFlight = useRef(false);
+
   // Accordion toggles
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     verdict: true,
@@ -50,12 +59,43 @@ export function AICoachPanel() {
     setExpandedSections((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const handleRunAnalysis = async () => {
+  const handleRunAnalysis = useCallback(async () => {
     if (!currentResume) {
       toast.error("No resume available to analyze");
       return;
     }
 
+    // Prevent duplicate concurrent requests
+    if (analyzeInFlight.current) return;
+
+    // Input validation — check resume has content
+    const data = currentResume.data;
+    const hasContent =
+      data.summary ||
+      (data.experience && data.experience.length > 0) ||
+      (data.projects && data.projects.length > 0) ||
+      (data.skills && Object.keys(data.skills).length > 0);
+
+    if (!hasContent) {
+      toast.error("Please add some content to your resume before analyzing.");
+      return;
+    }
+
+    // Client-side cache check
+    const cacheKey = generateClientCacheKey({
+      resumeId: currentResume.id,
+      operation: "analyze",
+      content: currentResume.data,
+      targetRole: currentResume.targetJob || currentResume.title,
+    });
+    const cached = getClientCached<AIAnalysisResult>(cacheKey);
+    if (cached) {
+      setAnalysis(cached);
+      toast.success("AI Analysis loaded from cache!", { duration: 2000 });
+      return;
+    }
+
+    analyzeInFlight.current = true;
     setIsAnalyzing(true);
     const toastId = toast.loading("🤖 AI Coach analyzing your resume...");
 
@@ -75,8 +115,12 @@ export function AICoachPanel() {
         throw new Error(err.error || "Failed to analyze resume");
       }
 
-      const data: AIAnalysisResult = await res.json();
-      setAnalysis(data);
+      const result: AIAnalysisResult = await res.json();
+      setAnalysis(result);
+
+      // Cache the result
+      setClientCached(cacheKey, result);
+
       toast.dismiss(toastId);
       toast.success("AI Analysis Complete!", { duration: 3000 });
     } catch (err: unknown) {
@@ -86,10 +130,11 @@ export function AICoachPanel() {
       toast.error(msg, { duration: 4000 });
     } finally {
       setIsAnalyzing(false);
+      analyzeInFlight.current = false;
     }
-  };
+  }, [currentResume, userType]);
 
-  const handleRunJDMatch = async () => {
+  const handleRunJDMatch = useCallback(async () => {
     if (!currentResume) {
       toast.error("No resume available");
       return;
@@ -99,6 +144,24 @@ export function AICoachPanel() {
       return;
     }
 
+    // Prevent duplicate concurrent requests
+    if (matchInFlight.current) return;
+
+    // Client-side cache check
+    const cacheKey = generateClientCacheKey({
+      resumeId: currentResume.id,
+      operation: "jd-match",
+      content: currentResume.data,
+      jobDescription,
+    });
+    const cached = getClientCached<JDMatchResult>(cacheKey);
+    if (cached) {
+      setJdMatch(cached);
+      toast.success("JD Match loaded from cache!", { duration: 2000 });
+      return;
+    }
+
+    matchInFlight.current = true;
     setIsMatching(true);
     const toastId = toast.loading("🎯 Matching resume against Job Description...");
 
@@ -117,8 +180,12 @@ export function AICoachPanel() {
         throw new Error(err.error || "Failed to match JD");
       }
 
-      const data: JDMatchResult = await res.json();
-      setJdMatch(data);
+      const result: JDMatchResult = await res.json();
+      setJdMatch(result);
+
+      // Cache the result
+      setClientCached(cacheKey, result);
+
       toast.dismiss(toastId);
       toast.success("JD Match Analysis Complete!", { duration: 3000 });
     } catch (err: unknown) {
@@ -128,8 +195,9 @@ export function AICoachPanel() {
       toast.error(msg, { duration: 4000 });
     } finally {
       setIsMatching(false);
+      matchInFlight.current = false;
     }
-  };
+  }, [currentResume, jobDescription]);
 
   return (
     <div className="space-y-4 text-slate-100">
@@ -323,6 +391,7 @@ export function AICoachPanel() {
                 type="button"
                 variant="outline"
                 size="sm"
+                disabled={isAnalyzing}
                 onClick={handleRunAnalysis}
                 className="w-full h-9 text-xs bg-slate-900 border-slate-800 text-slate-300 hover:bg-slate-800 hover:text-white"
               >

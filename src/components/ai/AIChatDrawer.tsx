@@ -60,12 +60,15 @@ export function AIChatDrawer({ isOpen, onClose }: AIChatDrawerProps) {
     setIsSending(true);
 
     try {
+      // Trim history to last 6 messages before sending to reduce token usage
+      const historyToSend = messages.slice(-6);
+
       const res = await fetch("/api/ai/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           resumeData: currentResume.data,
-          history: messages,
+          history: historyToSend,
           userPrompt: promptToSend.trim(),
           userType: userType || "developer",
           targetJob: currentResume.targetJob || currentResume.title,

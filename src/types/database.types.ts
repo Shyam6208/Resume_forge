@@ -170,6 +170,111 @@ export interface Database {
         };
       };
 
+      // ----- Resume Templates (Public Database Table for Dynamic Templates) -----
+      resume_templates: {
+        Row: {
+          id: string;
+          name: string;
+          slug: string;
+          description: string | null;
+          category: string;
+          tags: string[];
+          thumbnail_url: string | null;
+          thumbnail_public_id: string | null;
+          template_config_url: string | null;
+          template_config_public_id: string | null;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          template_config: any | null;
+          status: "draft" | "published" | "archived";
+          is_featured: boolean;
+          is_premium: boolean;
+          is_ats_friendly: boolean;
+          ats_rating: number | null;
+          sort_order: number;
+          version: string;
+          created_by: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          slug: string;
+          description?: string | null;
+          category?: string;
+          tags?: string[];
+          thumbnail_url?: string | null;
+          thumbnail_public_id?: string | null;
+          template_config_url?: string | null;
+          template_config_public_id?: string | null;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          template_config?: any | null;
+          status?: "draft" | "published" | "archived";
+          is_featured?: boolean;
+          is_premium?: boolean;
+          is_ats_friendly?: boolean;
+          ats_rating?: number | null;
+          sort_order?: number;
+          version?: string;
+          created_by?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          slug?: string;
+          description?: string | null;
+          category?: string;
+          tags?: string[];
+          thumbnail_url?: string | null;
+          thumbnail_public_id?: string | null;
+          template_config_url?: string | null;
+          template_config_public_id?: string | null;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          template_config?: any | null;
+          status?: "draft" | "published" | "archived";
+          is_featured?: boolean;
+          is_premium?: boolean;
+          is_ats_friendly?: boolean;
+          ats_rating?: number | null;
+          sort_order?: number;
+          version?: string;
+          created_by?: string;
+          updated_at?: string;
+        };
+      };
+
+      // ----- Admin Activity Logs -----
+      admin_activity_logs: {
+        Row: {
+          id: string;
+          admin_id: string;
+          admin_email: string;
+          action: string;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          details: any | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          admin_id: string;
+          admin_email: string;
+          action: string;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          details?: any | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          admin_id?: string;
+          admin_email?: string;
+          action?: string;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          details?: any | null;
+        };
+      };
+
       // ----- Job Applications -----
       job_applications: {
         Row: {
@@ -233,6 +338,13 @@ export type CoverLetterUpdate = Database["public"]["Tables"]["cover_letters"]["U
 export type Template = Database["public"]["Tables"]["templates"]["Row"];
 export type TemplateInsert = Database["public"]["Tables"]["templates"]["Insert"];
 export type TemplateUpdate = Database["public"]["Tables"]["templates"]["Update"];
+
+export type ResumeTemplateRow = Database["public"]["Tables"]["resume_templates"]["Row"];
+export type ResumeTemplateInsert = Database["public"]["Tables"]["resume_templates"]["Insert"];
+export type ResumeTemplateUpdate = Database["public"]["Tables"]["resume_templates"]["Update"];
+
+export type AdminActivityLog = Database["public"]["Tables"]["admin_activity_logs"]["Row"];
+export type AdminActivityLogInsert = Database["public"]["Tables"]["admin_activity_logs"]["Insert"];
 
 export type JobApplication = Database["public"]["Tables"]["job_applications"]["Row"];
 export type JobApplicationInsert = Database["public"]["Tables"]["job_applications"]["Insert"];

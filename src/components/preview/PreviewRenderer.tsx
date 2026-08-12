@@ -1,6 +1,6 @@
 "use client";
 
-import { Component, ReactNode, ErrorInfo } from "react";
+import { Component, ReactNode, ErrorInfo, memo } from "react";
 import type { ResumeData, ResumeTheme } from "@/types/resume.types";
 import {
   ModernPro,
@@ -9,14 +9,17 @@ import {
   DevTemplate,
   CorporatePro,
 } from "@/components/templates";
+import { DynamicTemplate } from "@/components/templates/DynamicTemplate";
+import { DynamicTemplateConfig } from "@/lib/templates/template-validator";
 
 interface PreviewRendererProps {
   templateId: string;
   data: ResumeData;
   theme: ResumeTheme;
+  templateConfig?: DynamicTemplateConfig | null;
 }
 
-// Simple Error Boundary for template rendering
+// Error Boundary for template rendering
 class TemplateErrorBoundary extends Component<
   { children: ReactNode },
   { hasError: boolean; error: string | null }
@@ -47,12 +50,11 @@ class TemplateErrorBoundary extends Component<
   }
 }
 
-import { memo } from "react";
-
 export const PreviewRenderer = memo(function PreviewRenderer({
   templateId,
   data,
   theme,
+  templateConfig,
 }: PreviewRendererProps) {
   const renderTemplate = () => {
     switch (templateId) {
@@ -67,8 +69,8 @@ export const PreviewRenderer = memo(function PreviewRenderer({
       case "corporate-pro":
         return <CorporatePro data={data} theme={theme} />;
       default:
-        // Default to Minimal White if template ID is unknown
-        return <MinimalWhite data={data} theme={theme} />;
+        // Dynamic / Custom Database Template
+        return <DynamicTemplate data={data} theme={theme} config={templateConfig} />;
     }
   };
 

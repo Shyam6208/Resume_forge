@@ -1,8 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useResumeStore } from "@/store/resume.store";
 import type { CoverLetterResult } from "@/lib/ai/types";
+import {
+  generateClientCacheKey,
+  getClientCached,
+  setClientCached,
+} from "@/lib/ai/ai-client-cache";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -26,13 +31,36 @@ export function CoverLetterModal({ isOpen, onClose }: CoverLetterModalProps) {
   const [coverLetter, setCoverLetter] = useState<CoverLetterResult | null>(null);
   const [editableText, setEditableText] = useState("");
 
-  const handleGenerate = async () => {
+  // Duplicate request prevention
+  const inFlightRef = useRef(false);
+
+  const handleGenerate = useCallback(async () => {
     if (!currentResume) return;
     if (!jobTitle.trim() || !companyName.trim()) {
       toast.error("Please provide both Job Title and Company Name");
       return;
     }
 
+    // Prevent duplicate concurrent requests
+    if (inFlightRef.current) return;
+
+    // Client-side cache check
+    const cacheKey = generateClientCacheKey({
+      resumeId: currentResume.id,
+      operation: "cover-letter",
+      content: currentResume.data,
+      targetRole: jobTitle,
+      jobDescription: companyName + "|" + jobDescription,
+    });
+    const cached = getClientCached<CoverLetterResult>(cacheKey);
+    if (cached) {
+      setCoverLetter(cached);
+      setEditableText(cached.coverLetterText);
+      toast.success("Cover Letter loaded from cache!", { duration: 2000 });
+      return;
+    }
+
+    inFlightRef.current = true;
     setIsGenerating(true);
     const toastId = toast.loading("📄 Generating tailored Cover Letter...");
 
@@ -56,6 +84,10 @@ export function CoverLetterModal({ isOpen, onClose }: CoverLetterModalProps) {
       const result: CoverLetterResult = await res.json();
       setCoverLetter(result);
       setEditableText(result.coverLetterText);
+
+      // Cache the result
+      setClientCached(cacheKey, result);
+
       toast.dismiss(toastId);
       toast.success("Cover Letter generated!", { duration: 3000 });
     } catch (err: unknown) {
@@ -64,8 +96,9 @@ export function CoverLetterModal({ isOpen, onClose }: CoverLetterModalProps) {
       toast.error(err instanceof Error ? err.message : "Failed to generate cover letter", { duration: 4000 });
     } finally {
       setIsGenerating(false);
+      inFlightRef.current = false;
     }
-  };
+  }, [currentResume, jobTitle, companyName, jobDescription]);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(editableText);

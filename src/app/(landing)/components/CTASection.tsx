@@ -5,7 +5,12 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, CheckCircle2 } from "lucide-react";
 
+import { useAuth } from "@/hooks/useAuth";
+
 export function CTASection() {
+  const { isAuthenticated } = useAuth();
+  const buildLink = isAuthenticated ? "/onboarding" : "/login?redirectTo=/onboarding";
+
   return (
     <section className="py-20 px-4 sm:px-6 max-w-7xl mx-auto">
       <motion.div
@@ -33,7 +38,7 @@ export function CTASection() {
           </p>
 
           <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/onboarding">
+            <Link href={buildLink}>
               <Button
                 type="button"
                 className="h-13 px-9 text-sm bg-white text-indigo-950 hover:bg-slate-100 font-extrabold rounded-2xl shadow-xl shadow-white/10 transition-all transform hover:scale-105 flex items-center gap-2"

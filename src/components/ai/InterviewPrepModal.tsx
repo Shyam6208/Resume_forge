@@ -1,8 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useResumeStore } from "@/store/resume.store";
 import type { InterviewPrepResult, InterviewQuestion } from "@/lib/ai/types";
+import {
+  generateClientCacheKey,
+  getClientCached,
+  setClientCached,
+} from "@/lib/ai/ai-client-cache";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -20,9 +25,31 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
   const [prepResult, setPrepResult] = useState<InterviewPrepResult | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>("All");
 
-  const handleGenerate = async () => {
+  // Duplicate request prevention
+  const inFlightRef = useRef(false);
+
+  const handleGenerate = useCallback(async () => {
     if (!currentResume) return;
 
+    // Prevent duplicate concurrent requests
+    if (inFlightRef.current) return;
+
+    // Client-side cache check
+    const targetRole = currentResume.targetJob || currentResume.title;
+    const cacheKey = generateClientCacheKey({
+      resumeId: currentResume.id,
+      operation: "interview-prep",
+      content: currentResume.data,
+      targetRole,
+    });
+    const cached = getClientCached<InterviewPrepResult>(cacheKey);
+    if (cached) {
+      setPrepResult(cached);
+      toast.success("Interview Prep loaded from cache!", { duration: 2000 });
+      return;
+    }
+
+    inFlightRef.current = true;
     setIsGenerating(true);
     const toastId = toast.loading("🎯 Generating role-specific Interview Questions...");
 
@@ -32,7 +59,7 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           resumeData: currentResume.data,
-          targetRole: currentResume.targetJob || currentResume.title,
+          targetRole,
         }),
       });
 
@@ -43,6 +70,10 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
 
       const result: InterviewPrepResult = await res.json();
       setPrepResult(result);
+
+      // Cache the result
+      setClientCached(cacheKey, result);
+
       toast.dismiss(toastId);
       toast.success("Interview Prep generated!", { duration: 3000 });
     } catch (err: unknown) {
@@ -51,8 +82,9 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
       toast.error(err instanceof Error ? err.message : "Failed to generate interview prep", { duration: 4000 });
     } finally {
       setIsGenerating(false);
+      inFlightRef.current = false;
     }
-  };
+  }, [currentResume]);
 
   const filteredQuestions = prepResult?.questions
     ? activeCategory === "All"
@@ -129,6 +161,7 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                 type="button"
                 variant="outline"
                 size="sm"
+                disabled={isGenerating}
                 onClick={handleGenerate}
                 className="h-8 text-xs bg-slate-950 border-slate-800 text-slate-300 hover:text-white"
               >
