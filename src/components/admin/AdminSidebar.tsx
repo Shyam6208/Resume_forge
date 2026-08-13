@@ -14,6 +14,7 @@ import {
   ArrowLeft,
   Sparkles,
   LogOut,
+  FileText,
 } from "lucide-react";
 import { UserMenu } from "@/components/navigation/UserMenu";
 import { supabase } from "@/lib/supabase/client";
@@ -22,6 +23,7 @@ import toast from "react-hot-toast";
 const NAV_ITEMS = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { label: "Templates", href: "/admin/templates", icon: FileCode2 },
+  { label: "Resumes", href: "/admin/resumes", icon: FileText },
   { label: "Users", href: "/admin/users", icon: Users },
   { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
