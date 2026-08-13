@@ -15,6 +15,8 @@ import {
   Sparkles,
   LogOut,
   FileText,
+  Activity,
+  ServerCrash,
 } from "lucide-react";
 import { UserMenu } from "@/components/navigation/UserMenu";
 import { supabase } from "@/lib/supabase/client";
@@ -25,6 +27,8 @@ const NAV_ITEMS = [
   { label: "Templates", href: "/admin/templates", icon: FileCode2 },
   { label: "Resumes", href: "/admin/resumes", icon: FileText },
   { label: "Users", href: "/admin/users", icon: Users },
+  { label: "Activity", href: "/admin/activity", icon: Activity },
+  { label: "Reliability", href: "/admin/reliability", icon: ServerCrash },
   { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
 

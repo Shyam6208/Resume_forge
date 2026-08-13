@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
   Search,
   FileText,
@@ -13,7 +14,10 @@ import {
   XCircle,
   LayoutTemplate,
   ArrowUpDown,
+  Download,
+  Loader2,
 } from "lucide-react";
+import toast from "react-hot-toast";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -57,16 +61,23 @@ const SORT_OPTIONS = [
 // ── Component ──────────────────────────────────────────────────
 
 export function AdminResumesClient() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [resumes, setResumes] = useState<ResumeListItem[]>([]);
   const [totalCount, setTotalCount] = useState(0);
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [userId, setUserId] = useState("");
-  const [templateId, setTemplateId] = useState("");
-  const [sort, setSort] = useState("updated_desc");
+  
+  // Initialize from URL
+  const [page, setPage] = useState(Math.max(1, parseInt(searchParams.get("page") || "1", 10)));
+  const [search, setSearch] = useState(searchParams.get("search") || "");
+  const [debouncedSearch, setDebouncedSearch] = useState(searchParams.get("search") || "");
+  const [userId, setUserId] = useState(searchParams.get("userId") || "");
+  const [templateId, setTemplateId] = useState(searchParams.get("templateId") || "");
+  const [sort, setSort] = useState(searchParams.get("sort") || "updated_desc");
   const [loadingState, setLoadingState] = useState<LoadingState>("loading");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isExporting, setIsExporting] = useState(false);
 
   // User filter options
   const [userOptions, setUserOptions] = useState<UserOption[]>([]);
@@ -79,17 +90,67 @@ export function AdminResumesClient() {
   // Debounce ref
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // ── URL Synchronization ──────────────────────────────────────
+  const updateUrl = useCallback((
+    newPage: number,
+    newSearch: string,
+    newUserId: string,
+    newTemplateId: string,
+    newSort: string
+  ) => {
+    const params = new URLSearchParams(searchParams.toString());
+    
+    if (newPage > 1) params.set("page", String(newPage));
+    else params.delete("page");
+    
+    if (newSearch) params.set("search", newSearch);
+    else params.delete("search");
+
+    if (newUserId) params.set("userId", newUserId);
+    else params.delete("userId");
+
+    if (newTemplateId) params.set("templateId", newTemplateId);
+    else params.delete("templateId");
+
+    if (newSort !== "updated_desc") params.set("sort", newSort);
+    else params.delete("sort");
+    
+    const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
+    router.replace(newUrl, { scroll: false });
+  }, [pathname, searchParams, router]);
+
+  // Sync state from URL (handles Browser Back/Forward)
+  useEffect(() => {
+    const urlPage = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
+    const urlSearch = searchParams.get("search") || "";
+    const urlUserId = searchParams.get("userId") || "";
+    const urlTemplateId = searchParams.get("templateId") || "";
+    const urlSort = searchParams.get("sort") || "updated_desc";
+    
+    if (urlPage !== page) setPage(urlPage);
+    if (urlSearch !== debouncedSearch) {
+      setDebouncedSearch(urlSearch);
+      setSearch(urlSearch);
+    }
+    if (urlUserId !== userId) setUserId(urlUserId);
+    if (urlTemplateId !== templateId) setTemplateId(urlTemplateId);
+    if (urlSort !== sort) setSort(urlSort);
+  }, [searchParams]);
+
   // ── Debounced search (300ms) ─────────────────────────────────
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      setDebouncedSearch(search);
-      setPage(1);
+      if (search !== debouncedSearch) {
+        setDebouncedSearch(search);
+        setPage(1);
+        updateUrl(1, search, userId, templateId, sort);
+      }
     }, 300);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [search]);
+  }, [search, debouncedSearch, userId, templateId, sort, updateUrl]);
 
   // ── Load user options for the filter dropdown ────────────────
   useEffect(() => {
@@ -186,13 +247,73 @@ export function AdminResumesClient() {
     setModalOpen(true);
   };
 
-  const handleClearFilters = () => {
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    updateUrl(newPage, debouncedSearch, userId, templateId, sort);
+  };
+
+  const handleFilterChange = (key: 'userId' | 'templateId' | 'sort', value: string) => {
+    let newUserId = userId;
+    let newTemplateId = templateId;
+    let newSort = sort;
+
+    if (key === 'userId') newUserId = value;
+    if (key === 'templateId') newTemplateId = value;
+    if (key === 'sort') newSort = value;
+
+    // Reset page to 1 on filter changes
+    setPage(1);
+    
+    if (key === 'userId') setUserId(value);
+    if (key === 'templateId') setTemplateId(value);
+    if (key === 'sort') setSort(value);
+
+    updateUrl(1, debouncedSearch, newUserId, newTemplateId, newSort);
+  };
+
+  const handleClearSearch = () => {
     setSearch("");
     setDebouncedSearch("");
     setUserId("");
     setTemplateId("");
     setSort("updated_desc");
     setPage(1);
+    updateUrl(1, "", "", "", "updated_desc");
+  };
+
+  const handleExportCSV = async () => {
+    if (isExporting) return;
+    setIsExporting(true);
+    try {
+      const params = new URLSearchParams();
+      if (debouncedSearch) params.set("search", debouncedSearch);
+      if (userId) params.set("userId", userId);
+      if (templateId) params.set("templateId", templateId);
+      params.set("sort", sort);
+      
+      const res = await fetch(`/api/admin/resumes/export?${params.toString()}`);
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Failed to export resumes");
+      }
+      
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.style.display = "none";
+      a.href = url;
+      a.download = "resumes.csv";
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      
+      toast.success("Resumes exported successfully");
+    } catch (err) {
+      console.error("Export error:", err);
+      toast.error(err instanceof Error ? err.message : "Failed to export resumes");
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const hasActiveFilters = !!debouncedSearch || !!userId || !!templateId || sort !== "updated_desc";
@@ -206,7 +327,11 @@ export function AdminResumesClient() {
   if (loadingState === "error") {
     return (
       <div className="space-y-6">
-        <PageHeader count={0} />
+        <PageHeader 
+          count={0} 
+          onExport={handleExportCSV} 
+          isExporting={isExporting} 
+        />
         <div className="rounded-3xl bg-slate-900/90 border border-slate-800 shadow-xl p-12 text-center space-y-4">
           <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto">
             <AlertCircle className="w-6 h-6 text-red-400" />
@@ -229,11 +354,14 @@ export function AdminResumesClient() {
 
   return (
     <div className="space-y-6">
-      <PageHeader count={totalCount} />
+      <PageHeader 
+        count={totalCount} 
+        onExport={handleExportCSV} 
+        isExporting={isExporting} 
+      />
 
       {/* Search + Filters toolbar */}
       <div className="flex flex-col sm:flex-row gap-3">
-        {/* Search */}
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <input
@@ -243,64 +371,68 @@ export function AdminResumesClient() {
             placeholder="Search resumes by title, role, or owner..."
             className="w-full h-10 pl-10 pr-9 text-xs bg-slate-900 border border-slate-800 rounded-xl text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-colors"
           />
-          {search && (
-            <button
-              type="button"
-              onClick={() => { setSearch(""); setDebouncedSearch(""); setPage(1); }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
-              aria-label="Clear search"
-            >
-              <XCircle className="w-4 h-4" />
-            </button>
-          )}
         </div>
-
-        {/* User filter */}
-        <select
-          value={userId}
-          onChange={(e) => { setUserId(e.target.value); setPage(1); }}
-          className="h-10 px-3 text-xs bg-slate-900 border border-slate-800 rounded-xl text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 min-w-[140px] appearance-none cursor-pointer"
-        >
-          <option value="">All Users</option>
-          {userOptions.map((u) => (
-            <option key={u.id} value={u.id}>
-              {u.name}
-            </option>
-          ))}
-        </select>
-
-        {/* Template filter */}
-        <select
-          value={templateId}
-          onChange={(e) => { setTemplateId(e.target.value); setPage(1); }}
-          className="h-10 px-3 text-xs bg-slate-900 border border-slate-800 rounded-xl text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 min-w-[140px] appearance-none cursor-pointer"
-        >
-          <option value="">All Templates</option>
-          {TEMPLATES.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.name}
-            </option>
-          ))}
-        </select>
-
-        {/* Sort */}
-        <select
-          value={sort}
-          onChange={(e) => { setSort(e.target.value); setPage(1); }}
-          className="h-10 px-3 text-xs bg-slate-900 border border-slate-800 rounded-xl text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 min-w-[150px] appearance-none cursor-pointer"
-        >
-          {SORT_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
       </div>
+
+      {/* Active Filters Row */}
+      {hasActiveFilters && (
+        <div className="flex flex-wrap items-center gap-2 px-1">
+          <span className="text-xs font-semibold text-slate-500">Active Filters:</span>
+          {debouncedSearch && (
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800/50 border border-slate-700 text-xs font-medium text-slate-300">
+              <span>Search: <strong className="text-white font-semibold">{debouncedSearch}</strong></span>
+              <button onClick={() => { setSearch(""); updateUrl(1, "", userId, templateId, sort); }} className="ml-1 p-0.5 hover:bg-slate-700 rounded-md transition-colors text-slate-400 hover:text-slate-300">
+                <XCircle className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+          {userId && (
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-xs font-medium text-indigo-300">
+              <span>User: <strong className="text-white font-semibold">{userOptions.find((u) => u.id === userId)?.name || "Unknown"}</strong></span>
+              <button onClick={() => handleFilterChange('userId', "")} className="ml-1 p-0.5 hover:bg-indigo-500/20 rounded-md transition-colors text-indigo-400 hover:text-indigo-300">
+                <XCircle className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+          {templateId && (
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-500/10 border border-purple-500/20 text-xs font-medium text-purple-300">
+              <span>Template: <strong className="text-white font-semibold">{TEMPLATES.find((t) => t.id === templateId)?.name || "Unknown"}</strong></span>
+              <button onClick={() => handleFilterChange('templateId', "")} className="ml-1 p-0.5 hover:bg-purple-500/20 rounded-md transition-colors text-purple-400 hover:text-purple-300">
+                <XCircle className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+          {sort !== "updated_desc" && (
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs font-medium text-amber-300">
+              <span>Sort: <strong className="text-white font-semibold">{
+                [
+                  { value: "updated_desc", label: "Recently Updated" },
+                  { value: "updated_asc", label: "Oldest Updated" },
+                  { value: "created_desc", label: "Recently Created" },
+                  { value: "created_asc", label: "Oldest Created" },
+                  { value: "title_asc", label: "Title (A-Z)" },
+                  { value: "title_desc", label: "Title (Z-A)" }
+                ].find(s => s.value === sort)?.label
+              }</strong></span>
+              <button onClick={() => handleFilterChange('sort', "updated_desc")} className="ml-1 p-0.5 hover:bg-amber-500/20 rounded-md transition-colors text-amber-400 hover:text-amber-300">
+                <XCircle className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+          <Button
+            variant="ghost"
+            onClick={handleClearSearch}
+            className="h-7 px-3 text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg ml-auto sm:ml-0"
+          >
+            Clear Filters
+          </Button>
+        </div>
+      )}
 
       {/* Loading overlay for subsequent fetches */}
       <div className={loadingState === "loading" ? "opacity-60 pointer-events-none transition-opacity" : "transition-opacity"}>
         {resumes.length === 0 ? (
-          <EmptyState hasFilters={hasActiveFilters} onClear={handleClearFilters} />
+          <div className="text-center p-12 text-slate-500">No resumes found.</div>
         ) : (
           <>
             {/* Desktop Table */}
@@ -350,49 +482,46 @@ export function AdminResumesClient() {
                   {Math.min(page * PAGE_SIZE, totalCount)} of {totalCount} resumes
                 </p>
                 <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  <Button
+                    variant="outline"
                     disabled={page === 1}
-                    className="h-8 w-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                    aria-label="Previous page"
+                    onClick={() => handlePageChange(page - 1)}
+                    className="w-9 h-9 p-0 bg-slate-900/50 border-slate-800 hover:bg-slate-800 text-slate-300 disabled:opacity-50 disabled:pointer-events-none rounded-xl"
                   >
                     <ChevronLeft className="w-4 h-4" />
-                  </button>
+                  </Button>
+                  
+                  <div className="hidden sm:flex items-center gap-1">
+                    {getPageNumbers().map((p, i) => 
+                      p === "ellipsis" ? (
+                        <span key={`ell-${i}`} className="w-9 text-center text-slate-500 text-sm">
+                          ...
+                        </span>
+                      ) : (
+                        <Button
+                          key={p}
+                          variant={page === p ? "default" : "outline"}
+                          onClick={() => handlePageChange(p as number)}
+                          className={`w-9 h-9 p-0 font-semibold rounded-xl text-sm ${
+                            page === p 
+                              ? "bg-purple-500 hover:bg-purple-600 text-white border-transparent" 
+                              : "bg-slate-900/50 border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800"
+                          }`}
+                        >
+                          {p}
+                        </Button>
+                      )
+                    )}
+                  </div>
 
-                  {getPageNumbers().map((p, i) =>
-                    p === "ellipsis" ? (
-                      <span
-                        key={`ellipsis-${i}`}
-                        className="h-8 w-8 flex items-center justify-center text-slate-500 text-xs"
-                      >
-                        …
-                      </span>
-                    ) : (
-                      <button
-                        key={p}
-                        type="button"
-                        onClick={() => setPage(p)}
-                        className={`h-8 w-8 flex items-center justify-center rounded-lg text-xs font-semibold transition-colors ${
-                          page === p
-                            ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/25"
-                            : "text-slate-400 hover:text-white hover:bg-slate-800"
-                        }`}
-                      >
-                        {p}
-                      </button>
-                    )
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                    disabled={page === totalPages}
-                    className="h-8 w-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                    aria-label="Next page"
+                  <Button
+                    variant="outline"
+                    disabled={page === totalPages || totalPages === 0}
+                    onClick={() => handlePageChange(page + 1)}
+                    className="w-9 h-9 p-0 bg-slate-900/50 border-slate-800 hover:bg-slate-800 text-slate-300 disabled:opacity-50 disabled:pointer-events-none rounded-xl"
                   >
                     <ChevronRight className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
@@ -405,6 +534,13 @@ export function AdminResumesClient() {
         resumeId={selectedResumeId}
         open={modalOpen}
         onOpenChange={setModalOpen}
+        onVisibilityChange={(resumeId, newIsPublic) => {
+          setResumes((prev) =>
+            prev.map((r) =>
+              r.id === resumeId ? { ...r, is_public: newIsPublic } : r
+            )
+          );
+        }}
       />
     </div>
   );
@@ -412,7 +548,15 @@ export function AdminResumesClient() {
 
 // ── Sub-components ─────────────────────────────────────────────
 
-function PageHeader({ count }: { count: number }) {
+function PageHeader({ 
+  count,
+  onExport,
+  isExporting
+}: { 
+  count: number;
+  onExport: () => void;
+  isExporting: boolean;
+}) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
       <div className="space-y-1">
@@ -425,8 +569,23 @@ function PageHeader({ count }: { count: number }) {
           )}
         </h1>
         <p className="text-xs sm:text-sm text-slate-400">
-          Manage resumes created and imported by ResumeForge users
+          Manage user resumes and templates
         </p>
+      </div>
+      <div className="flex items-center gap-3">
+        <Button
+          variant="outline"
+          onClick={onExport}
+          disabled={isExporting || count === 0}
+          className="h-9 px-4 text-xs font-semibold bg-slate-900 border-slate-700 hover:bg-slate-800 text-white rounded-xl"
+        >
+          {isExporting ? (
+            <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />
+          ) : (
+            <Download className="w-3.5 h-3.5 mr-2 text-purple-400" />
+          )}
+          Export CSV
+        </Button>
       </div>
     </div>
   );
@@ -523,7 +682,7 @@ function ResumeRow({
               View Details
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => window.open(`/${resume.slug}`, "_blank")}
+              onClick={() => window.open(`/admin/resumes/${resume.id}/view`, "_blank")}
               className="text-xs gap-2 cursor-pointer focus:bg-slate-800 focus:text-white"
             >
               <FileText className="w-3.5 h-3.5" />
@@ -588,7 +747,7 @@ function ResumeCard({
               View Details
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => window.open(`/${resume.slug}`, "_blank")}
+              onClick={() => window.open(`/admin/resumes/${resume.id}/view`, "_blank")}
               className="text-xs gap-2 cursor-pointer focus:bg-slate-800 focus:text-white"
             >
               <FileText className="w-3.5 h-3.5" />

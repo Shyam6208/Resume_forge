@@ -655,7 +655,7 @@ REQUIRED JSON OUTPUT FORMAT:
   async optimizeForTargetRole(
     data: ResumeData,
     targetRoleProfile: TargetRoleProfile,
-    userType: UserType = "developer"
+    _userType: UserType = "developer"
   ): Promise<RoleOptimizationResult> {
     const compactData = compactResumeForPrompt(data);
     const prompt = `

@@ -6,7 +6,6 @@ import { supabase } from "@/lib/supabase/client";
 import { useAuthStore } from "@/store/auth.store";
 import { useResumeStore } from "@/store/resume.store";
 import { useOptimizationStore } from "@/store/optimization.store";
-import type { User, Session } from "@supabase/supabase-js";
 import toast from "react-hot-toast";
 
 // Friendly error message translation

@@ -28,7 +28,7 @@ export function ProjectLibrary() {
   const handleUseProject = (proj: (typeof projectsData)[0]) => {
     const currentProjects = currentResume?.data.projects || [];
     const newProject = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       name: proj.name,
       description: proj.description,
       technologies: proj.technologies,

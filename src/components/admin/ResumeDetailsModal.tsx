@@ -20,10 +20,14 @@ import {
   CheckCircle2,
   Loader2,
   AlertCircle,
+  ShieldAlert,
+  Lock,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { TEMPLATES } from "@/config/templates.config";
 import { calculateResumeScore } from "@/utils/score-calculator";
 import type { ResumeData, UserType } from "@/types/resume.types";
+import toast from "react-hot-toast";
 
 // ── Types ──────────────────────────────────────────────────────
 
@@ -63,6 +67,7 @@ interface ResumeDetailsModalProps {
   resumeId: string | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onVisibilityChange?: (resumeId: string, newIsPublic: boolean) => void;
 }
 
 /**
@@ -78,10 +83,14 @@ export function ResumeDetailsModal({
   resumeId,
   open,
   onOpenChange,
+  onVisibilityChange,
 }: ResumeDetailsModalProps) {
   const [resume, setResume] = useState<ResumeFullDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [pendingVisibility, setPendingVisibility] = useState<boolean | null>(null);
+  const [toggling, setToggling] = useState(false);
 
   useEffect(() => {
     if (!resumeId || !open) {
@@ -231,11 +240,47 @@ export function ResumeDetailsModal({
                 label="Downloads"
                 value={String(resume.download_count)}
               />
-              <DetailRow
-                icon={Globe}
-                label="Public"
-                value={resume.is_public ? "Yes" : "No"}
-              />
+              {/* ── Visibility Toggle ────────────────────── */}
+              <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-slate-900/80 border border-slate-800/60">
+                <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center shrink-0">
+                  <Globe className="w-4 h-4 text-slate-400" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+                    Visibility
+                  </p>
+                  <p className="text-xs font-semibold text-slate-200">
+                    {resume.is_public ? "Public" : "Private"}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  disabled={toggling}
+                  onClick={() => {
+                    setPendingVisibility(!resume.is_public);
+                    setShowConfirm(true);
+                  }}
+                  className={`h-7 px-3 text-[11px] font-bold rounded-lg border transition-colors flex items-center gap-1.5 ${
+                    resume.is_public
+                      ? "text-amber-300 bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20"
+                      : "text-emerald-300 bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/20"
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  {toggling ? (
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                  ) : resume.is_public ? (
+                    <>
+                      <Lock className="w-3 h-3" />
+                      Make Private
+                    </>
+                  ) : (
+                    <>
+                      <Globe className="w-3 h-3" />
+                      Make Public
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
 
             {/* Section Summary */}
@@ -264,6 +309,98 @@ export function ResumeDetailsModal({
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* ── Visibility Confirmation Dialog ─────────────── */}
+        {showConfirm && pendingVisibility !== null && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm">
+            <div className="bg-slate-950 border border-slate-700 rounded-2xl p-6 max-w-sm mx-4 space-y-4 shadow-2xl">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0">
+                  <ShieldAlert className="w-5 h-5 text-amber-400" />
+                </div>
+                <div>
+                  <p className="text-sm font-extrabold text-white">
+                    Confirm Visibility Change
+                  </p>
+                  <p className="text-[11px] text-slate-400">
+                    This affects whether this resume is publicly visible.
+                  </p>
+                </div>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                You are about to change this resume from{" "}
+                <span className="font-bold text-white">
+                  {pendingVisibility ? "Private" : "Public"}
+                </span>{" "}
+                to{" "}
+                <span className="font-bold text-white">
+                  {pendingVisibility ? "Public" : "Private"}
+                </span>
+                . The resume owner will see this change.
+              </p>
+              <div className="flex items-center gap-2 pt-1">
+                <Button
+                  variant="outline"
+                  disabled={toggling}
+                  onClick={() => {
+                    setShowConfirm(false);
+                    setPendingVisibility(null);
+                  }}
+                  className="flex-1 h-9 text-xs font-semibold bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800 rounded-xl"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  disabled={toggling}
+                  onClick={async () => {
+                    if (pendingVisibility === null || !resume) return;
+                    setToggling(true);
+                    try {
+                      const res = await fetch(`/api/admin/resumes/${resume.id}`, {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ isPublic: pendingVisibility }),
+                      });
+                      const data = await res.json();
+                      if (!res.ok) {
+                        throw new Error(data.error || "Failed to update visibility.");
+                      }
+                      // Update local state only after server confirms
+                      setResume({ ...resume, is_public: pendingVisibility });
+                      if (data.changed && onVisibilityChange) {
+                        onVisibilityChange(resume.id, pendingVisibility);
+                      }
+                      toast.success(
+                        `Resume is now ${pendingVisibility ? "public" : "private"}.`
+                      );
+                    } catch (err) {
+                      toast.error(
+                        err instanceof Error ? err.message : "Failed to update visibility."
+                      );
+                    } finally {
+                      setToggling(false);
+                      setShowConfirm(false);
+                      setPendingVisibility(null);
+                    }
+                  }}
+                  className={`flex-1 h-9 text-xs font-bold rounded-xl ${
+                    pendingVisibility
+                      ? "bg-emerald-600 hover:bg-emerald-500 text-white"
+                      : "bg-amber-600 hover:bg-amber-500 text-white"
+                  }`}
+                >
+                  {toggling ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : pendingVisibility ? (
+                    "Make Public"
+                  ) : (
+                    "Make Private"
+                  )}
+                </Button>
+              </div>
+            </div>
           </div>
         )}
       </DialogContent>
