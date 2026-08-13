@@ -39,6 +39,7 @@ export function ExperienceForm() {
   const currentResume = useResumeStore((s) => s.currentResume);
   const updateSection = useResumeStore((s) => s.updateSection);
   const openLibrary = useUIStore((s) => s.openLibrary);
+  const jobDescription = useUIStore((s) => s.jobDescription);
 
   const initialEntries: ExperienceFormValues["entries"] =
     (currentResume?.data.experience || []).map((entry) => ({
@@ -115,7 +116,6 @@ export function ExperienceForm() {
           <p className="text-xs text-slate-400">Add your past roles, internships, and key achievements</p>
         </div>
         <div className="flex items-center gap-2">
-          <ImproveWithAIButton sectionKey="experience" currentData={getValues("entries") || fields} />
           <Button
             type="button"
             size="sm"
@@ -206,16 +206,31 @@ export function ExperienceForm() {
                 <div className="space-y-1 pt-1">
                   <div className="flex items-center justify-between">
                     <Label className="text-xs font-medium">Key Responsibilities (One per line)</Label>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openLibrary("bullets")}
-                      className="h-6 text-[11px] text-indigo-600 hover:text-indigo-700 p-0"
-                    >
-                      <Lightbulb className="w-3 h-3 mr-1" />
-                      💡 Bullet Library
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <ImproveWithAIButton 
+                        sectionKey="experience" 
+                        currentData={watch(`entries.${index}.responsibilitiesText`) || ""}
+                        onApply={(improvedData) => setValue(`entries.${index}.responsibilitiesText`, improvedData, { shouldDirty: true, shouldValidate: true })}
+                      />
+                      {jobDescription.trim().length >= 30 && (
+                        <ImproveWithAIButton 
+                          sectionKey="experience" 
+                          mode="optimize"
+                          currentData={watch(`entries.${index}.responsibilitiesText`) || ""}
+                          onApply={(improvedData) => setValue(`entries.${index}.responsibilitiesText`, improvedData, { shouldDirty: true, shouldValidate: true })}
+                        />
+                      )}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => openLibrary("bullets")}
+                        className="h-6 text-[11px] text-indigo-600 hover:text-indigo-700 p-0"
+                      >
+                        <Lightbulb className="w-3 h-3 mr-1" />
+                        💡 Bullet Library
+                      </Button>
+                    </div>
                   </div>
                   <Textarea
                     placeholder="• Developed REST APIs handling 10k daily requests&#10;• Reduced latency by 35% by implementing Redis caching"

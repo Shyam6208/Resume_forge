@@ -5,7 +5,7 @@ import { buildCacheKey, getCached, setCached } from "@/lib/ai/ai-cache";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { sectionKey, currentSectionData, userType, targetJob } = body || {};
+    const { mode = "improve", sectionKey, currentSectionData, userType, targetJob, jobDescription } = body || {};
 
     if (!sectionKey || currentSectionData === undefined) {
       return NextResponse.json(
@@ -23,25 +23,44 @@ export async function POST(request: Request) {
       );
     }
 
+    if (mode === "optimize" && (!jobDescription || jobDescription.trim().length < 30)) {
+      return NextResponse.json(
+        { error: "Please provide a valid job description before optimizing." },
+        { status: 400 }
+      );
+    }
+
     // Server-side cache check
     const cacheKey = buildCacheKey(
-      "improve-section",
+      mode === "optimize" ? "jd-optimize" : "improve-section",
       sectionKey,
       dataStr,
       userType,
-      targetJob
+      targetJob,
+      mode === "optimize" ? jobDescription : undefined
     );
     const cached = getCached(cacheKey);
     if (cached) {
       return NextResponse.json(cached, { status: 200 });
     }
 
-    const improvedResult = await aiService.improveSection(
-      sectionKey,
-      currentSectionData,
-      userType,
-      targetJob
-    );
+    let improvedResult;
+    
+    if (mode === "optimize") {
+      improvedResult = await aiService.optimizeSectionForJob(
+        sectionKey,
+        currentSectionData,
+        targetJob,
+        jobDescription
+      );
+    } else {
+      improvedResult = await aiService.improveSection(
+        sectionKey,
+        currentSectionData,
+        userType,
+        targetJob
+      );
+    }
 
     setCached(cacheKey, improvedResult);
 

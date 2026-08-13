@@ -6,12 +6,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { nanoid } from "nanoid";
 import { useResumeStore } from "@/store/resume.store";
+import { useUIStore } from "@/store/ui.store";
 import type { ProjectEntry } from "@/types/resume.types";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2, FolderKanban, X } from "lucide-react";
+import { ImproveWithAIButton } from "@/components/ai/ImproveWithAIButton";
 
 const projectEntrySchema = z.object({
   id: z.string(),
@@ -33,6 +35,7 @@ type ProjectsFormValues = z.infer<typeof projectsFormSchema>;
 export function ProjectsForm() {
   const currentResume = useResumeStore((s) => s.currentResume);
   const updateSection = useResumeStore((s) => s.updateSection);
+  const jobDescription = useUIStore((s) => s.jobDescription);
 
   const initialEntries: ProjectsFormValues["entries"] =
     (currentResume?.data.projects || []).map((p) => ({
@@ -160,7 +163,24 @@ export function ProjectsForm() {
               </div>
 
               <div className="space-y-1">
-                <Label className="text-xs">Description & Key Highlights *</Label>
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs font-medium">Description & Key Highlights *</Label>
+                  <div className="flex items-center gap-2">
+                    <ImproveWithAIButton 
+                      sectionKey="projects" 
+                      currentData={watch(`entries.${index}.description`) || ""}
+                      onApply={(improvedData) => setValue(`entries.${index}.description`, improvedData, { shouldDirty: true, shouldValidate: true })}
+                    />
+                    {jobDescription.trim().length >= 30 && (
+                      <ImproveWithAIButton 
+                        sectionKey="projects" 
+                        mode="optimize"
+                        currentData={watch(`entries.${index}.description`) || ""}
+                        onApply={(improvedData) => setValue(`entries.${index}.description`, improvedData, { shouldDirty: true, shouldValidate: true })}
+                      />
+                    )}
+                  </div>
+                </div>
                 <Textarea
                   placeholder="Built a full-stack e-commerce app with Stripe integration, handling 500+ daily orders..."
                   className="min-h-[80px] text-xs leading-relaxed"

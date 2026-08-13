@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import type { Resume, UserType } from "@/types/resume.types";
 import { ResumeCard } from "./ResumeCard";
+import { UploadResumeModal } from "./UploadResumeModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -16,6 +17,7 @@ import {
   LayoutTemplate,
   Trophy,
   FileArchive,
+  Upload,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -49,6 +51,8 @@ export function DashboardClient({
   // Hydration fix for skeletons
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => setIsMounted(true), []);
+
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
   const handleUpdate = (updatedResume: Resume) => {
     setResumes((prev) =>
@@ -177,15 +181,26 @@ export function DashboardClient({
               </p>
             </div>
 
-            <Link href="/onboarding" className="shrink-0">
+            <div className="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full sm:w-auto">
               <Button
                 type="button"
-                className="h-10 px-5 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl shadow-md flex items-center gap-2 w-full sm:w-auto transition-transform hover:scale-105 active:scale-95"
+                variant="outline"
+                onClick={() => setIsUploadModalOpen(true)}
+                className="h-10 px-5 text-xs bg-slate-900 border-slate-700 hover:bg-slate-800 text-slate-200 font-semibold rounded-xl shadow-sm flex items-center gap-2 w-full sm:w-auto transition-colors"
               >
-                <Plus className="w-4 h-4" />
-                <span>Create New Resume</span>
+                <Upload className="w-4 h-4" />
+                <span>Upload Existing Resume</span>
               </Button>
-            </Link>
+              <Link href="/onboarding" className="w-full sm:w-auto shrink-0">
+                <Button
+                  type="button"
+                  className="h-10 px-5 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl shadow-md flex items-center gap-2 w-full transition-transform hover:scale-105 active:scale-95"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Create New Resume</span>
+                </Button>
+              </Link>
+            </div>
           </div>
 
           {/* Stats Row */}
@@ -316,15 +331,26 @@ export function DashboardClient({
               </p>
             </div>
 
-            <Link href="/onboarding" className="inline-block pt-4 relative z-10">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4 relative z-10 w-full px-4 sm:px-0">
               <Button
                 type="button"
-                className="h-12 px-8 text-sm bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/20 flex items-center gap-2 transition-transform hover:scale-105 active:scale-95"
+                variant="outline"
+                onClick={() => setIsUploadModalOpen(true)}
+                className="h-12 px-8 text-sm bg-slate-900/80 border-slate-700 hover:bg-slate-800 text-slate-200 font-bold rounded-xl shadow-lg flex items-center gap-2 w-full sm:w-auto transition-colors backdrop-blur"
               >
-                <Plus className="w-4 h-4" />
-                <span>Create New Resume</span>
+                <Upload className="w-4 h-4" />
+                <span>Upload Existing Resume</span>
               </Button>
-            </Link>
+              <Link href="/onboarding" className="w-full sm:w-auto">
+                <Button
+                  type="button"
+                  className="h-12 px-8 text-sm bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/20 flex items-center gap-2 w-full transition-transform hover:scale-105 active:scale-95"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Create New Resume</span>
+                </Button>
+              </Link>
+            </div>
           </div>
         ) : displayResumes.length === 0 ? (
           /* Empty State - Filtered */
@@ -416,6 +442,11 @@ export function DashboardClient({
           </div>
         </div>
       </footer>
+
+      <UploadResumeModal 
+        isOpen={isUploadModalOpen} 
+        onClose={() => setIsUploadModalOpen(false)} 
+      />
     </div>
   );
 }

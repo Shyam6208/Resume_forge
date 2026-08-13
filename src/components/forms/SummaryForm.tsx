@@ -25,6 +25,7 @@ export function SummaryForm() {
   const updateSection = useResumeStore((s) => s.updateSection);
   const userType = useAuthStore((s) => s.userType);
   const openLibrary = useUIStore((s) => s.openLibrary);
+  const jobDescription = useUIStore((s) => s.jobDescription);
 
   const isFresher = userType === "fresher" || userType === "student";
 
@@ -64,7 +65,19 @@ export function SummaryForm() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <ImproveWithAIButton sectionKey="summary" currentData={watch("summary") || ""} />
+          <ImproveWithAIButton 
+            sectionKey="summary" 
+            currentData={watch("summary") || ""} 
+            onApply={(improvedData) => setValue("summary", improvedData, { shouldDirty: true, shouldValidate: true })}
+          />
+          {jobDescription.trim().length >= 30 && (
+            <ImproveWithAIButton 
+              sectionKey="summary" 
+              mode="optimize"
+              currentData={watch("summary") || ""} 
+              onApply={(improvedData) => setValue("summary", improvedData, { shouldDirty: true, shouldValidate: true })}
+            />
+          )}
           <Button
             type="button"
             variant="outline"

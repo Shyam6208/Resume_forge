@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { aiService } from "@/lib/ai/ai.service";
 import { buildCacheKey, getCached, setCached } from "@/lib/ai/ai-cache";
+import { compactResumeForInterviewPrep } from "@/lib/ai/prompt-utils";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { resumeData, targetRole } = body || {};
+    const { resumeData, jobDescription, jdMatchContext } = body || {};
 
     if (!resumeData) {
       return NextResponse.json(
@@ -13,19 +14,38 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+    
+    if (!jobDescription || jobDescription.trim().length < 30) {
+      return NextResponse.json(
+        { error: "Add a valid job description to prepare for your interview." },
+        { status: 400 }
+      );
+    }
+    
+    if (jobDescription.length > 20000) {
+      return NextResponse.json(
+        { error: "Job description is too long (max 20,000 characters)." },
+        { status: 400 }
+      );
+    }
 
     // Server-side cache check
     const cacheKey = buildCacheKey(
       "interview-prep",
-      JSON.stringify(resumeData),
-      targetRole || ""
+      compactResumeForInterviewPrep(resumeData),
+      jobDescription.trim().slice(0, 1000), // hash is generated over this in buildCacheKey
+      jdMatchContext ? JSON.stringify(jdMatchContext) : ""
     );
     const cached = getCached(cacheKey);
     if (cached) {
       return NextResponse.json(cached, { status: 200 });
     }
 
-    const prepResult = await aiService.generateInterviewPrep(resumeData, targetRole);
+    const prepResult = await aiService.generateInterviewPrep(
+      resumeData,
+      jobDescription,
+      jdMatchContext ? JSON.stringify(jdMatchContext) : ""
+    );
 
     setCached(cacheKey, prepResult);
 

@@ -21,6 +21,7 @@ interface ResumeState {
   isDirty: boolean;
   isSaving: boolean;
   lastSaved: Date | null;
+  temporaryImport: Resume | null;
 }
 
 // --- Actions ---
@@ -42,6 +43,7 @@ interface ResumeActions {
   setIsSaving: (val: boolean) => void;
   setLastSaved: (date: Date) => void;
   setIsDirty: (val: boolean) => void;
+  setTemporaryImport: (resume: Resume | null) => void;
 }
 
 // --- Store ---
@@ -54,10 +56,14 @@ export const useResumeStore = create<ResumeState & ResumeActions>()(
       isDirty: false,
       isSaving: false,
       lastSaved: null,
+      temporaryImport: null,
 
       // Actions
       setResume: (resume) =>
         set({ currentResume: resume, isDirty: false }),
+
+      setTemporaryImport: (resume) =>
+        set({ temporaryImport: resume }),
 
       updateSection: (section, data) => {
         const { currentResume } = get();

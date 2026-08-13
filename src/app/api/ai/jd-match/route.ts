@@ -17,7 +17,14 @@ export async function POST(request: Request) {
     // Input validation — JD must be at least 30 chars
     if (typeof jobDescription !== "string" || jobDescription.trim().length < 30) {
       return NextResponse.json(
-        { error: "Please provide at least 30 characters of a Job Description." },
+        { error: "Please enter a valid job description." },
+        { status: 400 }
+      );
+    }
+
+    if (jobDescription.length > 20000) {
+      return NextResponse.json(
+        { error: "Job description is too long to analyze." },
         { status: 400 }
       );
     }

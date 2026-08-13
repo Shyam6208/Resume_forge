@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useMemo } from "react";
 import { useResumeStore } from "@/store/resume.store";
+import { useUIStore } from "@/store/ui.store";
 import { useAuthStore } from "@/store/auth.store";
 import type { AIAnalysisResult, JDMatchResult } from "@/lib/ai/types";
 import {
@@ -27,29 +28,81 @@ import {
   ArrowRight,
   ChevronDown,
   ChevronUp,
+  FileText,
+  LineChart,
+  HelpCircle,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { CoverLetterModal } from "./CoverLetterModal";
+import { InterviewPrepModal } from "./InterviewPrepModal";
 
 export function AICoachPanel() {
   const currentResume = useResumeStore((s) => s.currentResume);
   const userType = useAuthStore((s) => s.userType);
 
-  const [activeTab, setActiveTab] = useState<"analysis" | "jd-match">("analysis");
+  const [activeTab, setActiveTab] = useState<"analysis" | "jd-match" | "skill-gap">("analysis");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState<AIAnalysisResult | null>(null);
 
-  // JD Match state
-  const [jobDescription, setJobDescription] = useState("");
+  const {
+    jobDescription,
+    setJobDescription,
+    jdMatchResult: jdMatch,
+    setJdMatchResult: setJdMatch,
+  } = useUIStore();
+
   const [isMatching, setIsMatching] = useState(false);
-  const [jdMatch, setJdMatch] = useState<JDMatchResult | null>(null);
+  const [isCoverLetterModalOpen, setIsCoverLetterModalOpen] = useState(false);
+  const [isInterviewPrepModalOpen, setIsInterviewPrepModalOpen] = useState(false);
 
   // Duplicate request prevention
   const analyzeInFlight = useRef(false);
   const matchInFlight = useRef(false);
+  const lastAnalyzedJdRef = useRef(jobDescription);
+  const lastAnalyzedResumeIdRef = useRef(currentResume?.id || "");
+
+  // Skill Gap derivation
+  const skillGapData = useMemo(() => {
+    if (!jdMatch) return null;
+    if (jobDescription !== lastAnalyzedJdRef.current) return null;
+    if (currentResume?.id !== lastAnalyzedResumeIdRef.current) return null;
+
+    const strongMatch = new Set<string>();
+    const notFound = new Set<string>();
+    const review = new Set<string>();
+
+    jdMatch.matchedSkills?.forEach((s) => {
+      const val = s.trim();
+      if (val) strongMatch.add(val);
+    });
+
+    const checkMissing = (arr?: string[]) => {
+      arr?.forEach((s) => {
+        const val = s.trim();
+        if (val && !strongMatch.has(val)) notFound.add(val);
+      });
+    };
+    checkMissing(jdMatch.missingSkills);
+    checkMissing(jdMatch.missingKeywords);
+
+    jdMatch.keywordHeatmap?.forEach((k) => {
+      if (k.status === "partial") {
+        const val = k.keyword.trim();
+        if (val && !strongMatch.has(val) && !notFound.has(val)) {
+          review.add(val);
+        }
+      }
+    });
+
+    return {
+      strongMatch: Array.from(strongMatch),
+      notFoundInResume: Array.from(notFound),
+      needsReview: Array.from(review),
+    };
+  }, [jdMatch, jobDescription, currentResume?.id]);
 
   // Accordion toggles
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
-    verdict: true,
     keywords: true,
     strengths: false,
     suggestions: true,
@@ -152,11 +205,13 @@ export function AICoachPanel() {
       resumeId: currentResume.id,
       operation: "jd-match",
       content: currentResume.data,
-      jobDescription,
+      jobDescription: jobDescription,
     });
     const cached = getClientCached<JDMatchResult>(cacheKey);
     if (cached) {
       setJdMatch(cached);
+      lastAnalyzedJdRef.current = jobDescription;
+      lastAnalyzedResumeIdRef.current = currentResume.id;
       toast.success("JD Match loaded from cache!", { duration: 2000 });
       return;
     }
@@ -182,6 +237,8 @@ export function AICoachPanel() {
 
       const result: JDMatchResult = await res.json();
       setJdMatch(result);
+      lastAnalyzedJdRef.current = jobDescription;
+      lastAnalyzedResumeIdRef.current = currentResume.id;
 
       // Cache the result
       setClientCached(cacheKey, result);
@@ -197,7 +254,7 @@ export function AICoachPanel() {
       setIsMatching(false);
       matchInFlight.current = false;
     }
-  }, [currentResume, jobDescription]);
+  }, [currentResume, jobDescription, setJdMatch]);
 
   return (
     <div className="space-y-4 text-slate-100">
@@ -217,7 +274,7 @@ export function AICoachPanel() {
       </div>
 
       {/* Mode Switcher Pills */}
-      <div className="grid grid-cols-2 p-1 rounded-xl bg-slate-950 border border-slate-800 text-xs">
+      <div className="grid grid-cols-3 p-1 rounded-xl bg-slate-950 border border-slate-800 text-xs">
         <button
           type="button"
           onClick={() => setActiveTab("analysis")}
@@ -239,6 +296,17 @@ export function AICoachPanel() {
           }`}
         >
           JD Matcher
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("skill-gap")}
+          className={`py-1.5 rounded-lg font-semibold transition-all ${
+            activeTab === "skill-gap"
+              ? "bg-indigo-600 text-white shadow-sm"
+              : "text-slate-400 hover:text-slate-200"
+          }`}
+        >
+          Skill Gap
         </button>
       </div>
 
@@ -279,52 +347,6 @@ export function AICoachPanel() {
 
           {analysis && (
             <div className="space-y-4">
-              {/* Score Badges Summary */}
-              <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                  <span className="text-[10px] text-slate-400 font-semibold uppercase block">Overall</span>
-                  <span className="text-lg font-extrabold text-indigo-400">{analysis.overallRating}/100</span>
-                </div>
-                <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                  <span className="text-[10px] text-slate-400 font-semibold uppercase block">ATS Score</span>
-                  <span className="text-lg font-extrabold text-emerald-400">{analysis.atsRating}%</span>
-                </div>
-                <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800">
-                  <span className="text-[10px] text-slate-400 font-semibold uppercase block">Recruiter</span>
-                  <span className="text-lg font-extrabold text-amber-400">{analysis.recruiterScore}%</span>
-                </div>
-              </div>
-
-              {/* Recruiter Verdict Card */}
-              <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-indigo-500/30 space-y-2">
-                <div
-                  className="flex items-center justify-between cursor-pointer"
-                  onClick={() => toggleSection("verdict")}
-                >
-                  <div className="flex items-center gap-2">
-                    <FileCheck2 className="w-4 h-4 text-indigo-400" />
-                    <span className="text-xs font-bold text-white">Recruiter Verdict</span>
-                    <Badge
-                      variant="outline"
-                      className={`text-[10px] px-2 py-0.2 font-semibold ${
-                        analysis.recruiterVerdict.shortlistStatus === "Shortlisted"
-                          ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
-                          : "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                      }`}
-                    >
-                      {analysis.recruiterVerdict.shortlistStatus}
-                    </Badge>
-                  </div>
-                  {expandedSections.verdict ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
-                </div>
-
-                {expandedSections.verdict && (
-                  <p className="text-xs text-slate-300 leading-relaxed pt-1">
-                    {analysis.recruiterVerdict.summary}
-                  </p>
-                )}
-              </div>
-
               {/* Categorized Missing Keywords */}
               <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
                 <div
@@ -409,10 +431,13 @@ export function AICoachPanel() {
           <div className="space-y-2">
             <label className="text-xs font-bold text-white">Target Job Description</label>
             <Textarea
-              placeholder="Paste job posting text or key requirement bullet points here..."
+              placeholder="Paste the job description here..."
+              className="min-h-[160px] text-xs leading-relaxed resize-none bg-slate-900 border-slate-800"
               value={jobDescription}
-              onChange={(e) => setJobDescription(e.target.value)}
-              className="min-h-[120px] text-xs bg-slate-950 border-slate-800 text-slate-200"
+              onChange={(e) => {
+                setJobDescription(e.target.value);
+                if (jdMatch) setJdMatch(null);
+              }}
             />
             <Button
               type="button"
@@ -435,15 +460,8 @@ export function AICoachPanel() {
           </div>
 
           {jdMatch && (
-            <div className="space-y-4 pt-2 border-t border-slate-800">
-              <div className="p-4 rounded-2xl bg-slate-950 border border-indigo-500/30 text-center space-y-1">
-                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">JD Match Score</span>
-                <div className="text-3xl font-extrabold text-indigo-400">{jdMatch.matchPercentage}%</div>
-                <Badge variant="outline" className="text-xs px-2 py-0.5 border-indigo-500/40 text-indigo-300">
-                  Hiring Probability: {jdMatch.hiringProbability}
-                </Badge>
-              </div>
-
+            <div className="space-y-4">
+              {/* Categorized Skills */}
               {jdMatch.missingSkills?.length > 0 && (
                 <div className="space-y-1.5">
                   <span className="text-xs font-bold text-rose-400 flex items-center gap-1">
@@ -477,8 +495,145 @@ export function AICoachPanel() {
               )}
             </div>
           )}
+
+          {jobDescription.trim().length >= 30 && (
+            <div className="pt-2 grid grid-cols-2 gap-2">
+              <Button
+                type="button"
+                onClick={() => setIsCoverLetterModalOpen(true)}
+                className="w-full h-9 text-xs bg-slate-900 border border-indigo-500/30 text-indigo-300 font-semibold rounded-xl"
+              >
+                <FileText className="w-3.5 h-3.5 mr-1.5" />
+                <span>Generate Cover Letter</span>
+              </Button>
+              <Button
+                type="button"
+                onClick={() => setIsInterviewPrepModalOpen(true)}
+                className="w-full h-9 text-xs bg-slate-900 border border-emerald-500/30 text-emerald-300 font-semibold rounded-xl"
+              >
+                <HelpCircle className="w-3.5 h-3.5 mr-1.5" />
+                <span>Practice Interview</span>
+              </Button>
+            </div>
+          )}
         </div>
       )}
+
+      {/* TAB 3: SKILL GAP */}
+      {activeTab === "skill-gap" && (
+        <div className="space-y-4">
+          {jobDescription.trim().length < 30 ? (
+            <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 text-center space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-slate-800/50 border border-slate-700/50 text-slate-400 flex items-center justify-center mx-auto">
+                <Target className="w-5 h-5" />
+              </div>
+              <p className="text-xs text-slate-400 leading-relaxed max-w-[250px] mx-auto">
+                Add a valid job description to see your skill gaps.
+              </p>
+              <Button
+                type="button"
+                onClick={() => setActiveTab("jd-match")}
+                className="w-full h-9 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl"
+              >
+                Go to JD Matcher
+              </Button>
+            </div>
+          ) : !skillGapData ? (
+            <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 text-center space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mx-auto">
+                <LineChart className="w-6 h-6 animate-pulse" />
+              </div>
+              <p className="text-xs text-slate-400 leading-relaxed max-w-[250px] mx-auto">
+                Analyze the job description first to see your skill gaps.
+              </p>
+              <Button
+                type="button"
+                disabled={isMatching}
+                onClick={() => {
+                  setActiveTab("jd-match");
+                  handleRunJDMatch();
+                }}
+                className="w-full h-10 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-md flex items-center justify-center gap-2"
+              >
+                {isMatching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Target className="w-4 h-4" />}
+                <span>Analyze Job</span>
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {/* Strong Match */}
+              <div className="space-y-1.5">
+                <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>Strong Match</span>
+                </span>
+                {skillGapData.strongMatch.length > 0 ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {skillGapData.strongMatch.map((skill: string, i: number) => (
+                      <span key={i} className="px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 text-xs">
+                        ✓ {skill}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-400 italic">No strong matches identified yet.</p>
+                )}
+              </div>
+
+              {/* Not Found in Resume */}
+              <div className="space-y-1.5">
+                <span className="text-xs font-bold text-rose-400 flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                  <span>Not Found in Resume</span>
+                </span>
+                {skillGapData.notFoundInResume.length > 0 ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {skillGapData.notFoundInResume.map((skill: string, i: number) => (
+                      <span key={i} className="px-2 py-1 rounded-md bg-rose-500/10 text-rose-300 border border-rose-500/20 text-xs">
+                        ⚠ {skill}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-400 italic">No additional skills were identified as missing from the resume.</p>
+                )}
+              </div>
+
+              {/* Needs Review */}
+              <div className="space-y-1.5">
+                <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                  <FileCheck2 className="w-3.5 h-3.5" />
+                  <span>Needs Review</span>
+                </span>
+                <p className="text-[10px] text-slate-400 mb-2 leading-relaxed">
+                  Some evidence may be relevant, but the resume does not provide enough specific information to confidently classify it.
+                </p>
+                {skillGapData.needsReview.length > 0 ? (
+                  <div className="flex flex-wrap gap-1.5">
+                    {skillGapData.needsReview.map((skill: string, i: number) => (
+                      <span key={i} className="px-2 py-1 rounded-md bg-amber-500/10 text-amber-300 border border-amber-500/20 text-xs">
+                        ? {skill}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-400 italic">No ambiguous skill matches require review.</p>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Modals */}
+      <CoverLetterModal
+        isOpen={isCoverLetterModalOpen}
+        onClose={() => setIsCoverLetterModalOpen(false)}
+      />
+      <InterviewPrepModal
+        isOpen={isInterviewPrepModalOpen}
+        onClose={() => setIsInterviewPrepModalOpen(false)}
+      />
     </div>
   );
 }

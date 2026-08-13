@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import { useResumeStore } from "@/store/resume.store";
+import { useUIStore } from "@/store/ui.store";
 import type { CoverLetterResult } from "@/lib/ai/types";
 import {
   generateClientCacheKey,
@@ -22,10 +23,10 @@ interface CoverLetterModalProps {
 
 export function CoverLetterModal({ isOpen, onClose }: CoverLetterModalProps) {
   const currentResume = useResumeStore((s) => s.currentResume);
+  const jobDescription = useUIStore((s) => s.jobDescription);
 
   const [jobTitle, setJobTitle] = useState(currentResume?.targetJob || currentResume?.title || "Software Engineer");
   const [companyName, setCompanyName] = useState("");
-  const [jobDescription, setJobDescription] = useState("");
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [coverLetter, setCoverLetter] = useState<CoverLetterResult | null>(null);
@@ -34,8 +35,30 @@ export function CoverLetterModal({ isOpen, onClose }: CoverLetterModalProps) {
   // Duplicate request prevention
   const inFlightRef = useRef(false);
 
-  const handleGenerate = useCallback(async () => {
-    if (!currentResume) return;
+  const handleGenerate = useCallback(async (forceRegenerate = false) => {
+    if (!currentResume) {
+      toast.error("No resume available");
+      return;
+    }
+    
+    // Check if effectively empty
+    const data = currentResume.data;
+    const hasContent =
+      data.summary ||
+      (data.experience && data.experience.length > 0) ||
+      (data.projects && data.projects.length > 0) ||
+      (data.skills && Object.keys(data.skills).length > 0);
+
+    if (!hasContent) {
+      toast.error("Add some resume content before generating a cover letter.");
+      return;
+    }
+    
+    if (!jobDescription || jobDescription.trim().length < 30) {
+      toast.error("Please add a valid job description before generating a cover letter.");
+      return;
+    }
+
     if (!jobTitle.trim() || !companyName.trim()) {
       toast.error("Please provide both Job Title and Company Name");
       return;
@@ -52,17 +75,20 @@ export function CoverLetterModal({ isOpen, onClose }: CoverLetterModalProps) {
       targetRole: jobTitle,
       jobDescription: companyName + "|" + jobDescription,
     });
-    const cached = getClientCached<CoverLetterResult>(cacheKey);
-    if (cached) {
-      setCoverLetter(cached);
-      setEditableText(cached.coverLetterText);
-      toast.success("Cover Letter loaded from cache!", { duration: 2000 });
-      return;
+    
+    if (!forceRegenerate) {
+      const cached = getClientCached<CoverLetterResult>(cacheKey);
+      if (cached) {
+        setCoverLetter(cached);
+        setEditableText(cached.coverLetterText);
+        toast.success("Cover Letter loaded from cache!", { duration: 2000 });
+        return;
+      }
     }
 
     inFlightRef.current = true;
     setIsGenerating(true);
-    const toastId = toast.loading("📄 Generating tailored Cover Letter...");
+    const toastId = toast.loading(forceRegenerate ? "📄 Regenerating Cover Letter..." : "📄 Generating tailored Cover Letter...");
 
     try {
       const res = await fetch("/api/ai/cover-letter", {
@@ -139,21 +165,10 @@ export function CoverLetterModal({ isOpen, onClose }: CoverLetterModalProps) {
             />
           </div>
         </div>
-
-        <div className="space-y-1">
-          <label className="text-xs font-semibold text-slate-300">Job Description (Optional)</label>
-          <Textarea
-            value={jobDescription}
-            onChange={(e) => setJobDescription(e.target.value)}
-            placeholder="Paste job posting details to align keywords..."
-            className="min-h-[70px] text-xs bg-slate-950 border-slate-800 text-white"
-          />
-        </div>
-
         <Button
           type="button"
           disabled={isGenerating || !jobTitle.trim() || !companyName.trim()}
-          onClick={handleGenerate}
+          onClick={() => handleGenerate(false)}
           className="w-full h-10 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-md flex items-center justify-center gap-2"
         >
           {isGenerating ? (
@@ -174,16 +189,29 @@ export function CoverLetterModal({ isOpen, onClose }: CoverLetterModalProps) {
           <div className="space-y-3 pt-2 border-t border-slate-800">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-white">Generated Cover Letter (Editable)</span>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleCopy}
-                className="h-8 text-xs bg-slate-950 border-slate-800 text-slate-200 hover:bg-slate-800 hover:text-white"
-              >
-                <Copy className="w-3.5 h-3.5 mr-1 text-emerald-400" />
-                <span>Copy Text</span>
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={isGenerating}
+                  onClick={() => handleGenerate(true)}
+                  className="h-8 text-xs bg-slate-950 border-slate-800 text-slate-200 hover:bg-slate-800 hover:text-white"
+                >
+                  <Sparkles className="w-3.5 h-3.5 mr-1 text-amber-400" />
+                  <span>Regenerate</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCopy}
+                  className="h-8 text-xs bg-slate-950 border-slate-800 text-slate-200 hover:bg-slate-800 hover:text-white"
+                >
+                  <Copy className="w-3.5 h-3.5 mr-1 text-emerald-400" />
+                  <span>Copy Text</span>
+                </Button>
+              </div>
             </div>
 
             <Textarea

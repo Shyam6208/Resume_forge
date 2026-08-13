@@ -145,7 +145,7 @@ export default async function EditorPage({ params }: EditorPageProps) {
 
     if (error || !dbResume) {
       console.warn("Resume not found in Supabase DB for user, using fallback initial object:", error);
-      return <EditorClient initialResume={{ ...DEMO_RESUME, id: resumeId, userId: user.id }} />;
+      return <EditorClient initialResume={{ ...DEMO_RESUME, id: resumeId, userId: user.id, isNotFound: true } as any} />;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -170,6 +170,6 @@ export default async function EditorPage({ params }: EditorPageProps) {
     return <EditorClient initialResume={resume} />;
   } catch (err) {
     console.error("Editor page server error:", err);
-    return <EditorClient initialResume={{ ...DEMO_RESUME, id: resumeId }} />;
+    return <EditorClient initialResume={{ ...DEMO_RESUME, id: resumeId, isNotFound: true } as any} />;
   }
 }

@@ -24,6 +24,11 @@ export interface IAIProvider {
   ): Promise<AIAnalysisResult>;
 
   /**
+   * Extracts raw resume text into structured ResumeData JSON
+   */
+  extractResumeData(text: string): Promise<ResumeData>;
+
+  /**
    * Matches resume content against a job description string
    */
   matchJobDescription(
@@ -39,6 +44,16 @@ export interface IAIProvider {
     currentSectionData: unknown,
     userType?: UserType,
     targetJob?: string
+  ): Promise<SectionImproveResult>;
+
+  /**
+   * Optimizes a single section of the resume for a specific job description
+   */
+  optimizeSectionForJob(
+    sectionKey: SectionKey,
+    currentSectionData: unknown,
+    targetJob?: string,
+    jobDescription?: string
   ): Promise<SectionImproveResult>;
 
   /**
@@ -67,7 +82,8 @@ export interface IAIProvider {
    */
   generateInterviewPrep(
     data: ResumeData,
-    targetRole?: string
+    jobDescription?: string,
+    jdMatchContext?: string
   ): Promise<InterviewPrepResult>;
 
   /**

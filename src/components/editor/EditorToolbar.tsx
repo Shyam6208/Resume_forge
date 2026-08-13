@@ -6,6 +6,7 @@ import { useResumeStore } from "@/store/resume.store";
 import { useResumeScore } from "@/hooks/useResumeScore";
 import { useATSCheck } from "@/hooks/useATSCheck";
 import { useAutoSave } from "@/hooks/useAutoSave";
+import { useSaveImportedResume } from "@/hooks/useSaveImportedResume";
 import { TEMPLATES } from "@/config/templates.config";
 import { useUIStore } from "@/store/ui.store";
 import { AIChatDrawer } from "@/components/ai/AIChatDrawer";
@@ -46,6 +47,7 @@ export function EditorToolbar() {
   const setIsCustomizerOpen = useUIStore((s) => s.setIsCustomizerOpen);
 
   const { isSaving, lastSaved } = useAutoSave();
+  const { saveResume, isSaving: isManualSaving } = useSaveImportedResume();
   const { score, level } = useResumeScore();
   const { atsResult } = useATSCheck();
 
@@ -123,22 +125,50 @@ export function EditorToolbar() {
           )}
         </div>
 
-        {/* Auto Save Status */}
-        <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-slate-400 border-l border-slate-800 pl-3">
-          {isSaving ? (
-            <>
-              <Loader2 className="w-3 h-3 animate-spin text-indigo-400" />
-              <span>Saving...</span>
-            </>
-          ) : lastSaved ? (
-            <>
-              <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-              <span>Saved</span>
-            </>
-          ) : (
-            <span>Ready</span>
-          )}
-        </div>
+        {/* Auto Save Status or Save Button */}
+        {currentResume?.isTemporary ? (
+          <div className="hidden sm:flex items-center border-l border-slate-800 pl-3">
+            <Button
+              type="button"
+              size="sm"
+              disabled={isManualSaving || isExportingPDF || isExportingDOCX}
+              onClick={async () => {
+                const toastId = toast.loading("Saving to your dashboard...");
+                const success = await saveResume();
+                toast.dismiss(toastId);
+                if (success) {
+                  toast.success("Resume saved successfully!");
+                }
+              }}
+              className="h-7 text-[11px] px-3 bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
+            >
+              {isManualSaving ? (
+                <>
+                  <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save to My Resumes"
+              )}
+            </Button>
+          </div>
+        ) : (
+          <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-slate-400 border-l border-slate-800 pl-3">
+            {isSaving ? (
+              <>
+                <Loader2 className="w-3 h-3 animate-spin text-indigo-400" />
+                <span>Saving...</span>
+              </>
+            ) : lastSaved ? (
+              <>
+                <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                <span>Saved</span>
+              </>
+            ) : (
+              <span>Ready</span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Center/Right: Badges + Template + Customizer + Export */}
@@ -267,7 +297,7 @@ export function EditorToolbar() {
           type="button"
           variant="outline"
           size="sm"
-          disabled={isExportingDOCX}
+          disabled={isExportingDOCX || isManualSaving}
           onClick={() => exportDOCX()}
           className="h-8 text-xs bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800 hover:text-white hidden sm:flex items-center gap-1.5"
         >
@@ -283,16 +313,33 @@ export function EditorToolbar() {
         <Button
           type="button"
           size="sm"
-          disabled={isExportingPDF}
-          onClick={() => exportPDF()}
+          disabled={isExportingPDF || isManualSaving}
+          onClick={async () => {
+            if (currentResume?.isTemporary) {
+              const toastId = toast.loading("Saving resume...");
+              const success = await saveResume();
+              toast.dismiss(toastId);
+              if (success) {
+                exportPDF(); // Store state is now updated, PDF will generate safely
+              }
+            } else {
+              exportPDF();
+            }
+          }}
           className="h-8 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-sm flex items-center gap-1.5"
         >
-          {isExportingPDF ? (
+          {isExportingPDF || (isManualSaving && currentResume?.isTemporary) ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
           ) : (
             <Download className="w-3.5 h-3.5" />
           )}
-          <span>{isExportingPDF ? "Generating PDF..." : "Download PDF"}</span>
+          <span>
+            {currentResume?.isTemporary
+              ? "Save & Download PDF"
+              : isExportingPDF
+              ? "Generating PDF..."
+              : "Download PDF"}
+          </span>
         </Button>
       </div>
 

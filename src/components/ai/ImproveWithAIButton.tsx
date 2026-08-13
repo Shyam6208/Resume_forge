@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback } from "react";
 import { useResumeStore } from "@/store/resume.store";
 import { useAuthStore } from "@/store/auth.store";
+import { useUIStore } from "@/store/ui.store";
 import type { SectionKey } from "@/types/resume.types";
 import type { SectionImproveResult } from "@/lib/ai/types";
 import {
@@ -19,23 +20,28 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Sparkles, Loader2, Check, ArrowRight, RefreshCw, Undo2 } from "lucide-react";
+import { Sparkles, Loader2, Check, ArrowRight, RefreshCw, Undo2, Target } from "lucide-react";
 import toast from "react-hot-toast";
 
 interface ImproveWithAIButtonProps {
   sectionKey: SectionKey;
   currentData: unknown;
   className?: string;
+  mode?: "improve" | "optimize";
+  onApply?: (improvedData: any) => void;
 }
 
 export function ImproveWithAIButton({
   sectionKey,
   currentData,
   className = "",
+  mode = "improve",
+  onApply,
 }: ImproveWithAIButtonProps) {
   const userType = useAuthStore((s) => s.userType);
   const updateSection = useResumeStore((s) => s.updateSection);
   const currentResume = useResumeStore((s) => s.currentResume);
+  const { jobDescription, jdMatchResult } = useUIStore();
 
   const [isLoading, setIsLoading] = useState(false);
   const [showDiffModal, setShowDiffModal] = useState(false);
@@ -62,13 +68,19 @@ export function ImproveWithAIButton({
       return;
     }
 
+    if (mode === "optimize" && (!jobDescription || jobDescription.trim().length < 30)) {
+      toast.error("Please enter a valid job description before optimizing.");
+      return;
+    }
+
     // Client-side cache check
     const cacheKey = generateClientCacheKey({
       resumeId: currentResume?.id,
-      operation: "improve-section",
+      operation: mode === "optimize" ? "jd-optimize" : "improve-section",
       sectionKey,
       content: currentData,
       targetRole: currentResume?.targetJob || currentResume?.title,
+      jobDescription: mode === "optimize" ? jobDescription : undefined,
     });
     const cached = getClientCached<SectionImproveResult>(cacheKey);
     if (cached) {
@@ -80,17 +92,18 @@ export function ImproveWithAIButton({
 
     inFlightRef.current = true;
     setIsLoading(true);
-    const toastId = toast.loading(`✨ Improving ${sectionKey} section with AI...`);
 
     try {
       const res = await fetch("/api/ai/improve-section", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          mode,
           sectionKey,
           currentSectionData: currentData,
           userType: userType || "developer",
           targetJob: currentResume?.targetJob || currentResume?.title,
+          jobDescription: mode === "optimize" ? jobDescription : undefined,
         }),
       });
 
@@ -106,12 +119,10 @@ export function ImproveWithAIButton({
       // Cache the result
       setClientCached(cacheKey, result);
 
-      toast.dismiss(toastId);
-      toast.success("AI Improvement Ready!", { duration: 3000 });
+      toast.success(mode === "optimize" ? "JD Optimization Ready!" : "AI Improvement Ready!", { duration: 3000 });
     } catch (err: unknown) {
       console.error("Improve section error:", err);
       const msg = err instanceof Error ? err.message : "Failed to improve section";
-      toast.dismiss(toastId);
       toast.error(msg, { duration: 4000 });
     } finally {
       setIsLoading(false);
@@ -121,8 +132,12 @@ export function ImproveWithAIButton({
 
   const handleApplyChanges = () => {
     if (improveResult?.improvedData) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      updateSection(sectionKey, improveResult.improvedData as any);
+      if (onApply) {
+        onApply(improveResult.improvedData);
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        updateSection(sectionKey, improveResult.improvedData as any);
+      }
       toast.success("AI Improvements applied!");
       setShowDiffModal(false);
     }
@@ -141,10 +156,18 @@ export function ImproveWithAIButton({
       >
         {isLoading ? (
           <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-400" />
+        ) : mode === "optimize" ? (
+          <Target className="w-3.5 h-3.5 text-rose-400" />
         ) : (
           <Sparkles className="w-3.5 h-3.5 text-amber-300" />
         )}
-        <span>✨ Improve with AI</span>
+        <span>
+          {isLoading 
+            ? "Improving..." 
+            : mode === "optimize"
+              ? "🎯 Optimize for this Job"
+              : "✨ Improve with AI"}
+        </span>
       </Button>
 
       {/* Diff & Review Modal */}

@@ -4,6 +4,7 @@
 
 import { create } from "zustand";
 import type { SectionKey } from "@/types/resume.types";
+import type { JDMatchResult } from "@/lib/ai/types";
 
 // --- Types ---
 
@@ -19,6 +20,8 @@ interface UIState {
   isLibraryOpen: boolean;
   libraryType: LibraryType;
   mobileTab: MobileTab;
+  jobDescription: string;
+  jdMatchResult: JDMatchResult | null;
 }
 
 // --- Actions ---
@@ -32,6 +35,8 @@ interface UIActions {
   setMobileTab: (tab: MobileTab) => void;
   openLibrary: (type: LibraryType) => void;
   closeLibrary: () => void;
+  setJobDescription: (val: string) => void;
+  setJdMatchResult: (val: JDMatchResult | null) => void;
 }
 
 // --- Store ---
@@ -44,6 +49,8 @@ export const useUIStore = create<UIState & UIActions>()((set) => ({
   isLibraryOpen: false,
   libraryType: null,
   mobileTab: "edit",
+  jobDescription: "",
+  jdMatchResult: null,
 
   // Actions
   setActiveSection: (section) => set({ activeSection: section }),
@@ -58,4 +65,6 @@ export const useUIStore = create<UIState & UIActions>()((set) => ({
     set({ isLibraryOpen: true, libraryType: type }),
   closeLibrary: () =>
     set({ isLibraryOpen: false, libraryType: null }),
+  setJobDescription: (val) => set({ jobDescription: val }),
+  setJdMatchResult: (val) => set({ jdMatchResult: val }),
 }));

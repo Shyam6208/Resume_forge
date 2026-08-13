@@ -25,16 +25,6 @@ export interface KeywordHeatmapItem {
 }
 
 export interface AIAnalysisResult {
-  overallRating: number;
-  atsRating: number;
-  recruiterScore: number;
-  hiringReadiness: "Low" | "Medium" | "High" | "Job Ready";
-  recruiterVerdict: {
-    shortlistStatus: "Shortlisted" | "Under Review" | "Rejected";
-    summary: string;
-    keyPros: string[];
-    keyCons: string[];
-  };
   strengths: string[];
   weaknesses: string[];
   atsImprovements: string[];
@@ -56,8 +46,6 @@ export interface AIAnalysisResult {
 }
 
 export interface JDMatchResult {
-  matchPercentage: number;
-  hiringProbability: "High" | "Moderate" | "Low";
   matchedSkills: string[];
   missingSkills: string[];
   missingKeywords: string[];
@@ -91,11 +79,10 @@ export interface CoverLetterResult {
 }
 
 export interface InterviewQuestion {
-  category: "Technical" | "Behavioral" | "HR" | "Project-Based";
+  category: "Resume" | "Technical" | "Behavioral" | "Job-Specific";
   question: string;
   whyAsked: string;
-  suggestedAnswer: string;
-  keyPhrasesToInclude: string[];
+  answerGuide: string[];
 }
 
 export interface InterviewPrepResult {

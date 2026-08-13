@@ -27,6 +27,11 @@ export function usePDFExport(): UsePDFExportReturn {
         return;
       }
 
+      if (resumeToExport.isTemporary) {
+        toast.error("Save this resume to your dashboard before downloading.");
+        return;
+      }
+
       setIsExporting(true);
       const toastId = toast.loading("Saving resume & generating PDF...");
 

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import { useResumeStore } from "@/store/resume.store";
+import { useUIStore } from "@/store/ui.store";
 import type { InterviewPrepResult, InterviewQuestion } from "@/lib/ai/types";
 import {
   generateClientCacheKey,
@@ -21,6 +22,7 @@ interface InterviewPrepModalProps {
 
 export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps) {
   const currentResume = useResumeStore((s) => s.currentResume);
+  const { jobDescription, jdMatchResult } = useUIStore();
   const [isGenerating, setIsGenerating] = useState(false);
   const [prepResult, setPrepResult] = useState<InterviewPrepResult | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>("All");
@@ -28,25 +30,39 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
   // Duplicate request prevention
   const inFlightRef = useRef(false);
 
-  const handleGenerate = useCallback(async () => {
+  const handleGenerate = useCallback(async (isRegenerate = false) => {
     if (!currentResume) return;
+    if (jobDescription.trim().length < 30) {
+      toast.error("Add a valid job description to prepare for your interview.");
+      return;
+    }
 
     // Prevent duplicate concurrent requests
     if (inFlightRef.current) return;
 
+    // JD Match Context (compacted to just useful fields)
+    const jdMatchContext = jdMatchResult ? {
+      matchedSkills: jdMatchResult.matchedSkills,
+      missingSkills: jdMatchResult.missingSkills,
+      missingKeywords: jdMatchResult.missingKeywords,
+      priorityActions: jdMatchResult.priorityActions
+    } : null;
+
     // Client-side cache check
-    const targetRole = currentResume.targetJob || currentResume.title;
     const cacheKey = generateClientCacheKey({
       resumeId: currentResume.id,
       operation: "interview-prep",
       content: currentResume.data,
-      targetRole,
+      jobDescription: jobDescription,
     });
-    const cached = getClientCached<InterviewPrepResult>(cacheKey);
-    if (cached) {
-      setPrepResult(cached);
-      toast.success("Interview Prep loaded from cache!", { duration: 2000 });
-      return;
+    
+    if (!isRegenerate) {
+      const cached = getClientCached<InterviewPrepResult>(cacheKey);
+      if (cached) {
+        setPrepResult(cached);
+        toast.success("Interview Prep loaded from cache!", { duration: 2000 });
+        return;
+      }
     }
 
     inFlightRef.current = true;
@@ -59,7 +75,8 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           resumeData: currentResume.data,
-          targetRole,
+          jobDescription,
+          jdMatchContext,
         }),
       });
 
@@ -84,7 +101,7 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
       setIsGenerating(false);
       inFlightRef.current = false;
     }
-  }, [currentResume]);
+  }, [currentResume, jobDescription, jdMatchResult]);
 
   const filteredQuestions = prepResult?.questions
     ? activeCategory === "All"
@@ -119,7 +136,7 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
             <Button
               type="button"
               disabled={isGenerating}
-              onClick={handleGenerate}
+              onClick={() => handleGenerate(false)}
               className="h-10 px-6 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-md flex items-center gap-2 mx-auto"
             >
               {isGenerating ? (
@@ -142,7 +159,7 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
             {/* Category Filter Pills */}
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
               <div className="flex items-center gap-1.5 overflow-x-auto">
-                {["All", "Technical", "Behavioral", "HR", "Project-Based"].map((cat) => (
+                {["All", "Resume", "Technical", "Behavioral", "Job-Specific"].map((cat) => (
                   <button
                     key={cat}
                     type="button"
@@ -162,7 +179,7 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                 variant="outline"
                 size="sm"
                 disabled={isGenerating}
-                onClick={handleGenerate}
+                onClick={() => handleGenerate(true)}
                 className="h-8 text-xs bg-slate-950 border-slate-800 text-slate-300 hover:text-white"
               >
                 <Sparkles className="w-3.5 h-3.5 mr-1 text-indigo-400" />
@@ -190,7 +207,11 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
 
                   <div className="p-2.5 rounded-lg bg-indigo-950/30 border border-indigo-500/20 space-y-1">
                     <span className="text-[10px] font-bold text-emerald-400 uppercase block">Suggested Answer Framework:</span>
-                    <p className="text-[11px] text-slate-200 leading-relaxed">{q.suggestedAnswer}</p>
+                    <ul className="text-[11px] text-slate-200 leading-relaxed list-disc list-inside space-y-1">
+                      {q.answerGuide?.map((guide, idx) => (
+                        <li key={idx}>{guide}</li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               ))}

@@ -22,7 +22,7 @@ export function useAutoSave() {
 
   // --- Core save function ---
   const saveNow = useCallback(async () => {
-    if (!currentResume || !isDirty) return;
+    if (!currentResume || !isDirty || currentResume.isTemporary) return;
 
     setIsSaving(true);
 
@@ -79,7 +79,7 @@ export function useAutoSave() {
   // --- Save on beforeunload ---
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (isDirty && currentResume) {
+      if (isDirty && currentResume && !currentResume.isTemporary) {
         // Fire-and-forget save attempt using sendBeacon
         const payload = JSON.stringify({
           title: currentResume.title,

@@ -226,6 +226,7 @@ export interface Resume {
   downloadCount: number;
   createdAt: string;
   updatedAt: string;
+  isTemporary?: boolean;
 }
 
 // ============================================================

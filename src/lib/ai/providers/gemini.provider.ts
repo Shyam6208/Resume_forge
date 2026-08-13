@@ -11,7 +11,7 @@ import type {
   SkillGapResult,
   RoleOptimizationResult,
 } from "../types";
-import { compactResumeForPrompt, compactSectionForPrompt } from "../prompt-utils";
+import { compactResumeForPrompt, compactResumeForCoverLetter, compactResumeForInterviewPrep, compactSectionForPrompt } from "../prompt-utils";
 
 // ============================================================
 // Gemini Provider — Token-Optimized for Free Tier
@@ -173,6 +173,175 @@ export class GeminiProvider implements IAIProvider {
     }
   }
 
+  async extractResumeData(text: string): Promise<ResumeData> {
+    const prompt = `
+You are a precise resume data extraction engine.
+Extract the facts from the provided resume text into a structured JSON object.
+
+CRITICAL RULES:
+1. ONLY output valid JSON. No markdown, no explanations, no wrappers.
+2. DO NOT hallucinate. Do NOT invent companies, job titles, dates, skills, metrics, or technologies not explicitly written in the resume.
+3. Preserve the exact wording of bullet points and descriptions. Do NOT rewrite them.
+4. Output MUST conform exactly to this TypeScript schema:
+
+{
+  "personalInfo": {
+    "fullName": "string",
+    "email": "string",
+    "phone": "string (optional)",
+    "website": "string (optional)",
+    "linkedin": "string (optional)",
+    "github": "string (optional)",
+    "address": "string (optional)",
+    "city": "string (optional)",
+    "country": "string (optional)"
+  },
+  "summary": "string (optional)",
+  "experience": [
+    {
+      "id": "generate a random string",
+      "company": "string",
+      "position": "string",
+      "location": "string (optional)",
+      "startDate": "string (e.g. MM/YYYY)",
+      "endDate": "string (e.g. MM/YYYY, optional)",
+      "isCurrentlyWorking": boolean,
+      "responsibilities": ["bullet 1", "bullet 2"]
+    }
+  ],
+  "education": [
+    {
+      "id": "generate a random string",
+      "institution": "string",
+      "degree": "string",
+      "branch": "string (optional)",
+      "grade": "string (optional)",
+      "startDate": "string",
+      "endDate": "string (optional)",
+      "isCurrentlyStudying": boolean
+    }
+  ],
+  "projects": [
+    {
+      "id": "generate a random string",
+      "name": "string",
+      "technologies": ["string"],
+      "description": "string",
+      "githubLink": "string (optional)",
+      "liveDemo": "string (optional)",
+      "startDate": "string (optional)",
+      "endDate": "string (optional)"
+    }
+  ],
+  "skills": {
+    "frontend": ["string"],
+    "backend": ["string"],
+    "database": ["string"],
+    "cloud": ["string"],
+    "programming": ["string"],
+    "tools": ["string"],
+    "languages": ["string"],
+    "other": ["string"]
+  },
+  "certifications": [
+    {
+      "id": "generate a random string",
+      "name": "string",
+      "organization": "string",
+      "issueDate": "string"
+    }
+  ]
+}
+
+RESUME TEXT:
+${text.substring(0, 45000)} // Ensure we don't blow up context
+`;
+
+    const rawResult = await this.callGeminiAPI(prompt, 3000); // 3k max output for complex resumes
+    
+    // Default fallback in case Gemini completely fails to return valid JSON
+    return this.parseJSON<ResumeData>(rawResult, {
+      personalInfo: { fullName: "", email: "" },
+      summary: "",
+      experience: [],
+      education: [],
+      projects: [],
+      skills: {},
+      certifications: [],
+    });
+  }
+
+  async optimizeSectionForJob(
+    sectionKey: SectionKey,
+    currentSectionData: unknown,
+    targetJob: string = "",
+    jobDescription: string
+  ): Promise<SectionImproveResult> {
+    const prompt = `
+You are a resume optimization assistant.
+Optimize the supplied resume content for the supplied job description.
+
+Preserve every factual claim from the original content.
+
+Do not invent:
+- skills
+- technologies
+- employers
+- job titles
+- responsibilities
+- metrics
+- percentages
+- dates
+- certifications
+- achievements
+- project features
+- users
+- revenue
+- performance numbers
+
+A requirement appearing in the job description does NOT mean the candidate has that skill.
+Do not add a skill or technology merely because it appears in the JD.
+You may use a JD keyword in the improved text ONLY when that skill, technology, concept, or experience is supported by the supplied original content/context.
+
+Improve:
+- clarity
+- professional wording
+- action verbs
+- relevance
+- conciseness
+- ATS readability
+
+Preserve the original factual meaning.
+Return exactly one concise improved version as valid JSON.
+
+TARGET ROLE:
+${targetJob || "Not specified"}
+
+JOB DESCRIPTION:
+${jobDescription}
+
+CURRENT CONTENT:
+${JSON.stringify(currentSectionData, null, 2)}
+
+REQUIRED JSON OUTPUT FORMAT:
+{
+  "sectionKey": "${sectionKey}",
+  "improvedData": <same structure as CURRENT CONTENT, but optimized>,
+  "keyChanges": ["List of exactly what changed (max 3)"],
+  "explanation": "Brief explanation of why these optimizations improve JD alignment"
+}
+`;
+
+    const rawResult = await this.callGeminiAPI(prompt, 512);
+
+    return this.parseJSON<SectionImproveResult>(rawResult, {
+      sectionKey,
+      improvedData: currentSectionData,
+      keyChanges: ["Could not parse optimized response safely."],
+      explanation: "Optimization failed validation.",
+    });
+  }
+
   async analyzeResume(
     data: ResumeData,
     userType: UserType = "developer",
@@ -180,37 +349,48 @@ export class GeminiProvider implements IAIProvider {
   ): Promise<AIAnalysisResult> {
     const compactData = compactResumeForPrompt(data);
     const prompt = `
-You are an Executive HR Recruiter and Lead ATS Scanner evaluating a resume for a ${targetJob || userType} candidate.
+You are an Executive HR Recruiter evaluating a resume for a ${targetJob || userType} candidate.
+You are analyzing the supplied resume data.
+
+Only identify facts and issues supported by the supplied resume.
+
+Do not invent:
+- skills
+- technologies
+- experience
+- employers
+- metrics
+- certifications
+- education
+- achievements
+
+Do not calculate ATS scores.
+Do not calculate recruiter scores.
+Do not assign an overall numerical rating.
+
+Separate observations from recommendations.
+If information is missing, identify it as missing rather than inventing it.
+
 Analyze the provided JSON resume content carefully and output ONLY a valid JSON object matching the exact structure below.
 
 RESUME DATA:
 ${compactData}
 
 REQUIRED JSON OUTPUT FORMAT:
-{"overallRating":85,"atsRating":88,"recruiterScore":82,"hiringReadiness":"Job Ready","recruiterVerdict":{"shortlistStatus":"Shortlisted","summary":"Concise 2-sentence HR recruiter verdict on this candidate.","keyPros":["Key strength 1","Key strength 2"],"keyCons":["Key risk or gap 1"]},"strengths":["Clear technical stack","Quantifiable impact"],"weaknesses":["Missing specific cloud certifications","Short summary"],"atsImprovements":["Include exact ATS keyword matches","Avoid complex tables"],"missingKeywords":{"technicalSkills":["TypeScript","GraphQL"],"softSkills":["Cross-functional Leadership"],"tools":["Docker","Kubernetes"],"frameworks":["Next.js App Router"],"industryTerms":["CI/CD Pipeline","Microservices"]},"keywordHeatmap":[{"keyword":"React","category":"technical","presentCount":3,"expectedCount":4,"status":"matched"},{"keyword":"Docker","category":"tool","presentCount":0,"expectedCount":2,"status":"missing"}],"grammarSuggestions":[{"original":"Worked on frontend.","correction":"Architected and delivered high-performance frontend interfaces.","reason":"Weak action verb."}],"sectionSuggestions":[{"sectionKey":"summary","title":"Executive Summary Enhancement","currentIssue":"Lacks measurable metrics.","suggestedImprovement":"Lead with years of experience and key engineering impact.","exampleText":"Senior Full Stack Engineer with 5+ years of experience scaling web systems handling 100k daily active users."}],"formattingTips":["Keep bullet points to 1-2 lines for optimal ATS parsing."],"recommendedCertifications":[{"name":"AWS Certified Solutions Architect","provider":"Amazon Web Services","relevance":"Validates cloud architecture expertise."}],"powerfulActionVerbs":["Architected","Engineered","Optimized","Spearheaded","Scaled"]}
+{"strengths":["Clear technical stack","Quantifiable impact"],"weaknesses":["Missing specific cloud certifications","Short summary"],"atsImprovements":["Include exact ATS keyword matches","Avoid complex tables"],"missingKeywords":{"technicalSkills":["TypeScript","GraphQL"],"softSkills":["Cross-functional Leadership"],"tools":["Docker","Kubernetes"],"frameworks":["Next.js App Router"],"industryTerms":["CI/CD Pipeline","Microservices"]},"keywordHeatmap":[{"keyword":"React","category":"technical","presentCount":3,"expectedCount":4,"status":"matched"},{"keyword":"Docker","category":"tool","presentCount":0,"expectedCount":2,"status":"missing"}],"grammarSuggestions":[{"original":"Worked on frontend.","correction":"Architected and delivered high-performance frontend interfaces.","reason":"Weak action verb."}],"sectionSuggestions":[{"sectionKey":"summary","title":"Executive Summary Enhancement","currentIssue":"Lacks measurable metrics.","suggestedImprovement":"Lead with years of experience and key engineering impact.","exampleText":"Senior Full Stack Engineer with 5+ years of experience scaling web systems handling 100k daily active users."}],"formattingTips":["Keep bullet points to 1-2 lines for optimal ATS parsing."],"recommendedCertifications":[{"name":"AWS Certified Solutions Architect","provider":"Amazon Web Services","relevance":"Validates cloud architecture expertise."}],"powerfulActionVerbs":["Architected","Engineered","Optimized","Spearheaded","Scaled"]}
 `;
 
     const rawResult = await this.callGeminiAPI(prompt, 2048);
     return this.parseJSON<AIAnalysisResult>(rawResult, {
-      overallRating: 75,
-      atsRating: 78,
-      recruiterScore: 72,
-      hiringReadiness: "Medium",
-      recruiterVerdict: {
-        shortlistStatus: "Under Review",
-        summary: "Solid resume with good technical background. Minor ATS optimizations required.",
-        keyPros: ["Solid core skills"],
-        keyCons: ["Add more metrics to bullet points"],
-      },
       strengths: ["Clean profile layout"],
       weaknesses: ["Add quantitative achievements"],
       atsImprovements: ["Ensure keywords match target job description"],
       missingKeywords: {
-        technicalSkills: ["TypeScript"],
-        softSkills: ["Collaboration"],
-        tools: ["Git"],
-        frameworks: ["React"],
-        industryTerms: ["Agile"],
+        technicalSkills: [],
+        softSkills: [],
+        tools: [],
+        frameworks: [],
+        industryTerms: [],
       },
       keywordHeatmap: [],
       grammarSuggestions: [],
@@ -228,7 +408,14 @@ REQUIRED JSON OUTPUT FORMAT:
     const compactData = compactResumeForPrompt(data);
     const prompt = `
 You are an ATS Match Engine. Compare the candidate's resume against the Job Description provided below.
-Output ONLY a valid JSON object matching the exact schema.
+
+Rules:
+- Do not infer unsupported skills.
+- Do not claim the resume contains information that is not present.
+- Distinguish between "not present in the resume" and "candidate does not have the skill".
+- Do not invent metrics, technologies, employers, experience, responsibilities, certifications, or achievements.
+- Recommendations must be based only on the supplied resume and JD.
+- Output ONLY a valid JSON object matching the exact schema.
 
 CANDIDATE RESUME:
 ${compactData}
@@ -237,13 +424,11 @@ JOB DESCRIPTION:
 ${jobDescription}
 
 REQUIRED JSON OUTPUT FORMAT:
-{"matchPercentage":82,"hiringProbability":"High","matchedSkills":["React","Node.js","TypeScript"],"missingSkills":["GraphQL","Kubernetes"],"missingKeywords":["AWS","CI/CD","Redis"],"priorityActions":["Highlight Docker and Kubernetes experience in Projects","Add AWS certification to Certifications section"],"keywordHeatmap":[{"keyword":"React","category":"technical","presentCount":4,"expectedCount":3,"status":"matched"},{"keyword":"GraphQL","category":"technical","presentCount":0,"expectedCount":2,"status":"missing"}],"tailoringAdvice":"Focus experience bullet points on cloud deployment and scaling microservices."}
+{"matchedSkills":["React","Node.js"],"missingSkills":["GraphQL","Kubernetes"],"missingKeywords":["AWS"],"priorityActions":["Highlight Docker experience"],"keywordHeatmap":[{"keyword":"React","category":"technical","presentCount":4,"expectedCount":3,"status":"matched"},{"keyword":"GraphQL","category":"technical","presentCount":0,"expectedCount":2,"status":"missing"}],"tailoringAdvice":"Focus on cloud deployment."}
 `;
 
-    const rawResult = await this.callGeminiAPI(prompt, 1024);
+    const rawResult = await this.callGeminiAPI(prompt, 1536);
     return this.parseJSON<JDMatchResult>(rawResult, {
-      matchPercentage: 70,
-      hiringProbability: "Moderate",
       matchedSkills: [],
       missingSkills: [],
       missingKeywords: [],
@@ -262,20 +447,32 @@ REQUIRED JSON OUTPUT FORMAT:
     // Send ONLY the relevant section — not the entire resume
     const compactSection = compactSectionForPrompt(currentSectionData);
     const prompt = `
-You are an HR Executive & Expert Resume Editor. Rewrite and improve the given resume section data for a ${targetJob || userType} position.
-Make it highly professional, ATS-optimized, and impactful with strong action verbs and quantitative metrics where possible.
-NEVER invent metrics, percentages, revenue, users, or achievements not present in the original data.
-Output ONLY a valid JSON object matching the schema below.
+You are a resume writing assistant for a ${targetJob || userType} position.
+
+Improve the supplied resume content while preserving every factual claim.
+
+Rules:
+- Do not invent facts.
+- Do not invent metrics.
+- Do not invent technologies.
+- Do not invent employers.
+- Do not invent responsibilities.
+- Do not add experience not present in the source.
+- Preserve all factual meaning.
+- Improve grammar, clarity, conciseness and professional wording.
+- Use strong action verbs only when they accurately represent the source.
+- Return only valid JSON matching the schema below.
+- Return one improved version.
 
 SECTION KEY: "${sectionKey}"
 CURRENT SECTION DATA:
 ${compactSection}
 
 REQUIRED JSON OUTPUT FORMAT:
-{"sectionKey":"${sectionKey}","improvedData":<IMPROVED_DATA_SAME_STRUCTURE_AS_INPUT>,"explanation":"Concise summary of improvements made.","keyChanges":["Replaced weak action verbs with high-impact leadership verbs","Added measurable percentage metrics"]}
+{"sectionKey":"${sectionKey}","improvedData":<IMPROVED_DATA_SAME_STRUCTURE_AS_INPUT>,"explanation":"Concise summary of improvements made.","keyChanges":["Replaced weak action verbs with high-impact leadership verbs","Improved grammar and conciseness"]}
 `;
 
-    const rawResult = await this.callGeminiAPI(prompt, 768);
+    const rawResult = await this.callGeminiAPI(prompt, 512);
     return this.parseJSON<SectionImproveResult>(rawResult, {
       sectionKey,
       improvedData: currentSectionData,
@@ -327,15 +524,27 @@ OUTPUT FORMAT: Return JSON object:
     companyName: string,
     jobDescription = ""
   ): Promise<CoverLetterResult> {
-    const compactData = compactResumeForPrompt(data);
+    const compactData = compactResumeForCoverLetter(data);
     const candidateName = data.personalInfo?.fullName || "Candidate";
+    
+    // Safety check - if resume is practically empty, throw error early.
+    if (compactData.length < 50) {
+      throw new Error("Add some resume content before generating a cover letter.");
+    }
+    
     const prompt = `
 You are an Executive Career Coach writing a compelling, tailored Cover Letter for a candidate applying to ${companyName} as a ${jobTitle}.
+
+CRITICAL FACTUAL SAFETY RULES:
+1. ONLY use information supported by the supplied candidate resume.
+2. NEVER invent skills, technologies, employers, job titles, dates, years of experience, projects, responsibilities, certifications, awards, achievements, metrics, percentages, revenue, users, or performance numbers.
+3. If the Job Description mentions a requirement (e.g. AWS, Next.js) that is NOT in the resume, DO NOT claim the candidate has it. Instead, focus on the skills the candidate DOES have that are relevant.
+4. If the resume has no metrics, DO NOT fabricate them.
 
 CANDIDATE RESUME:
 ${compactData}
 
-JOB DESCRIPTION (IF PROVIDED):
+JOB DESCRIPTION:
 ${jobDescription || "N/A"}
 
 REQUIRED JSON OUTPUT FORMAT:
@@ -345,36 +554,76 @@ REQUIRED JSON OUTPUT FORMAT:
     const rawResult = await this.callGeminiAPI(prompt, 1024);
     return this.parseJSON<CoverLetterResult>(rawResult, {
       subjectLine: `Application for ${jobTitle} — ${candidateName}`,
-      salutation: "Dear Hiring Team,",
+      salutation: "Dear Hiring Manager,",
       openingParagraph: `I am writing to express my strong interest in the ${jobTitle} position at ${companyName}.`,
-      bodyParagraphs: ["With my background in software engineering, I am confident in my ability to contribute."],
+      bodyParagraphs: ["With my background, I am confident in my ability to contribute."],
       closingParagraph: "Thank you for your consideration. I look forward to speaking with you.",
-      coverLetterText: `Dear Hiring Team,\n\nI am writing to apply for ${jobTitle} at ${companyName}.\n\nSincerely,\n${candidateName}`,
+      coverLetterText: `Dear Hiring Manager,\n\nI am writing to apply for ${jobTitle} at ${companyName}.\n\nSincerely,\n${candidateName}`,
       matchingHighlights: [],
     });
   }
 
   async generateInterviewPrep(
     data: ResumeData,
-    targetRole = ""
+    jobDescription = "",
+    jdMatchContext = ""
   ): Promise<InterviewPrepResult> {
-    const compactData = compactResumeForPrompt(data);
-    const prompt = `
-Generate role-specific interview preparation questions and sample answers for a candidate with this resume.
-Target Role: ${targetRole || "Software Developer"}
+    const compactData = compactResumeForInterviewPrep(data);
+    const candidateName = data.personalInfo?.fullName || "Candidate";
 
-RESUME:
+    if (compactData.length < 50) {
+      throw new Error("Add some resume content before preparing for your interview.");
+    }
+
+    const prompt = `
+You are an expert technical recruiter and hiring manager conducting interview preparation for ${candidateName}.
+Generate a concise, targeted interview preparation set.
+
+CRITICAL FACTUAL SAFETY RULES:
+1. ONLY generate questions based on the candidate's actual resume or the job description.
+2. NEVER invent employers, projects, technologies, responsibilities, or metrics.
+3. If the Job Description requires a skill (e.g., "TypeScript") that is NOT in the resume, DO NOT assume they know it. 
+   - BAD: "Tell me about your TypeScript project."
+   - GOOD: "The role requires TypeScript. How would you approach working with it given your current experience?"
+4. NEVER generate a first-person fake answer pretending to be the candidate.
+5. Provide a bulleted \`answerGuide\` explaining HOW to answer (e.g., "Mention your React project", "Explain your state management approach").
+6. Maximize at approximately 15 questions total (4 Resume, 5 Tech, 3 Behavioral, 3 JD). Do not pad.
+
+CANDIDATE RESUME:
 ${compactData}
 
+JOB DESCRIPTION (If provided, use to contextualize Technical and Job-Specific questions):
+${jobDescription || "N/A"}
+
+JD MATCH CONTEXT (Key gaps or matches to focus on):
+${jdMatchContext || "N/A"}
+
 REQUIRED JSON OUTPUT FORMAT:
-{"jobRole":"${targetRole || "Software Engineer"}","questions":[{"category":"Technical","question":"How do you optimize state management in Next.js applications?","whyAsked":"Tests practical architectural understanding.","suggestedAnswer":"Explain store slice selectors, memoization, and server/client boundary separation.","keyPhrasesToInclude":["Selector slices","Memoization","Hydration"]},{"category":"Behavioral","question":"Describe a project deadline crunch and how you prioritized tasks.","whyAsked":"Evaluates stress handling and communication.","suggestedAnswer":"Use the STAR method (Situation, Task, Action, Result)...","keyPhrasesToInclude":["Prioritization","Stakeholder communication"]}],"overallTips":["Review key metrics from your experience section","Practice explaining system trade-offs"]}
+{
+  "jobRole": "The inferred role title",
+  "questions": [
+    {
+      "category": "Resume",
+      "question": "Can you explain your React architecture in [Project]?",
+      "whyAsked": "To verify practical experience.",
+      "answerGuide": ["Explain the architecture you actually used.", "Mention a real technical challenge."]
+    },
+    {
+      "category": "Job-Specific",
+      "question": "The role requires AWS, which isn't on your resume. How would you approach learning it?",
+      "whyAsked": "To evaluate adaptability and honesty.",
+      "answerGuide": ["Be honest about your current level.", "Mention similar cloud experience if applicable."]
+    }
+  ],
+  "overallTips": ["Review key metrics from your experience section", "Be honest about skills you are currently learning"]
+}
 `;
 
-    const rawResult = await this.callGeminiAPI(prompt, 1536);
+    const rawResult = await this.callGeminiAPI(prompt, 2048);
     return this.parseJSON<InterviewPrepResult>(rawResult, {
-      jobRole: targetRole || "Software Engineer",
+      jobRole: "Candidate",
       questions: [],
-      overallTips: ["Review your resume bullet points and practice STAR technique."],
+      overallTips: ["Review your resume bullet points and practice the STAR technique."],
     });
   }
 

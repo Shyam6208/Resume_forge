@@ -30,7 +30,9 @@ const ProjectLibrary = dynamic(
 );
 
 import type { Resume } from "@/types/resume.types";
-import { Edit3, Eye, BarChart3, Target, Crosshair } from "lucide-react";
+import { Edit3, Eye, BarChart3, Target, Crosshair, AlertCircle } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const RoleOptimizerPanel = dynamic(
   () => import("@/components/optimizer/RoleOptimizerPanel").then((m) => m.RoleOptimizerPanel),
@@ -38,17 +40,55 @@ const RoleOptimizerPanel = dynamic(
 );
 
 interface EditorClientProps {
-  initialResume: Resume;
+  initialResume: Resume & { isNotFound?: boolean };
 }
 
 export function EditorClient({ initialResume }: EditorClientProps) {
   const setResume = useResumeStore((s) => s.setResume);
+  const temporaryImport = useResumeStore((s) => s.temporaryImport);
+  const setTemporaryImport = useResumeStore((s) => s.setTemporaryImport);
   const mobileTab = useUIStore((s) => s.mobileTab);
   const setMobileTab = useUIStore((s) => s.setMobileTab);
 
+  const isExpiredSession = initialResume.isNotFound && (!temporaryImport || temporaryImport.id !== initialResume.id);
+
   useEffect(() => {
-    setResume(initialResume);
-  }, [initialResume, setResume]);
+    if (isExpiredSession) return;
+    
+    if (temporaryImport && temporaryImport.id === initialResume.id) {
+      setResume(temporaryImport);
+    } else {
+      setResume(initialResume);
+    }
+  }, [initialResume, setResume, temporaryImport, isExpiredSession]);
+
+  if (isExpiredSession) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-slate-950 text-slate-100 p-6 text-center space-y-6">
+        <div className="w-16 h-16 bg-slate-900 rounded-full flex items-center justify-center text-rose-500 mb-2">
+          <AlertCircle className="w-8 h-8" />
+        </div>
+        <div className="space-y-2">
+          <h1 className="text-2xl font-bold text-white">Imported resume session expired</h1>
+          <p className="text-slate-400 max-w-md mx-auto">
+            The temporary import session for this resume is no longer available. Please import your resume again.
+          </p>
+        </div>
+        <div className="flex gap-4 pt-4">
+          <Link href="/dashboard">
+            <Button variant="outline" className="h-11 px-6 rounded-xl border-slate-800 bg-slate-900 hover:bg-slate-800 text-slate-300">
+              Back to Dashboard
+            </Button>
+          </Link>
+          <Link href="/dashboard">
+            <Button className="h-11 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium">
+              Import Resume
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-slate-950 text-slate-100">

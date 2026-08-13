@@ -14,6 +14,20 @@ export async function POST(request: Request) {
       );
     }
 
+    if (!jobDescription || jobDescription.trim().length < 30) {
+      return NextResponse.json(
+        { error: "Job description must be at least 30 characters long." },
+        { status: 400 }
+      );
+    }
+
+    if (jobDescription.length > 20000) {
+      return NextResponse.json(
+        { error: "Job description must not exceed 20,000 characters." },
+        { status: 400 }
+      );
+    }
+
     // Server-side cache check
     const cacheKey = buildCacheKey(
       "cover-letter",
