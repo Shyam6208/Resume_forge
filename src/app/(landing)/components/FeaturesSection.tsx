@@ -78,8 +78,8 @@ export function FeaturesSection() {
         </p>
       </div>
 
-      {/* 4x2 Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Evergreen Fluid Grid */}
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-6">
         {FEATURES.map((feat, idx) => {
           const Icon = feat.icon;
           return (

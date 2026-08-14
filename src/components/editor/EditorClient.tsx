@@ -5,6 +5,7 @@ import { useResumeStore } from "@/store/resume.store";
 import { useUIStore } from "@/store/ui.store";
 import { EditorToolbar } from "./EditorToolbar";
 import { EditorSidebar } from "./EditorSidebar";
+import { MobileSectionNav } from "./MobileSectionNav";
 import { EditorPanel } from "./EditorPanel";
 import { PreviewPanel } from "@/components/preview/PreviewPanel";
 import { ScoreSidebar } from "@/components/score/ScoreSidebar";
@@ -69,19 +70,19 @@ export function EditorClient({ initialResume }: EditorClientProps) {
           <AlertCircle className="w-8 h-8" />
         </div>
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold text-white">Imported resume session expired</h1>
-          <p className="text-slate-400 max-w-md mx-auto">
+          <h1 className="text-xl sm:text-2xl font-bold text-white">Imported resume session expired</h1>
+          <p className="text-slate-400 max-w-md mx-auto text-sm">
             The temporary import session for this resume is no longer available. Please import your resume again.
           </p>
         </div>
-        <div className="flex gap-4 pt-4">
+        <div className="flex flex-col sm:flex-row gap-3 pt-4 w-full sm:w-auto">
           <Link href="/dashboard">
-            <Button variant="outline" className="h-11 px-6 rounded-xl border-slate-800 bg-slate-900 hover:bg-slate-800 text-slate-300">
+            <Button variant="outline" className="h-11 px-6 rounded-xl border-slate-800 bg-slate-900 hover:bg-slate-800 text-slate-300 w-full sm:w-auto">
               Back to Dashboard
             </Button>
           </Link>
           <Link href="/dashboard">
-            <Button className="h-11 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium">
+            <Button className="h-11 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium w-full sm:w-auto">
               Import Resume
             </Button>
           </Link>
@@ -96,16 +97,16 @@ export function EditorClient({ initialResume }: EditorClientProps) {
       <EditorToolbar />
 
       {/* Main Desktop & Mobile Workspace */}
-      <div className="flex-1 flex overflow-hidden relative">
-        {/* DESKTOP LAYOUT (md and above) */}
-        <div className="hidden md:flex w-full h-full overflow-hidden">
+      <div className="flex-1 flex overflow-hidden relative min-w-0">
+        {/* DESKTOP LAYOUT (lg and above — 3-pane with sidebar) */}
+        <div className="hidden lg:flex w-full h-full overflow-hidden">
           {/* Left Sidebar Nav */}
           <div className="w-48 shrink-0 h-full border-r border-slate-800">
             <EditorSidebar />
           </div>
 
           {/* Form Panel */}
-          <div className="w-96 lg:w-[420px] xl:w-[460px] shrink-0 h-full border-r border-slate-800">
+          <div className="w-[380px] xl:w-[420px] 2xl:w-[460px] shrink-0 h-full border-r border-slate-800">
             <EditorPanel />
           </div>
 
@@ -120,23 +121,37 @@ export function EditorClient({ initialResume }: EditorClientProps) {
           </div>
         </div>
 
+        {/* TABLET LAYOUT (md to lg — 2-pane: sidebar+form, no preview) */}
+        <div className="hidden md:flex lg:hidden w-full h-full overflow-hidden">
+          {/* Left Sidebar Nav */}
+          <div className="w-44 shrink-0 h-full border-r border-slate-800">
+            <EditorSidebar />
+          </div>
+
+          {/* Form Panel — takes remaining space */}
+          <div className="flex-1 h-full min-w-0">
+            <EditorPanel />
+          </div>
+        </div>
+
         {/* MOBILE LAYOUT (below md) */}
-        <div className="md:hidden w-full h-full flex flex-col">
+        <div className="md:hidden w-full h-full flex flex-col min-w-0">
           {/* Active Tab View */}
-          <div className="flex-1 overflow-y-auto pb-16">
+          <div className="flex-1 overflow-y-auto pb-16 min-w-0">
             {mobileTab === "edit" && (
-              <div className="h-full flex flex-col">
-                <div className="h-12 bg-slate-900 border-b border-slate-800 px-2 flex items-center overflow-x-auto shrink-0 space-x-1.5 scrollbar-none">
-                  <EditorSidebar />
+              <div className="h-full flex flex-col min-w-0">
+                {/* Horizontal section pill nav — purpose-built for mobile */}
+                <div className="bg-slate-900 border-b border-slate-800 shrink-0">
+                  <MobileSectionNav />
                 </div>
-                <div className="flex-1 overflow-y-auto">
+                <div className="flex-1 overflow-y-auto min-w-0">
                   <EditorPanel />
                 </div>
               </div>
             )}
 
             {mobileTab === "preview" && (
-              <div className="h-full">
+              <div className="h-full min-w-0">
                 <PreviewPanel />
               </div>
             )}
@@ -161,7 +176,7 @@ export function EditorClient({ initialResume }: EditorClientProps) {
           </div>
 
           {/* Bottom Mobile Tab Bar with 44px touch targets */}
-          <div className="fixed bottom-0 left-0 right-0 h-16 bg-slate-950/95 backdrop-blur border-t border-slate-800 flex items-center justify-around z-40 px-1 gap-0.5">
+          <div className="fixed bottom-0 left-0 right-0 h-14 sm:h-16 bg-slate-950/95 backdrop-blur border-t border-slate-800 flex items-center justify-around z-40 px-1 gap-0.5 pb-[env(safe-area-inset-bottom)]">
             <button
               type="button"
               onClick={() => setMobileTab("edit")}
@@ -226,4 +241,3 @@ export function EditorClient({ initialResume }: EditorClientProps) {
     </div>
   );
 }
-

@@ -371,8 +371,8 @@ export function DashboardClient({
             </Button>
           </div>
         ) : (
-          /* Resume Grid: 3 cols desktop, 2 tablet, 1 mobile */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+          /* Resume Grid: Evergreen auto-fit */
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(min(300px,100%),1fr))] gap-5 sm:gap-6">
             {!isMounted 
               ? Array(resumes.length || 3).fill(0).map((_, i) => (
                   <div key={`client-skel-${i}`} className="rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden flex flex-col h-[340px]">

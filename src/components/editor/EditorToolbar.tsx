@@ -26,6 +26,8 @@ import {
   Edit2,
   Bot,
   HelpCircle,
+  MoreVertical,
+  Save,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -77,10 +79,23 @@ export function EditorToolbar() {
     return "bg-rose-500/20 text-rose-400 border-rose-500/40";
   };
 
+  const handlePDFExport = async () => {
+    if (currentResume?.isTemporary) {
+      const toastId = toast.loading("Saving resume...");
+      const success = await saveResume();
+      toast.dismiss(toastId);
+      if (success) {
+        exportPDF();
+      }
+    } else {
+      exportPDF();
+    }
+  };
+
   return (
-    <header className="sticky top-0 z-40 w-full h-14 bg-slate-950 border-b border-slate-800 px-4 flex items-center justify-between text-slate-200">
+    <header className="sticky top-0 z-40 w-full h-14 bg-slate-950 border-b border-slate-800 px-2 sm:px-4 flex items-center justify-between text-slate-200 min-w-0">
       {/* Left: Home Logo + Back + Title + Save Indicator */}
-      <div className="flex items-center gap-2.5 min-w-0">
+      <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 flex-1">
         <Link
           href="/"
           className="flex items-center gap-1.5 group shrink-0"
@@ -96,14 +111,14 @@ export function EditorToolbar() {
 
         <Link
           href="/dashboard"
-          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors shrink-0"
           title="Back to Dashboard"
         >
           <ArrowLeft className="w-4 h-4" />
         </Link>
 
         {/* Resume Title */}
-        <div className="flex items-center gap-2 max-w-[200px] sm:max-w-[300px]">
+        <div className="flex items-center gap-1.5 min-w-0 flex-1 max-w-[140px] sm:max-w-[250px] md:max-w-[300px]">
           {isEditingTitle ? (
             <Input
               value={titleInput}
@@ -111,23 +126,23 @@ export function EditorToolbar() {
               onBlur={handleTitleSubmit}
               onKeyDown={(e) => e.key === "Enter" && handleTitleSubmit()}
               autoFocus
-              className="h-7 text-xs bg-slate-900 border-slate-700 text-white"
+              className="h-7 text-xs bg-slate-900 border-slate-700 text-white w-full"
             />
           ) : (
             <button
               type="button"
               onClick={() => setIsEditingTitle(true)}
-              className="group flex items-center gap-1.5 font-semibold text-xs text-white truncate hover:text-indigo-400 transition-colors"
+              className="group flex items-center gap-1 font-semibold text-xs text-white truncate hover:text-indigo-400 transition-colors min-w-0"
             >
               <span className="truncate">{currentResume?.title || "My Resume"}</span>
-              <Edit2 className="w-3 h-3 text-slate-500 group-hover:text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <Edit2 className="w-3 h-3 text-slate-500 group-hover:text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
             </button>
           )}
         </div>
 
-        {/* Auto Save Status or Save Button */}
+        {/* Auto Save Status or Save Button — Desktop only */}
         {currentResume?.isTemporary ? (
-          <div className="hidden sm:flex items-center border-l border-slate-800 pl-3">
+          <div className="hidden md:flex items-center border-l border-slate-800 pl-3 shrink-0">
             <Button
               type="button"
               size="sm"
@@ -153,7 +168,7 @@ export function EditorToolbar() {
             </Button>
           </div>
         ) : (
-          <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-slate-400 border-l border-slate-800 pl-3">
+          <div className="hidden md:flex items-center gap-1.5 text-[11px] text-slate-400 border-l border-slate-800 pl-3 shrink-0">
             {isSaving ? (
               <>
                 <Loader2 className="w-3 h-3 animate-spin text-indigo-400" />
@@ -171,42 +186,44 @@ export function EditorToolbar() {
         )}
       </div>
 
-      {/* Center/Right: Badges + Template + Customizer + Export */}
-      <div className="flex items-center gap-2 sm:gap-3">
-        {/* Resume Score Badge */}
+      {/* Right: Actions */}
+      <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+        {/* Resume Score Badge — Always visible */}
         <Badge
           variant="outline"
-          className={`text-xs px-2.5 py-0.5 border font-semibold flex items-center gap-1.5 ${getScoreColorClass()}`}
+          className={`text-[10px] sm:text-xs px-1.5 sm:px-2.5 py-0.5 border font-semibold flex items-center gap-1 sm:gap-1.5 ${getScoreColorClass()}`}
         >
-          <Sparkles className="w-3 h-3" />
-          <span>Score: {score}</span>
+          <Sparkles className="w-3 h-3 hidden sm:block" />
+          <span>{score}</span>
         </Badge>
 
-        {/* ATS Match Badge */}
+        {/* ATS Match Badge — md+ only */}
         {atsResult && (
           <Badge
             variant="outline"
-            className="text-xs px-2 py-0.5 border bg-indigo-500/20 text-indigo-300 border-indigo-500/40 hidden md:flex items-center gap-1"
+            className="text-xs px-2 py-0.5 border bg-indigo-500/20 text-indigo-300 border-indigo-500/40 hidden lg:flex items-center gap-1"
           >
             <Target className="w-3 h-3" />
             <span>ATS: {atsResult.matchPercentage}%</span>
           </Badge>
         )}
 
-        {/* AI Assistant Chat Trigger */}
+        {/* === DESKTOP ACTIONS (lg+) === */}
+
+        {/* AI Assistant Chat Trigger — md+ */}
         <Button
           type="button"
           variant="outline"
           size="sm"
           onClick={() => setIsChatOpen(true)}
-          className="h-8 text-xs bg-indigo-950/50 border-indigo-500/40 text-indigo-300 hover:bg-indigo-600 hover:text-white"
+          className="h-8 text-xs bg-indigo-950/50 border-indigo-500/40 text-indigo-300 hover:bg-indigo-600 hover:text-white hidden md:flex items-center gap-1"
           title="Open AI Chat Assistant"
         >
-          <Bot className="w-3.5 h-3.5 mr-1 text-amber-400" />
-          <span className="hidden md:inline">AI Chat</span>
+          <Bot className="w-3.5 h-3.5 text-amber-400" />
+          <span className="hidden lg:inline">AI Chat</span>
         </Button>
 
-        {/* AI Tools Dropdown */}
+        {/* AI Tools Dropdown — lg+ */}
         <Popover>
           <PopoverTrigger
             render={
@@ -214,7 +231,7 @@ export function EditorToolbar() {
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-8 text-xs bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800 hover:text-white hidden lg:flex items-center gap-1"
+                className="h-8 text-xs bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800 hover:text-white hidden xl:flex items-center gap-1"
               />
             }
           >
@@ -241,19 +258,19 @@ export function EditorToolbar() {
           </PopoverContent>
         </Popover>
 
-        {/* Theme Customizer Trigger */}
+        {/* Theme Customizer — md+ */}
         <Button
           type="button"
           variant="outline"
           size="sm"
           onClick={() => setIsCustomizerOpen(true)}
-          className="h-8 text-xs bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800 hover:text-white"
+          className="h-8 text-xs bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800 hover:text-white hidden md:flex items-center gap-1"
         >
-          <SlidersHorizontal className="w-3.5 h-3.5 mr-1.5 text-indigo-400" />
-          <span className="hidden sm:inline">Customize</span>
+          <SlidersHorizontal className="w-3.5 h-3.5 text-indigo-400" />
+          <span className="hidden lg:inline">Customize</span>
         </Button>
 
-        {/* Template Switcher */}
+        {/* Template Switcher — md+ */}
         <Popover>
           <PopoverTrigger
             render={
@@ -261,14 +278,14 @@ export function EditorToolbar() {
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-8 text-xs bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800 hover:text-white"
+                className="h-8 text-xs bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800 hover:text-white hidden md:flex items-center gap-1"
               />
             }
           >
-            <Palette className="w-3.5 h-3.5 mr-1.5 text-indigo-400" />
-            <span className="hidden sm:inline">Templates</span>
+            <Palette className="w-3.5 h-3.5 text-indigo-400" />
+            <span className="hidden lg:inline">Templates</span>
           </PopoverTrigger>
-          <PopoverContent align="end" className="w-64 p-3 bg-slate-900 border-slate-800 text-slate-200 space-y-2">
+          <PopoverContent align="end" className="w-[min(16rem,calc(100vw-2rem))] p-3 bg-slate-900 border-slate-800 text-slate-200 space-y-2">
             <h4 className="text-xs font-bold text-white border-b border-slate-800 pb-1.5">
               Select Resume Template
             </h4>
@@ -292,14 +309,14 @@ export function EditorToolbar() {
           </PopoverContent>
         </Popover>
 
-        {/* Export DOCX */}
+        {/* Export DOCX — lg+ */}
         <Button
           type="button"
           variant="outline"
           size="sm"
           disabled={isExportingDOCX || isManualSaving}
           onClick={() => exportDOCX()}
-          className="h-8 text-xs bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800 hover:text-white hidden sm:flex items-center gap-1.5"
+          className="h-8 text-xs bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800 hover:text-white hidden lg:flex items-center gap-1.5"
         >
           {isExportingDOCX ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-400" />
@@ -309,36 +326,129 @@ export function EditorToolbar() {
           <span>{isExportingDOCX ? "DOCX..." : "DOCX"}</span>
         </Button>
 
-        {/* Export PDF (Primary) */}
+        {/* === MOBILE/TABLET OVERFLOW MENU (below md) === */}
+        <Popover>
+          <PopoverTrigger
+            render={
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 w-8 p-0 bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800 hover:text-white md:hidden flex items-center justify-center"
+              />
+            }
+          >
+            <MoreVertical className="w-4 h-4" />
+          </PopoverTrigger>
+          <PopoverContent align="end" className="w-[min(220px,calc(100vw-2rem))] p-2 bg-slate-900 border-slate-800 text-slate-200 space-y-1">
+            {/* Save status on mobile */}
+            {currentResume?.isTemporary ? (
+              <button
+                type="button"
+                onClick={async () => {
+                  const toastId = toast.loading("Saving to your dashboard...");
+                  const success = await saveResume();
+                  toast.dismiss(toastId);
+                  if (success) toast.success("Resume saved successfully!");
+                }}
+                disabled={isManualSaving}
+                className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+              >
+                <Save className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span>{isManualSaving ? "Saving..." : "Save to My Resumes"}</span>
+              </button>
+            ) : (
+              <div className="flex items-center gap-2 p-2 text-xs text-slate-400">
+                {isSaving ? (
+                  <>
+                    <Loader2 className="w-3 h-3 animate-spin text-indigo-400" />
+                    <span>Saving...</span>
+                  </>
+                ) : lastSaved ? (
+                  <>
+                    <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                    <span>Auto-saved</span>
+                  </>
+                ) : (
+                  <span>Ready</span>
+                )}
+              </div>
+            )}
+
+            <div className="h-px bg-slate-800 my-1" />
+
+            <button
+              type="button"
+              onClick={() => setIsChatOpen(true)}
+              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+            >
+              <Bot className="w-4 h-4 text-amber-400 shrink-0" />
+              <span>AI Chat</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsCoverLetterOpen(true)}
+              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+            >
+              <FileText className="w-4 h-4 text-indigo-400 shrink-0" />
+              <span>Cover Letter Generator</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsInterviewPrepOpen(true)}
+              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+            >
+              <HelpCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>Interview Prep</span>
+            </button>
+
+            <div className="h-px bg-slate-800 my-1" />
+
+            <button
+              type="button"
+              onClick={() => setIsCustomizerOpen(true)}
+              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+            >
+              <SlidersHorizontal className="w-4 h-4 text-indigo-400 shrink-0" />
+              <span>Customize Theme</span>
+            </button>
+
+            <div className="h-px bg-slate-800 my-1" />
+
+            <button
+              type="button"
+              disabled={isExportingDOCX || isManualSaving}
+              onClick={() => exportDOCX()}
+              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200 disabled:opacity-50"
+            >
+              <FileSpreadsheet className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>{isExportingDOCX ? "Exporting DOCX..." : "Download DOCX"}</span>
+            </button>
+          </PopoverContent>
+        </Popover>
+
+        {/* Export PDF (Primary) — Always visible */}
         <Button
           type="button"
           size="sm"
           disabled={isExportingPDF || isManualSaving}
-          onClick={async () => {
-            if (currentResume?.isTemporary) {
-              const toastId = toast.loading("Saving resume...");
-              const success = await saveResume();
-              toast.dismiss(toastId);
-              if (success) {
-                exportPDF(); // Store state is now updated, PDF will generate safely
-              }
-            } else {
-              exportPDF();
-            }
-          }}
-          className="h-8 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-sm flex items-center gap-1.5"
+          onClick={handlePDFExport}
+          className="h-8 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-sm flex items-center gap-1 sm:gap-1.5"
         >
           {isExportingPDF || (isManualSaving && currentResume?.isTemporary) ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
           ) : (
             <Download className="w-3.5 h-3.5" />
           )}
-          <span>
+          <span className="hidden sm:inline">
             {currentResume?.isTemporary
-              ? "Save & Download PDF"
+              ? "Save & PDF"
               : isExportingPDF
-              ? "Generating PDF..."
-              : "Download PDF"}
+              ? "PDF..."
+              : "PDF"}
+          </span>
+          <span className="sm:hidden">
+            {isExportingPDF ? "..." : "PDF"}
           </span>
         </Button>
       </div>

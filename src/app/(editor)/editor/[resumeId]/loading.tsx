@@ -33,8 +33,8 @@ export default function EditorLoading() {
         </div>
 
         {/* Right Preview Panel Skeleton */}
-        <div className="hidden lg:flex p-6 bg-slate-900/40 items-center justify-center animate-pulse">
-          <div className="w-[500px] h-[700px] bg-slate-900 border border-slate-800 rounded-2xl p-8 space-y-6 shadow-2xl">
+        <div className="hidden lg:flex p-6 bg-slate-900/40 items-center justify-center animate-pulse min-w-0">
+          <div className="w-full max-w-[500px] aspect-[1/1.414] max-h-[700px] bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-2xl">
             <div className="h-12 w-1/2 bg-slate-800/80 rounded mx-auto" />
             <div className="h-4 w-1/3 bg-slate-800/60 rounded mx-auto" />
             <div className="h-0.5 w-full bg-slate-800" />

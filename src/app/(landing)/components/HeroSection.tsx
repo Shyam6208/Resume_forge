@@ -47,7 +47,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-[1.1] max-w-4xl mx-auto"
+          className="text-[clamp(2.5rem,5vw+1rem,4.5rem)] font-extrabold text-white tracking-tight leading-[1.1] max-w-4xl mx-auto"
         >
           Create a Professional Resume in{" "}
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">

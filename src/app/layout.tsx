@@ -11,7 +11,6 @@ const inter = Inter({ subsets: ["latin"], display: "swap" });
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
   themeColor: "#020617",
 };
 
@@ -52,7 +51,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={cn("dark font-sans", geist.variable, inter.className)}>
-      <body className="bg-slate-950 text-slate-100 antialiased">
+      <body className="bg-slate-950 text-slate-100 antialiased min-h-screen flex flex-col w-full min-w-0">
         <TooltipProvider>{children}</TooltipProvider>
         <Toaster
           position="bottom-right"

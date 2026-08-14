@@ -67,7 +67,7 @@ export function SkillsSuggestions() {
         <Lightbulb className="w-3.5 h-3.5 text-amber-500" />
         <span>💡 Smart Skills Explorer</span>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-[340px] p-4 space-y-3">
+      <PopoverContent align="start" className="w-[min(340px,calc(100vw-2rem))] max-w-[calc(100vw-2rem)] p-4 space-y-3">
         <div className="flex items-center justify-between border-b pb-2">
           <span className="text-xs font-bold text-slate-900">Skills Explorer</span>
           <span className="text-[10px] text-muted-foreground">Click to toggle skills</span>
