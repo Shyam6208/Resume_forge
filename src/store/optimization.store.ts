@@ -5,7 +5,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { ResumeData } from "@/types/resume.types";
-import type { TargetRole } from "@/config/target-roles.config";
 import type { RoleOptimizationResult } from "@/lib/ai/types";
 
 // --- View State ---
@@ -24,7 +23,7 @@ export type SectionStatus = "pending" | "accepted" | "rejected";
 // --- State Shape ---
 
 interface OptimizationState {
-  selectedRole: TargetRole | null;
+  selectedRole: string | null;
   optimizationResult: RoleOptimizationResult | null;
   isOptimizing: boolean;
   originalResumeData: ResumeData | null;
@@ -38,7 +37,7 @@ interface OptimizationState {
 // --- Actions ---
 
 interface OptimizationActions {
-  selectRole: (role: TargetRole) => void;
+  selectRole: (role: string) => void;
   setOptimizationResult: (result: RoleOptimizationResult) => void;
   setIsOptimizing: (val: boolean) => void;
   setViewState: (state: OptimizationViewState) => void;

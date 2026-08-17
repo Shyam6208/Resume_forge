@@ -1,15 +1,15 @@
 "use client";
 
 import { useRoleOptimization } from "@/hooks/useRoleOptimization";
-import { TargetRoleSelector } from "./TargetRoleSelector";
-import { RoleProfileView } from "./RoleProfileView";
+import { RoleRecommendations } from "./RoleRecommendations";
 import { OptimizationDashboard } from "./OptimizationDashboard";
 import { ChangePreviewPanel } from "./ChangePreviewPanel";
 import { MissingSkillsPanel } from "./MissingSkillsPanel";
 import { KeywordAnalysisPanel } from "./KeywordAnalysisPanel";
-import { Loader2 } from "lucide-react";
+import { Loader2, Rocket } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 
 export function RoleOptimizerPanel() {
   const {
@@ -23,7 +23,6 @@ export function RoleOptimizerPanel() {
     canUndo,
     canRedo,
     pendingCount,
-    selectRole,
     optimize,
     acceptSection,
     rejectSection,
@@ -36,20 +35,32 @@ export function RoleOptimizerPanel() {
 
   const [activeReviewTab, setActiveReviewTab] = useState<"changes" | "skills" | "keywords">("changes");
 
-  // State: Idle -> Selector
-  if (viewState === "idle" || !selectedRoleProfile) {
-    return <TargetRoleSelector selectedRole={selectedRole} onSelect={selectRole} />;
-  }
+  // Automatically transition out of "idle" since we use the global targetJob
+  useEffect(() => {
+    if (viewState === "idle") {
+      setViewState("profile");
+    }
+  }, [viewState, setViewState]);
 
   // State: Profile -> Role Profile View (Before optimization)
-  if (viewState === "profile") {
+  if (viewState === "profile" || viewState === "idle") {
     return (
-      <RoleProfileView
-        profile={selectedRoleProfile}
-        isOptimizing={isOptimizing}
-        onOptimize={optimize}
-        onBack={() => setViewState("idle")}
-      />
+      <div className="space-y-4">
+        <RoleRecommendations />
+        <Button
+          type="button"
+          onClick={optimize}
+          disabled={isOptimizing || !selectedRole}
+          className="w-full h-10 text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center gap-2"
+        >
+          <Rocket className="w-4 h-4" />
+          <span>{isOptimizing ? "Analyzing..." : "🚀 Optimize My Resume"}</span>
+        </Button>
+        <p className="text-[10px] text-slate-500 text-center">
+          AI will analyze your resume and suggest improvements for this role.
+          Your original resume will be preserved.
+        </p>
+      </div>
     );
   }
 
@@ -60,7 +71,7 @@ export function RoleOptimizerPanel() {
         <Loader2 className="w-8 h-8 text-indigo-400 animate-spin mx-auto" />
         <div className="space-y-1">
           <h4 className="text-xs font-bold text-white">
-            Analyzing Resume for {selectedRoleProfile.label}...
+            Analyzing Resume for {selectedRoleProfile?.title || selectedRole}...
           </h4>
           <p className="text-[11px] text-slate-400 max-w-xs mx-auto">
             Comparing resume experience & skills against role requirements without fabricating information.
@@ -77,7 +88,7 @@ export function RoleOptimizerPanel() {
         result={optimizationResult}
         pendingCount={pendingCount}
         onReviewChanges={() => setViewState("review")}
-        onChangeRole={() => setViewState("idle")}
+        onReset={() => setViewState("idle")}
       />
     );
   }
@@ -145,5 +156,5 @@ export function RoleOptimizerPanel() {
     );
   }
 
-  return <TargetRoleSelector selectedRole={selectedRole} onSelect={selectRole} />;
+  return null;
 }

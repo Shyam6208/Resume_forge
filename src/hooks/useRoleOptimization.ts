@@ -7,8 +7,7 @@
 import { useCallback, useMemo } from "react";
 import { useResumeStore } from "@/store/resume.store";
 import { useOptimizationStore } from "@/store/optimization.store";
-import { TARGET_ROLE_MAP } from "@/config/target-roles.config";
-import type { TargetRole } from "@/config/target-roles.config";
+import { getRoleProfile } from "@/lib/role-matching";
 import type { ResumeData, SectionKey } from "@/types/resume.types";
 import toast from "react-hot-toast";
 
@@ -28,7 +27,8 @@ export function useRoleOptimization() {
   const updateSection = useResumeStore((s) => s.updateSection);
   const setResume = useResumeStore((s) => s.setResume);
 
-  const selectedRole = useOptimizationStore((s) => s.selectedRole);
+  const targetJob = currentResume?.targetJob || "";
+
   const optimizationResult = useOptimizationStore((s) => s.optimizationResult);
   const isOptimizing = useOptimizationStore((s) => s.isOptimizing);
   const viewState = useOptimizationStore((s) => s.viewState);
@@ -37,7 +37,6 @@ export function useRoleOptimization() {
   const undoStack = useOptimizationStore((s) => s.undoStack);
   const redoStack = useOptimizationStore((s) => s.redoStack);
 
-  const selectRole = useOptimizationStore((s) => s.selectRole);
   const setOptimizationResult = useOptimizationStore((s) => s.setOptimizationResult);
   const setIsOptimizing = useOptimizationStore((s) => s.setIsOptimizing);
   const setViewState = useOptimizationStore((s) => s.setViewState);
@@ -55,20 +54,20 @@ export function useRoleOptimization() {
 
   // Selected role profile
   const selectedRoleProfile = useMemo(
-    () => (selectedRole ? TARGET_ROLE_MAP[selectedRole] : null),
-    [selectedRole]
+    () => (targetJob ? getRoleProfile(targetJob) : null),
+    [targetJob]
   );
 
   // Cache key
   const cacheKey = useMemo(() => {
-    if (!currentResume || !selectedRole) return null;
+    if (!currentResume || !targetJob) return null;
     const hash = contentHash(currentResume.data);
-    return `${currentResume.id}:${selectedRole}:${hash}`;
-  }, [currentResume, selectedRole]);
+    return `${currentResume.id}:${targetJob}:${hash}`;
+  }, [currentResume, targetJob]);
 
   // Optimize — explicit user action only
   const optimize = useCallback(async () => {
-    if (!currentResume || !selectedRole) return;
+    if (!currentResume || !targetJob) return;
 
     // Check cache first
     if (cacheKey) {
@@ -85,7 +84,7 @@ export function useRoleOptimization() {
     setIsOptimizing(true);
     setViewState("optimizing");
 
-    const toastId = toast.loading("🎯 Analyzing resume for " + (selectedRoleProfile?.label || selectedRole) + "...");
+    const toastId = toast.loading("🎯 Analyzing resume for " + (selectedRoleProfile?.title || targetJob) + "...");
 
     try {
       const res = await fetch("/api/ai/optimize-role", {
@@ -93,7 +92,7 @@ export function useRoleOptimization() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           resumeData: currentResume.data,
-          targetRoleId: selectedRole,
+          targetRoleId: targetJob, // We pass the string directly now
           userType: "developer",
         }),
       });
@@ -128,7 +127,7 @@ export function useRoleOptimization() {
     } finally {
       setIsOptimizing(false);
     }
-  }, [currentResume, selectedRole, selectedRoleProfile, cacheKey, getCached, setCache, snapshotOriginal, setIsOptimizing, setViewState, setOptimizationResult]);
+  }, [currentResume, targetJob, selectedRoleProfile, cacheKey, getCached, setCache, snapshotOriginal, setIsOptimizing, setViewState, setOptimizationResult]);
 
   // Accept a single section
   const acceptSection = useCallback(
@@ -273,13 +272,6 @@ export function useRoleOptimization() {
     toast.success("Original resume restored!", { duration: 3000 });
   }, [currentResume, getOriginal, pushUndo, clearRedoStack, setResume, clearOptimization]);
 
-  // Change role — clears result, keeps original, does NOT call AI
-  const changeRole = useCallback(
-    (newRole: TargetRole) => {
-      selectRole(newRole);
-    },
-    [selectRole]
-  );
 
   // Derived state
   const pendingCount = useMemo(
@@ -297,7 +289,7 @@ export function useRoleOptimization() {
 
   return {
     // State
-    selectedRole,
+    selectedRole: targetJob,
     selectedRoleProfile,
     optimizationResult,
     isOptimizing,
@@ -311,7 +303,6 @@ export function useRoleOptimization() {
     rejectedCount,
 
     // Actions
-    selectRole: changeRole,
     optimize,
     acceptSection,
     rejectSection,

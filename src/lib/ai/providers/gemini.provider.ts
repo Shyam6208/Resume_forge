@@ -1,6 +1,6 @@
 import type { IAIProvider } from "../ai-provider.interface";
 import type { ResumeData, SectionKey, UserType } from "@/types/resume.types";
-import type { TargetRoleProfile } from "@/config/target-roles.config";
+import type { RoleProfile } from "@/config/roleIntelligence";
 import type {
   AIAnalysisResult,
   JDMatchResult,
@@ -654,14 +654,14 @@ REQUIRED JSON OUTPUT FORMAT:
 
   async optimizeForTargetRole(
     data: ResumeData,
-    targetRoleProfile: TargetRoleProfile,
+    targetRoleProfile: RoleProfile,
     _userType: UserType = "developer"
   ): Promise<RoleOptimizationResult> {
     const compactData = compactResumeForPrompt(data);
     const prompt = `
 You are an Expert Resume Optimizer and ATS Specialist.
 
-Your task is to analyze the candidate's resume and generate role-specific optimization suggestions for a "${targetRoleProfile.label}" position.
+Your task is to analyze the candidate's resume and generate role-specific optimization suggestions for a "${targetRoleProfile.title}" position.
 
 === ABSOLUTE RULES (NEVER VIOLATE) ===
 1. NEVER fabricate, invent, or assume ANY information not present in the resume.
@@ -673,7 +673,7 @@ Your task is to analyze the candidate's resume and generate role-specific optimi
 7. If a field has no content to improve, return the current value unchanged.
 
 === TARGET ROLE PROFILE ===
-Role: ${targetRoleProfile.label}
+Role: ${targetRoleProfile.title}
 Core Skills Expected: ${targetRoleProfile.coreSkills.join(", ")}
 Secondary Skills: ${targetRoleProfile.secondarySkills.join(", ")}
 Important Keywords: ${targetRoleProfile.importantKeywords.join(", ")}
@@ -683,7 +683,7 @@ Important Sections: ${targetRoleProfile.importantSections.join(", ")}
 ${compactData}
 
 === REQUIRED JSON OUTPUT FORMAT ===
-{"targetRole":"${targetRoleProfile.label}","overallAssessment":"2-3 sentence assessment of how well this resume fits the target role","matchedSkills":["skills from the resume that match the target role"],"relevantProjects":["project names from the resume relevant to this role"],"relevantExperience":["job titles/companies from the resume relevant to this role"],"summary":{"current":"the candidate's current summary text (or empty string if none)","suggested":"an improved role-specific summary using ONLY verified candidate info","reason":"why the improvement helps for this role"},"skills":{"existing":["all skills currently in the resume"],"reordered":{"Frontend":["React","JavaScript"],"Backend":["Node.js"],"Database":["MongoDB"],"Tools":["Git"]},"suggested":[{"skill":"Docker","reason":"Essential for modern ${targetRoleProfile.label} deployment workflows","learningPriority":"high","commonUseCase":"Containerizing applications for consistent deployment"}]},"sectionChanges":[{"sectionKey":"experience","label":"Work Experience","currentData":null,"suggestedData":null,"reason":"Why this section should be improved","keyChanges":["Changed weak verbs to action verbs","Highlighted relevant technologies"]}],"keywords":{"highPriority":["keywords critical for this role"],"mediumPriority":["helpful keywords"],"lowPriority":["nice-to-have keywords"]},"missingSkills":[{"skill":"AWS","reason":"Cloud skills are expected for ${targetRoleProfile.label} roles","learningPriority":"medium","commonUseCase":"Deploying and managing cloud infrastructure"}],"recommendations":["Actionable recommendation 1","Actionable recommendation 2"]}
+{"targetRole":"${targetRoleProfile.title}","overallAssessment":"2-3 sentence assessment of how well this resume fits the target role","matchedSkills":["skills from the resume that match the target role"],"relevantProjects":["project names from the resume relevant to this role"],"relevantExperience":["job titles/companies from the resume relevant to this role"],"summary":{"current":"the candidate's current summary text (or empty string if none)","suggested":"an improved role-specific summary using ONLY verified candidate info","reason":"why the improvement helps for this role"},"skills":{"existing":["all skills currently in the resume"],"reordered":{"Frontend":["React","JavaScript"],"Backend":["Node.js"],"Database":["MongoDB"],"Tools":["Git"]},"suggested":[{"skill":"Docker","reason":"Essential for modern ${targetRoleProfile.title} deployment workflows","learningPriority":"high","commonUseCase":"Containerizing applications for consistent deployment"}]},"sectionChanges":[{"sectionKey":"experience","label":"Work Experience","currentData":null,"suggestedData":null,"reason":"Why this section should be improved","keyChanges":["Changed weak verbs to action verbs","Highlighted relevant technologies"]}],"keywords":{"highPriority":["keywords critical for this role"],"mediumPriority":["helpful keywords"],"lowPriority":["nice-to-have keywords"]},"missingSkills":[{"skill":"AWS","reason":"Cloud skills are expected for ${targetRoleProfile.title} roles","learningPriority":"medium","commonUseCase":"Deploying and managing cloud infrastructure"}],"recommendations":["Actionable recommendation 1","Actionable recommendation 2"]}
 
 For sectionChanges:
 - Include entries ONLY for sections that actually need improvement.
@@ -696,7 +696,7 @@ For sectionChanges:
 
     const rawResult = await this.callGeminiAPI(prompt, 2048);
     return this.parseJSON<RoleOptimizationResult>(rawResult, {
-      targetRole: targetRoleProfile.label,
+      targetRole: targetRoleProfile.title,
       overallAssessment: "Resume analysis completed. Review the suggestions below.",
       matchedSkills: [],
       relevantProjects: [],

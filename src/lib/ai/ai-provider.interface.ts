@@ -1,5 +1,5 @@
 import type { ResumeData, SectionKey, UserType } from "@/types/resume.types";
-import type { TargetRoleProfile } from "@/config/target-roles.config";
+import type { RoleProfile } from "@/config/roleIntelligence";
 import type {
   AIAnalysisResult,
   JDMatchResult,
@@ -100,7 +100,7 @@ export interface IAIProvider {
    */
   optimizeForTargetRole(
     data: ResumeData,
-    targetRoleProfile: TargetRoleProfile,
+    targetRoleProfile: RoleProfile,
     userType?: UserType
   ): Promise<RoleOptimizationResult>;
 }

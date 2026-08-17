@@ -10,6 +10,10 @@ import {
   AchievementsSection,
   LanguagesSection,
   ExperienceSection,
+  InterestsSection,
+  VolunteerSection,
+  PublicationsSection,
+  ReferencesSection,
 } from "@/components/sections";
 
 interface FresherBasicProps {
@@ -81,6 +85,26 @@ export function FresherBasic({ data, theme }: FresherBasicProps) {
       {/* Languages */}
       <SectionWrapper isEmpty={isSectionEmpty.languages(data)}>
         <LanguagesSection languages={data.languages} theme={theme} />
+      </SectionWrapper>
+
+      {/* Interests */}
+      <SectionWrapper isEmpty={isSectionEmpty.interests(data)}>
+        <InterestsSection interests={data.interests} theme={theme} />
+      </SectionWrapper>
+
+      {/* Volunteer */}
+      <SectionWrapper isEmpty={isSectionEmpty.volunteer(data)}>
+        <VolunteerSection volunteer={data.volunteer} theme={theme} />
+      </SectionWrapper>
+
+      {/* Publications */}
+      <SectionWrapper isEmpty={isSectionEmpty.publications(data)}>
+        <PublicationsSection publications={data.publications} theme={theme} />
+      </SectionWrapper>
+
+      {/* References */}
+      <SectionWrapper isEmpty={isSectionEmpty.references(data)}>
+        <ReferencesSection references={data.references} theme={theme} />
       </SectionWrapper>
     </div>
   );

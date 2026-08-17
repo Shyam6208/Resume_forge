@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { aiService } from "@/lib/ai/ai.service";
-import { TARGET_ROLE_MAP } from "@/config/target-roles.config";
-import type { TargetRole } from "@/config/target-roles.config";
+import { getRoleProfile } from "@/lib/role-matching";
 import { buildCacheKey, getCached, setCached } from "@/lib/ai/ai-cache";
 
 export async function POST(request: Request) {
@@ -16,14 +15,14 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!targetRoleId || !(targetRoleId in TARGET_ROLE_MAP)) {
+    if (!targetRoleId || typeof targetRoleId !== "string") {
       return NextResponse.json(
-        { error: "Invalid or missing targetRoleId" },
+        { error: "Invalid or missing targetRoleId string" },
         { status: 400 }
       );
     }
 
-    const roleProfile = TARGET_ROLE_MAP[targetRoleId as TargetRole];
+    const roleProfile = getRoleProfile(targetRoleId);
 
     // Server-side cache check
     const cacheKey = buildCacheKey(

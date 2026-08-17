@@ -331,6 +331,201 @@ export async function generateDOCX(
     }
   }
 
+  // ==========================================================
+  // 8. Achievements
+  // ==========================================================
+  if (!isSectionEmpty.achievements(data) && data.achievements) {
+    children.push(createSectionHeading("Achievements", primaryColorHex));
+    for (const ach of data.achievements) {
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({ text: ach.title, bold: true, size: 19 }),
+            new TextRun({
+              text: ach.organization ? ` — ${ach.organization}` : "",
+              size: 19,
+              color: "475569",
+            }),
+            new TextRun({
+              text: ach.date ? ` (${ach.date})` : "",
+              italics: true,
+              size: 18,
+              color: "64748B",
+            }),
+          ],
+          spacing: { after: ach.description ? 40 : 60 },
+        })
+      );
+      if (ach.description) {
+        children.push(
+          new Paragraph({
+            children: [new TextRun({ text: ach.description, size: 19 })],
+            spacing: { after: 60 },
+          })
+        );
+      }
+    }
+  }
+
+  // ==========================================================
+  // 9. Languages
+  // ==========================================================
+  if (!isSectionEmpty.languages(data) && data.languages) {
+    children.push(createSectionHeading("Languages", primaryColorHex));
+    const langStrs = data.languages.map((l) => `${l.name} (${l.proficiency})`);
+    children.push(
+      new Paragraph({
+        children: [new TextRun({ text: langStrs.join(" • "), size: 19 })],
+        spacing: { after: 60 },
+      })
+    );
+  }
+
+  // ==========================================================
+  // 10. Interests & Hobbies
+  // ==========================================================
+  if (!isSectionEmpty.interests(data) && data.interests) {
+    children.push(createSectionHeading("Interests & Hobbies", primaryColorHex));
+    children.push(
+      new Paragraph({
+        children: [new TextRun({ text: data.interests.join(" • "), size: 19 })],
+        spacing: { after: 60 },
+      })
+    );
+  }
+
+  // ==========================================================
+  // 11. Volunteer Experience
+  // ==========================================================
+  if (!isSectionEmpty.volunteer(data) && data.volunteer) {
+    children.push(createSectionHeading("Volunteer Experience", primaryColorHex));
+    for (const vol of data.volunteer) {
+      const dateStr = [vol.startDate, vol.endDate].filter(Boolean).join(" - ");
+
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: vol.role || "Role",
+              bold: true,
+              size: 20,
+            }),
+            new TextRun({
+              text: vol.organization ? `  at ${vol.organization}` : "",
+              bold: true,
+              size: 20,
+              color: "334155",
+            }),
+            new TextRun({
+              text: dateStr ? `   (${dateStr})` : "",
+              italics: true,
+              size: 18,
+              color: "64748B",
+            }),
+          ],
+          spacing: { before: 120, after: 40 },
+        })
+      );
+
+      if (vol.description) {
+        children.push(
+          new Paragraph({
+            children: [new TextRun({ text: vol.description, size: 19 })],
+            spacing: { after: 40 },
+          })
+        );
+      }
+    }
+  }
+
+  // ==========================================================
+  // 12. Publications & Articles
+  // ==========================================================
+  if (!isSectionEmpty.publications(data) && data.publications) {
+    children.push(createSectionHeading("Publications & Articles", primaryColorHex));
+    for (const pub of data.publications) {
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({ text: pub.title, bold: true, size: 20 }),
+            new TextRun({
+              text: pub.publisher ? ` — ${pub.publisher}` : "",
+              size: 19,
+              color: "334155",
+            }),
+            new TextRun({
+              text: pub.date ? ` (${pub.date})` : "",
+              italics: true,
+              size: 18,
+              color: "64748B",
+            }),
+          ],
+          spacing: { before: 120, after: 40 },
+        })
+      );
+
+      if (pub.url) {
+        children.push(
+          new Paragraph({
+            children: [new TextRun({ text: `URL: ${pub.url}`, size: 18, color: "2563EB" })],
+            spacing: { after: pub.description ? 40 : 60 },
+          })
+        );
+      }
+
+      if (pub.description) {
+        children.push(
+          new Paragraph({
+            children: [new TextRun({ text: pub.description, size: 19 })],
+            spacing: { after: 60 },
+          })
+        );
+      }
+    }
+  }
+
+  // ==========================================================
+  // 13. References
+  // ==========================================================
+  if (!isSectionEmpty.references(data) && data.references) {
+    children.push(createSectionHeading("References", primaryColorHex));
+    for (const ref of data.references) {
+      children.push(
+        new Paragraph({
+          children: [
+            new TextRun({ text: ref.name, bold: true, size: 20 }),
+            new TextRun({
+              text: ref.position || ref.company ? ` — ` : "",
+              size: 19,
+            }),
+            new TextRun({
+              text: [ref.position, ref.company].filter(Boolean).join(" at "),
+              size: 19,
+              color: "334155",
+            }),
+          ],
+          spacing: { before: 120, after: 40 },
+        })
+      );
+
+      const contactParts = [ref.email, ref.phone].filter(Boolean);
+      if (contactParts.length > 0) {
+        children.push(
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: contactParts.join(" | "),
+                size: 18,
+                color: "64748B",
+              }),
+            ],
+            spacing: { after: 60 },
+          })
+        );
+      }
+    }
+  }
+
   // Create Document object
   const doc = new Document({
     sections: [

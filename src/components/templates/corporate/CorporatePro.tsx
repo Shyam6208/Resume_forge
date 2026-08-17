@@ -11,6 +11,7 @@ import {
   CertificationsSection,
   AchievementsSection,
   LanguagesSection,
+  InterestsSection,
   VolunteerSection,
   PublicationsSection,
   ReferencesSection,
@@ -80,6 +81,11 @@ export function CorporatePro({ data, theme }: CorporateProProps) {
       {/* Languages */}
       <SectionWrapper isEmpty={isSectionEmpty.languages(data)}>
         <LanguagesSection languages={data.languages} theme={corporateTheme} />
+      </SectionWrapper>
+
+      {/* Interests */}
+      <SectionWrapper isEmpty={isSectionEmpty.interests(data)}>
+        <InterestsSection interests={data.interests} theme={corporateTheme} />
       </SectionWrapper>
 
       {/* Volunteer */}

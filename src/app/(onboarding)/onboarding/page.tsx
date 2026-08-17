@@ -10,6 +10,7 @@ import type { UserType, SectionKey } from "@/types/resume.types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { JobRoleCombobox } from "@/components/ui/job-role-combobox";
 import { TEMPLATES } from "@/config/templates.config";
 import {
   GraduationCap,
@@ -96,18 +97,6 @@ const USER_TYPES: UserTypeOption[] = [
   },
 ];
 
-const TARGET_JOB_SUGGESTIONS = [
-  "Software Engineer",
-  "Frontend Developer",
-  "Backend Developer",
-  "Full Stack Developer",
-  "Data Scientist / Analyst",
-  "UI/UX Designer",
-  "Product Manager",
-  "Digital Marketing Specialist",
-  "Teacher / Educator",
-  "Finance Analyst",
-];
 
 const RECOMMENDED_TEMPLATES: Record<UserType, string> = {
   student: "fresher-basic",
@@ -137,10 +126,6 @@ export default function OnboardingPage() {
   const handleUserTypeSelect = (type: UserType) => {
     setSelectedUserType(type);
     setSelectedTemplateId(RECOMMENDED_TEMPLATES[type] || "minimal-white");
-  };
-
-  const handleJobSuggestionClick = (job: string) => {
-    setTargetJob(job);
   };
 
   const handleFinish = async () => {
@@ -327,36 +312,10 @@ export default function OnboardingPage() {
               {/* Text Input */}
               <div className="space-y-2 bg-slate-900/60 p-5 rounded-2xl border border-slate-800">
                 <label className="text-xs font-bold text-slate-300">Target Role Title</label>
-                <Input
+                <JobRoleCombobox 
                   value={targetJob}
-                  onChange={(e) => setTargetJob(e.target.value)}
-                  placeholder="e.g. Senior Frontend Developer, Data Analyst..."
-                  className="h-11 text-sm bg-slate-950 border-slate-800 text-white placeholder:text-slate-500"
+                  onChange={setTargetJob}
                 />
-
-                {/* Popular suggestions */}
-                <div className="space-y-2 pt-3">
-                  <span className="text-[11px] font-medium text-slate-400">Popular Job Roles:</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {TARGET_JOB_SUGGESTIONS.map((job) => {
-                      const isSelected = targetJob === job;
-                      return (
-                        <button
-                          key={job}
-                          type="button"
-                          onClick={() => handleJobSuggestionClick(job)}
-                          className={`px-3 py-1 rounded-full text-xs transition-all ${
-                            isSelected
-                              ? "bg-indigo-600 text-white font-medium"
-                              : "bg-slate-950 text-slate-300 border border-slate-800 hover:border-slate-700"
-                          }`}
-                        >
-                          {job}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
               </div>
 
               {/* Footer controls for Step 2 */}

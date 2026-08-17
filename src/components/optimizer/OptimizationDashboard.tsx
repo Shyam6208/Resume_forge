@@ -14,14 +14,14 @@ interface OptimizationDashboardProps {
   result: RoleOptimizationResult;
   pendingCount: number;
   onReviewChanges: () => void;
-  onChangeRole: () => void;
+  onReset: () => void;
 }
 
 export function OptimizationDashboard({
   result,
   pendingCount,
   onReviewChanges,
-  onChangeRole,
+  onReset,
 }: OptimizationDashboardProps) {
   return (
     <div className="space-y-5">
@@ -124,11 +124,11 @@ export function OptimizationDashboard({
         <Button
           type="button"
           variant="outline"
-          onClick={onChangeRole}
+          onClick={onReset}
           className="w-full h-8 text-xs bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl flex items-center justify-center gap-2"
         >
           <RefreshCw className="w-3 h-3" />
-          <span>Change Role</span>
+          <span>Back to Analysis</span>
         </Button>
       </div>
     </div>

@@ -12,6 +12,7 @@ import {
   CertificationsSection,
   AchievementsSection,
   LanguagesSection,
+  InterestsSection,
   VolunteerSection,
   PublicationsSection,
   ReferencesSection,
@@ -64,6 +65,10 @@ export function DynamicTemplate({ data, theme, config }: DynamicTemplateProps) {
           <SectionWrapper isEmpty={isSectionEmpty.certifications(data)}>
             <CertificationsSection certifications={data.certifications} theme={mergedTheme} />
           </SectionWrapper>
+
+          <SectionWrapper isEmpty={isSectionEmpty.interests(data)}>
+            <InterestsSection interests={data.interests} theme={mergedTheme} />
+          </SectionWrapper>
         </div>
 
         {/* Main Content Area */}
@@ -90,6 +95,18 @@ export function DynamicTemplate({ data, theme, config }: DynamicTemplateProps) {
 
           <SectionWrapper isEmpty={isSectionEmpty.achievements(data)}>
             <AchievementsSection achievements={data.achievements} theme={mergedTheme} />
+          </SectionWrapper>
+
+          <SectionWrapper isEmpty={isSectionEmpty.volunteer(data)}>
+            <VolunteerSection volunteer={data.volunteer} theme={mergedTheme} />
+          </SectionWrapper>
+
+          <SectionWrapper isEmpty={isSectionEmpty.publications(data)}>
+            <PublicationsSection publications={data.publications} theme={mergedTheme} />
+          </SectionWrapper>
+
+          <SectionWrapper isEmpty={isSectionEmpty.references(data)}>
+            <ReferencesSection references={data.references} theme={mergedTheme} />
           </SectionWrapper>
         </div>
       </div>
@@ -157,6 +174,11 @@ export function DynamicTemplate({ data, theme, config }: DynamicTemplateProps) {
       {/* Languages */}
       <SectionWrapper isEmpty={isSectionEmpty.languages(data)}>
         <LanguagesSection languages={data.languages} theme={mergedTheme} />
+      </SectionWrapper>
+
+      {/* Interests */}
+      <SectionWrapper isEmpty={isSectionEmpty.interests(data)}>
+        <InterestsSection interests={data.interests} theme={mergedTheme} />
       </SectionWrapper>
 
       {/* Volunteer */}

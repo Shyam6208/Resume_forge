@@ -76,6 +76,11 @@ export function MinimalWhite({ data, theme }: MinimalWhiteProps) {
         <LanguagesSection languages={data.languages} theme={theme} />
       </SectionWrapper>
 
+      {/* Interests */}
+      <SectionWrapper isEmpty={isSectionEmpty.interests(data)}>
+        <InterestsSection interests={data.interests} theme={theme} />
+      </SectionWrapper>
+
       {/* Volunteer */}
       <SectionWrapper isEmpty={isSectionEmpty.volunteer(data)}>
         <VolunteerSection volunteer={data.volunteer} theme={theme} />
