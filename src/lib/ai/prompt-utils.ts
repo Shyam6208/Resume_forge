@@ -70,6 +70,28 @@ export function compactResumeForInterviewPrep(data: ResumeData): string {
   if (cloned.certifications) {
     cloned.certifications.forEach(cert => { delete (cert as any).id; });
   }
+  if (cloned.achievements) {
+    cloned.achievements.forEach(ach => { delete (ach as any).id; });
+  }
+  if (cloned.languages) {
+    cloned.languages.forEach(lang => { delete (lang as any).id; });
+  }
+  if (cloned.volunteer) {
+    cloned.volunteer.forEach(vol => { delete (vol as any).id; });
+  }
+  if (cloned.publications) {
+    cloned.publications.forEach(pub => { delete (pub as any).id; });
+  }
+
+  // Safe references: map only name, company, position
+  let safeReferences = undefined;
+  if (cloned.references && Array.isArray(cloned.references)) {
+    safeReferences = cloned.references.map(ref => ({
+      name: ref.name,
+      company: ref.company,
+      position: ref.position
+    }));
+  }
 
   // Pick only relevant fields for Interview Prep
   const interviewData = {
@@ -80,6 +102,12 @@ export function compactResumeForInterviewPrep(data: ResumeData): string {
     skills: cloned.skills,
     education: cloned.education,
     certifications: cloned.certifications,
+    achievements: cloned.achievements,
+    languages: cloned.languages,
+    interests: cloned.interests,
+    volunteer: cloned.volunteer,
+    publications: cloned.publications,
+    references: safeReferences
   };
 
   return JSON.stringify(stripEmpty(interviewData));

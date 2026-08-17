@@ -7,6 +7,9 @@ import type {
   AIChatMessage,
   CoverLetterResult,
   InterviewPrepResult,
+  AnswerEvaluation,
+  InterviewAnswer,
+  ReadinessReportResult,
   SkillGapResult,
   RoleOptimizationResult,
 } from "./types";
@@ -83,7 +86,9 @@ export interface IAIProvider {
   generateInterviewPrep(
     data: ResumeData,
     jobDescription?: string,
-    jdMatchContext?: string
+    jdMatchContext?: string,
+    targetRole?: string,
+    roleContext?: string
   ): Promise<InterviewPrepResult>;
 
   /**
@@ -103,4 +108,28 @@ export interface IAIProvider {
     targetRoleProfile: RoleProfile,
     userType?: UserType
   ): Promise<RoleOptimizationResult>;
+
+  /**
+   * Evaluates a single mock interview answer against a question.
+   */
+  evaluateInterviewAnswer(
+    question: string,
+    userAnswer: string,
+    category: string,
+    targetJob?: string,
+    roleContext?: string,
+    jobDescription?: string,
+    resumeContext?: string,
+    jdMatchContext?: string
+  ): Promise<AnswerEvaluation>;
+
+  /**
+   * Generates a final readiness report summarizing all mock interview answers.
+   */
+  generateInterviewReadinessReport(
+    answers: InterviewAnswer[],
+    resumeContext?: string,
+    jdContext?: string,
+    targetRole?: string
+  ): Promise<ReadinessReportResult>;
 }

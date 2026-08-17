@@ -6,7 +6,7 @@ import { compactResumeForInterviewPrep } from "@/lib/ai/prompt-utils";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { resumeData, jobDescription, jdMatchContext } = body || {};
+    const { resumeData, jobDescription, jdMatchContext, targetRole, roleContext } = body || {};
 
     if (!resumeData) {
       return NextResponse.json(
@@ -29,10 +29,18 @@ export async function POST(request: Request) {
       );
     }
 
+    if (targetRole && typeof targetRole !== "string") {
+      return NextResponse.json({ error: "Invalid targetRole" }, { status: 400 });
+    }
+    if (targetRole && targetRole.length > 200) {
+      return NextResponse.json({ error: "targetRole is too long" }, { status: 400 });
+    }
+
     // Server-side cache check
     const cacheKey = buildCacheKey(
       "interview-prep",
       compactResumeForInterviewPrep(resumeData),
+      targetRole?.trim().toLowerCase() || "",
       jobDescription.trim().slice(0, 1000), // hash is generated over this in buildCacheKey
       jdMatchContext ? JSON.stringify(jdMatchContext) : ""
     );
@@ -44,7 +52,9 @@ export async function POST(request: Request) {
     const prepResult = await aiService.generateInterviewPrep(
       resumeData,
       jobDescription,
-      jdMatchContext ? JSON.stringify(jdMatchContext) : ""
+      jdMatchContext ? JSON.stringify(jdMatchContext) : "",
+      targetRole || "",
+      roleContext ? JSON.stringify(roleContext) : ""
     );
 
     setCached(cacheKey, prepResult);

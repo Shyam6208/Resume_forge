@@ -79,6 +79,7 @@ export interface CoverLetterResult {
 }
 
 export interface InterviewQuestion {
+  id?: string;
   category: "Resume" | "Technical" | "Behavioral" | "Job-Specific";
   question: string;
   whyAsked: string;
@@ -89,6 +90,31 @@ export interface InterviewPrepResult {
   jobRole: string;
   questions: InterviewQuestion[];
   overallTips: string[];
+}
+
+export interface AnswerEvaluation {
+  score: number;
+  strengths: string[];
+  improvements: string[];
+  missingElements: string[];
+  unsupportedClaims: string[];
+  followUpQuestion?: string;
+}
+
+export interface InterviewAnswer {
+  questionId: string;
+  userAnswer: string;
+  evaluation: AnswerEvaluation | null;
+  skipped: boolean;
+}
+
+export interface ReadinessReportResult {
+  overallScore: number;
+  categoryScores: Record<string, number>;
+  keyStrengths: string[];
+  criticalGaps: string[];
+  repeatedMistakes: string[];
+  actionablePlan: string[];
 }
 
 export interface SkillGapItem {
