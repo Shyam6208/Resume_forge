@@ -58,6 +58,7 @@ export function LandingPageClient() {
             {[
               { label: "Features", href: "#features" },
               { label: "Templates", href: "/templates" },
+              { label: "Free ATS Checker", href: "/ats-checker" },
               { label: "How It Works", href: "#how-it-works" },
               { label: "FAQ", href: "#faq" },
             ].map((item) => (

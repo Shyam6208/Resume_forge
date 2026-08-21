@@ -5,6 +5,8 @@ import Link from "next/link";
 import type { Resume, UserType } from "@/types/resume.types";
 import { ResumeCard } from "./ResumeCard";
 import { UploadResumeModal } from "./UploadResumeModal";
+import { JobApplicationsBoard } from "./JobApplicationsBoard";
+import { UserMenu } from "@/components/navigation/UserMenu";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,6 +20,7 @@ import {
   Trophy,
   FileArchive,
   Upload,
+  Briefcase,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -44,6 +47,7 @@ export function DashboardClient({
   const [resumes, setResumes] = useState<Resume[]>(initialResumes);
   
   // Controls state
+  const [mainTab, setMainTab] = useState<"resumes" | "applications">("resumes");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("updated");
   const [filterBy, setFilterBy] = useState<FilterOption>("all");
@@ -152,20 +156,57 @@ export function DashboardClient({
         </div>
 
         <div className="flex items-center gap-3">
-          {userEmail && (
-            <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-400 bg-slate-900 border border-slate-800 px-3 py-1 rounded-full">
-              <User className="w-3.5 h-3.5 text-indigo-400" />
-              <span className="truncate max-w-[150px]">{userEmail}</span>
-            </div>
-          )}
+          <UserMenu />
         </div>
       </header>
 
+      {/* Sub-Header Tab Navigation */}
+      <div className="border-b border-slate-800/80 bg-slate-950/60 px-4 sm:px-8">
+        <div className="max-w-7xl mx-auto flex items-center gap-2 pt-2">
+          <button
+            type="button"
+            onClick={() => setMainTab("resumes")}
+            className={`px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 transition-all flex items-center gap-2 ${
+              mainTab === "resumes"
+                ? "border-indigo-500 text-white"
+                : "border-transparent text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            <FileText className="w-4 h-4 text-indigo-400" />
+            <span>My Resumes</span>
+            {resumes.length > 0 && (
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-mono">
+                {resumes.length}
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setMainTab("applications")}
+            className={`px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 transition-all flex items-center gap-2 ${
+              mainTab === "applications"
+                ? "border-indigo-500 text-white"
+                : "border-transparent text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            <Briefcase className="w-4 h-4 text-emerald-400" />
+            <span>Job Tracker</span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold uppercase tracking-wider">
+              New
+            </span>
+          </button>
+        </div>
+      </div>
+
       {/* Main Content Area */}
       <main className="max-w-7xl mx-auto w-full flex-1 p-4 sm:p-6 lg:p-8 space-y-8">
-        
-        {/* Page Title & Stats Row */}
-        <div className="space-y-6">
+        {mainTab === "applications" ? (
+          <JobApplicationsBoard resumes={resumes} />
+        ) : (
+          <>
+            {/* Page Title & Stats Row */}
+            <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div className="space-y-1">
               <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
@@ -426,6 +467,8 @@ export function DashboardClient({
             ))}
           </div>
         )}
+        </>
+      )}
       </main>
 
       {/* Dashboard Footer */}

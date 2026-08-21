@@ -346,49 +346,198 @@ export function AICoachPanel() {
           )}
 
           {analysis && (
-            <div className="space-y-4">
-              {/* Categorized Missing Keywords */}
-              <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
-                <div
-                  className="flex items-center justify-between cursor-pointer"
-                  onClick={() => toggleSection("keywords")}
-                >
-                  <div className="flex items-center gap-2">
-                    <Target className="w-4 h-4 text-amber-400" />
-                    <span className="text-xs font-bold text-white">Missing Skill Keywords</span>
+            <div className="space-y-3.5">
+              {/* Strengths */}
+              {analysis.strengths?.length > 0 && (
+                <div className="p-3.5 rounded-2xl bg-emerald-950/20 border border-emerald-500/20 space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-bold text-emerald-400">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>Key Resume Strengths</span>
                   </div>
-                  {expandedSections.keywords ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                  <ul className="space-y-1.5 text-xs text-slate-300">
+                    {analysis.strengths.map((str, i) => (
+                      <li key={i} className="flex items-start gap-1.5">
+                        <span className="text-emerald-400 font-bold mt-0.5">•</span>
+                        <span>{str}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
+              )}
 
-                {expandedSections.keywords && (
-                  <div className="space-y-2 pt-1">
-                    {analysis.missingKeywords.technicalSkills?.length > 0 && (
-                      <div>
-                        <span className="text-[10px] text-slate-400 font-bold uppercase block mb-1">Technical Skills</span>
-                        <div className="flex flex-wrap gap-1.5">
-                          {analysis.missingKeywords.technicalSkills.map((kw, i) => (
-                            <span key={i} className="px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-300 border border-rose-500/20 text-[11px]">
-                              + {kw}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {analysis.missingKeywords.tools?.length > 0 && (
-                      <div>
-                        <span className="text-[10px] text-slate-400 font-bold uppercase block mb-1">Tools & Platforms</span>
-                        <div className="flex flex-wrap gap-1.5">
-                          {analysis.missingKeywords.tools.map((kw, i) => (
-                            <span key={i} className="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-300 border border-amber-500/20 text-[11px]">
-                              + {kw}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+              {/* Weaknesses & Blindspots */}
+              {analysis.weaknesses?.length > 0 && (
+                <div className="p-3.5 rounded-2xl bg-rose-950/20 border border-rose-500/20 space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-bold text-rose-400">
+                    <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+                    <span>Areas for Improvement</span>
                   </div>
-                )}
-              </div>
+                  <ul className="space-y-1.5 text-xs text-slate-300">
+                    {analysis.weaknesses.map((weak, i) => (
+                      <li key={i} className="flex items-start gap-1.5">
+                        <span className="text-rose-400 font-bold mt-0.5">•</span>
+                        <span>{weak}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* ATS Shortlist Improvements */}
+              {analysis.atsImprovements?.length > 0 && (
+                <div className="p-3.5 rounded-2xl bg-indigo-950/20 border border-indigo-500/20 space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-bold text-indigo-400">
+                    <Target className="w-4 h-4 text-indigo-400 shrink-0" />
+                    <span>ATS Shortlist Recommendations</span>
+                  </div>
+                  <ul className="space-y-1.5 text-xs text-slate-300">
+                    {analysis.atsImprovements.map((tip, i) => (
+                      <li key={i} className="flex items-start gap-1.5">
+                        <span className="text-indigo-400 font-bold mt-0.5">✓</span>
+                        <span>{tip}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Categorized Missing Keywords */}
+              {analysis.missingKeywords && (
+                <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2.5">
+                  <div
+                    className="flex items-center justify-between cursor-pointer"
+                    onClick={() => toggleSection("keywords")}
+                  >
+                    <div className="flex items-center gap-2">
+                      <Target className="w-4 h-4 text-amber-400" />
+                      <span className="text-xs font-bold text-white">Missing Skill Keywords</span>
+                    </div>
+                    {expandedSections.keywords ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                  </div>
+
+                  {expandedSections.keywords && (
+                    <div className="space-y-2.5 pt-1">
+                      {analysis.missingKeywords.technicalSkills?.length > 0 && (
+                        <div>
+                          <span className="text-[10px] text-slate-400 font-bold uppercase block mb-1">Technical Skills</span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {analysis.missingKeywords.technicalSkills.map((kw, i) => (
+                              <span key={i} className="px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-300 border border-rose-500/20 text-[11px] font-mono">
+                                + {kw}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {analysis.missingKeywords.tools?.length > 0 && (
+                        <div>
+                          <span className="text-[10px] text-slate-400 font-bold uppercase block mb-1">Tools & Platforms</span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {analysis.missingKeywords.tools.map((kw, i) => (
+                              <span key={i} className="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-300 border border-amber-500/20 text-[11px] font-mono">
+                                + {kw}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {analysis.missingKeywords.frameworks?.length > 0 && (
+                        <div>
+                          <span className="text-[10px] text-slate-400 font-bold uppercase block mb-1">Frameworks & Libraries</span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {analysis.missingKeywords.frameworks.map((kw, i) => (
+                              <span key={i} className="px-2 py-0.5 rounded-md bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 text-[11px] font-mono">
+                                + {kw}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {analysis.missingKeywords.industryTerms?.length > 0 && (
+                        <div>
+                          <span className="text-[10px] text-slate-400 font-bold uppercase block mb-1">Industry Terms</span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {analysis.missingKeywords.industryTerms.map((kw, i) => (
+                              <span key={i} className="px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-300 border border-purple-500/20 text-[11px] font-mono">
+                                + {kw}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* High-Impact Action Verbs */}
+              {analysis.powerfulActionVerbs?.length > 0 && (
+                <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-bold text-white">
+                    <Zap className="w-4 h-4 text-amber-400" />
+                    <span>Recommended Power Verbs</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {analysis.powerfulActionVerbs.map((verb, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(verb);
+                          toast.success(`Copied "${verb}" to clipboard!`);
+                        }}
+                        className="px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 border border-white/[0.06] text-xs font-medium transition-colors"
+                        title="Click to copy"
+                      >
+                        {verb}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Grammar & Phrasing Suggestions */}
+              {analysis.grammarSuggestions?.length > 0 && (
+                <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2.5">
+                  <div className="flex items-center gap-2 text-xs font-bold text-white">
+                    <Sparkles className="w-4 h-4 text-cyan-400" />
+                    <span>High-Impact Phrasing Upgrades</span>
+                  </div>
+                  <div className="space-y-2">
+                    {analysis.grammarSuggestions.map((item, i) => (
+                      <div key={i} className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs space-y-1">
+                        <div className="text-slate-400 line-through text-[11px]">{item.original}</div>
+                        <div className="text-emerald-300 font-semibold">{item.correction}</div>
+                        <div className="text-[10px] text-slate-500 italic">{item.reason}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Section Suggestions */}
+              {analysis.sectionSuggestions?.length > 0 && (
+                <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2.5">
+                  <div className="flex items-center gap-2 text-xs font-bold text-white">
+                    <FileCheck2 className="w-4 h-4 text-indigo-400" />
+                    <span>Section-Specific Advice</span>
+                  </div>
+                  <div className="space-y-2">
+                    {analysis.sectionSuggestions.map((sec, i) => (
+                      <div key={i} className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs space-y-1.5">
+                        <div className="font-bold text-white capitalize">{sec.title || sec.sectionKey}</div>
+                        <div className="text-[11px] text-amber-300">{sec.currentIssue}</div>
+                        <div className="text-[11px] text-slate-300">{sec.suggestedImprovement}</div>
+                        {sec.exampleText && (
+                          <div className="p-2 rounded-lg bg-white/[0.02] border border-white/[0.04] text-[11px] text-indigo-300 font-mono">
+                            &ldquo;{sec.exampleText}&rdquo;
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Recommended Certifications */}
               {analysis.recommendedCertifications?.length > 0 && (
@@ -399,9 +548,9 @@ export function AICoachPanel() {
                   </div>
                   <div className="space-y-1.5">
                     {analysis.recommendedCertifications.map((cert, i) => (
-                      <div key={i} className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-xs">
+                      <div key={i} className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs">
                         <div className="font-semibold text-white">{cert.name}</div>
-                        <div className="text-[10px] text-indigo-400">{cert.provider} — {cert.relevance}</div>
+                        <div className="text-[11px] text-indigo-400">{cert.provider} — {cert.relevance}</div>
                       </div>
                     ))}
                   </div>
@@ -415,10 +564,10 @@ export function AICoachPanel() {
                 size="sm"
                 disabled={isAnalyzing}
                 onClick={handleRunAnalysis}
-                className="w-full h-9 text-xs bg-slate-900 border-slate-800 text-slate-300 hover:bg-slate-800 hover:text-white"
+                className="w-full h-10 text-xs bg-slate-900 border-slate-800 text-slate-200 hover:bg-slate-800 hover:text-white rounded-xl flex items-center justify-center gap-2"
               >
-                <Sparkles className="w-3.5 h-3.5 mr-1.5 text-indigo-400" />
-                <span>Re-analyze Resume</span>
+                <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                <span>Re-analyze Resume with AI</span>
               </Button>
             </div>
           )}

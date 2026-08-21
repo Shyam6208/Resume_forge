@@ -88,8 +88,14 @@ export function Navbar() {
                 <DropdownMenuTrigger className="flex items-center gap-2 rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
                   <Avatar className="w-8 h-8 border border-border">
                     <AvatarImage
-                      src={user?.user_metadata?.avatar_url}
+                      src={
+                        user?.user_metadata?.avatar_url ||
+                        user?.user_metadata?.picture ||
+                        user?.user_metadata?.avatar ||
+                        user?.user_metadata?.photoUrl
+                      }
                       alt="Profile"
+                      referrerPolicy="no-referrer"
                     />
                     <AvatarFallback className="bg-indigo-600 text-white text-xs font-medium">
                       {getInitials()}
@@ -117,11 +123,11 @@ export function Navbar() {
                   </DropdownMenuItem>
                   {!isGuest && (
                     <DropdownMenuItem
-                      onClick={() => router.push("/dashboard/profile")}
+                      onClick={() => router.push("/profile")}
                       className="flex items-center gap-2 cursor-pointer"
                     >
                       <User className="w-4 h-4" />
-                      Profile
+                      Profile & Settings
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuSeparator />

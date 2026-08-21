@@ -41,6 +41,7 @@ import toast from "react-hot-toast";
 
 import { usePDFExport } from "@/hooks/usePDFExport";
 import { useDOCXExport } from "@/hooks/useDOCXExport";
+import { downloadPlainTextResume } from "@/utils/text-exporter";
 
 export function EditorToolbar() {
   const currentResume = useResumeStore((s) => s.currentResume);
@@ -309,6 +310,28 @@ export function EditorToolbar() {
           </PopoverContent>
         </Popover>
 
+        {/* Export Plain Text (TXT) — xl+ */}
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            if (currentResume?.data) {
+              downloadPlainTextResume(
+                currentResume.data,
+                currentResume.title || "Resume",
+                currentResume.sectionOrder
+              );
+              toast.success("Plain text resume downloaded!");
+            }
+          }}
+          className="h-8 text-xs bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800 hover:text-white hidden xl:flex items-center gap-1.5"
+          title="Download clean plain-text / ASCII version for job portals"
+        >
+          <FileText className="w-3.5 h-3.5 text-cyan-400" />
+          <span>TXT</span>
+        </Button>
+
         {/* Export DOCX — lg+ */}
         <Button
           type="button"
@@ -414,6 +437,24 @@ export function EditorToolbar() {
             </button>
 
             <div className="h-px bg-slate-800 my-1" />
+
+            <button
+              type="button"
+              onClick={() => {
+                if (currentResume?.data) {
+                  downloadPlainTextResume(
+                    currentResume.data,
+                    currentResume.title || "Resume",
+                    currentResume.sectionOrder
+                  );
+                  toast.success("Plain text resume downloaded!");
+                }
+              }}
+              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+            >
+              <FileText className="w-4 h-4 text-cyan-400 shrink-0" />
+              <span>Download Plain Text (.txt)</span>
+            </button>
 
             <button
               type="button"

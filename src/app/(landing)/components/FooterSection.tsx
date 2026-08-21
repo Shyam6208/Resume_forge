@@ -22,6 +22,7 @@ export function FooterSection() {
           <nav className="flex flex-wrap items-center gap-6 text-xs font-medium">
             {[
               { label: "Templates", href: "/templates" },
+              { label: "Free ATS Checker", href: "/ats-checker" },
               { label: "Dashboard", href: "/dashboard" },
               { label: "Privacy", href: "/dashboard" },
               { label: "Terms", href: "/dashboard" },

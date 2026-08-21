@@ -18,7 +18,27 @@ export default function ProfilePage() {
   useEffect(() => {
     if (user) {
       setFullName(user.user_metadata?.full_name || user.user_metadata?.name || "");
-      setPhotoUrl(user.user_metadata?.avatar_url || user.user_metadata?.picture || "");
+      const initialPhoto =
+        user.user_metadata?.avatar_url ||
+        user.user_metadata?.picture ||
+        user.user_metadata?.avatar ||
+        user.user_metadata?.photoUrl ||
+        "";
+      setPhotoUrl(initialPhoto);
+
+      // Check profiles table for updated avatar
+      supabase
+        .from("profiles")
+        .select("name, avatar_url")
+        .eq("id", user.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          const profile = data as { name?: string | null; avatar_url?: string | null } | null;
+          if (profile) {
+            if (profile.name) setFullName(profile.name);
+            if (profile.avatar_url) setPhotoUrl(profile.avatar_url);
+          }
+        });
     }
   }, [user]);
 
@@ -36,6 +56,15 @@ export default function ProfilePage() {
       });
 
       if (error) throw error;
+
+      // Also update profiles table in Supabase
+      await (supabase.from("profiles") as any)
+        .update({
+          name: fullName.trim(),
+          avatar_url: photoUrl,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", user.id);
 
       toast.success("Profile updated successfully!");
     } catch (err: unknown) {

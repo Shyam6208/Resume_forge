@@ -35,7 +35,7 @@ export class GeminiProvider implements IAIProvider {
   name = "gemini";
   private apiKey: string;
   private primaryModel = "gemini-2.5-flash";
-  private fallbackModels = ["gemini-1.5-flash", "gemini-2.0-flash"];
+  private fallbackModels = ["gemini-2.5-flash"];
 
   constructor(apiKey?: string) {
     this.apiKey = apiKey || process.env.GEMINI_API_KEY || "";
@@ -43,7 +43,7 @@ export class GeminiProvider implements IAIProvider {
 
   private async callGeminiAPI(
     prompt: string,
-    maxOutputTokens: number = 2048
+    maxOutputTokens: number = 8192
   ): Promise<string> {
     if (!this.apiKey) {
       throw new Error("GEMINI_API_KEY is not configured on the server.");
@@ -169,7 +169,27 @@ export class GeminiProvider implements IAIProvider {
         .replace(/^```\s*/i, "")
         .replace(/\s*```$/i, "")
         .trim();
-      return JSON.parse(cleaned) as T;
+
+      try {
+        return JSON.parse(cleaned) as T;
+      } catch {
+        // Fallback: extract the JSON block between the first { and last }
+        const startObj = cleaned.indexOf("{");
+        const endObj = cleaned.lastIndexOf("}");
+        if (startObj !== -1 && endObj !== -1 && endObj > startObj) {
+          const jsonSub = cleaned.substring(startObj, endObj + 1);
+          return JSON.parse(jsonSub) as T;
+        }
+
+        const startArr = cleaned.indexOf("[");
+        const endArr = cleaned.lastIndexOf("]");
+        if (startArr !== -1 && endArr !== -1 && endArr > startArr) {
+          const jsonSub = cleaned.substring(startArr, endArr + 1);
+          return JSON.parse(jsonSub) as T;
+        }
+
+        throw new Error("No JSON structure found");
+      }
     } catch (err) {
       console.error("JSON parsing error from Gemini output:", err, rawText);
       return fallback;
