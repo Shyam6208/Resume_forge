@@ -3,26 +3,61 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { TEMPLATES } from "@/config/templates.config";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+
+/* Visual configs for template categories to make each card distinct */
+const STYLE_MAP: Record<string, { bar: string; accent: string; badge: string }> = {
+  modern: {
+    bar: "bg-gradient-to-r from-indigo-500 to-violet-500",
+    accent: "border-indigo-500/20",
+    badge: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
+  },
+  minimal: {
+    bar: "bg-gradient-to-r from-slate-400 to-slate-600",
+    accent: "border-slate-600/20",
+    badge: "bg-slate-500/10 text-slate-400 border-slate-500/20",
+  },
+  executive: {
+    bar: "bg-gradient-to-r from-amber-500 to-orange-600",
+    accent: "border-amber-500/20",
+    badge: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+  },
+  developer: {
+    bar: "bg-gradient-to-r from-emerald-500 to-teal-500",
+    accent: "border-emerald-500/20",
+    badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+  },
+  fresher: {
+    bar: "bg-gradient-to-r from-cyan-500 to-sky-500",
+    accent: "border-cyan-500/20",
+    badge: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
+  },
+  creative: {
+    bar: "bg-gradient-to-r from-pink-500 to-rose-500",
+    accent: "border-pink-500/20",
+    badge: "bg-pink-500/10 text-pink-400 border-pink-500/20",
+  },
+};
+
+const DEFAULT_STYLE = {
+  bar: "bg-gradient-to-r from-indigo-500 to-purple-500",
+  accent: "border-indigo-500/20",
+  badge: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
+};
 
 export function TemplatePreviews() {
-  const previewTemplates = TEMPLATES.slice(0, 6);
+  const previewTemplates = TEMPLATES.slice(0, 4);
 
   return (
-    <section className="py-20 px-4 sm:px-6 max-w-7xl mx-auto space-y-12">
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-800 pb-6">
-        <div className="space-y-2">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Curated Design Collection</span>
+    <section className="py-24 px-4 sm:px-6 max-w-7xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12">
+        <div className="space-y-3">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+            Templates that pass the scan.
           </h2>
-          <h3 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            40+ Professional Templates
-          </h3>
-          <p className="text-xs sm:text-sm text-slate-400">
-            Tested and optimized for maximum ATS readability and executive presentation.
+          <p className="text-sm text-slate-400 max-w-md">
+            Every template is tested against real ATS parsers. Pick one, customize it, and export.
           </p>
         </div>
 
@@ -30,78 +65,80 @@ export function TemplatePreviews() {
           <Button
             type="button"
             variant="outline"
-            className="h-10 px-5 text-xs bg-slate-900 border-slate-800 text-slate-200 hover:bg-slate-800 hover:text-white flex items-center gap-2 shrink-0"
+            className="h-10 px-5 text-xs bg-white/[0.03] border-white/[0.08] text-slate-300 hover:bg-white/[0.06] hover:text-white flex items-center gap-2 shrink-0 rounded-xl transition-all"
           >
-            <span>View All Templates</span>
-            <ArrowRight className="w-4 h-4" />
+            <span>See all 40+ templates</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Button>
         </Link>
       </div>
 
-      {/* Grid of 6 Templates */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {previewTemplates.map((tmpl, idx) => (
-          <motion.div
-            key={tmpl.id}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: idx * 0.08 }}
-            className="group rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden flex flex-col justify-between hover:border-indigo-500/50 transition-all shadow-md"
-          >
-            {/* Stylized Template Thumbnail Mockup */}
-            <div className="h-44 bg-slate-950 p-4 border-b border-slate-800 relative overflow-hidden flex flex-col justify-between group-hover:bg-slate-950/80 transition-colors">
-              <div className="h-2 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full opacity-80" />
+      {/* Grid of 4 templates */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {previewTemplates.map((tmpl, idx) => {
+          const cat = tmpl.category?.toLowerCase() ?? "";
+          const style = STYLE_MAP[cat] ?? DEFAULT_STYLE;
 
-              {/* Fake skeleton layout preview */}
-              <div className="space-y-2 py-2">
-                <div className="h-2 w-1/3 bg-slate-700 rounded" />
-                <div className="h-1.5 w-1/4 bg-indigo-500/40 rounded" />
-                <div className="space-y-1 pt-2">
-                  <div className="h-1.5 w-full bg-slate-800 rounded" />
-                  <div className="h-1.5 w-5/6 bg-slate-800 rounded" />
-                  <div className="h-1.5 w-4/5 bg-slate-800/60 rounded" />
+          return (
+            <motion.div
+              key={tmpl.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: idx * 0.08 }}
+              className={`group rounded-2xl bg-slate-900/50 border border-white/[0.06] overflow-hidden hover:border-white/[0.12] transition-all duration-200`}
+            >
+              {/* Template thumbnail mockup — distinct per category */}
+              <div className="relative h-48 bg-slate-950/60 p-5 flex flex-col justify-between overflow-hidden">
+                {/* Gradient header bar */}
+                <div className={`h-1.5 w-full ${style.bar} rounded-full`} />
+
+                {/* Layout preview — varies per template */}
+                <div className="flex-1 py-3 space-y-2">
+                  <div className="h-2.5 w-2/5 rounded bg-slate-700/80" />
+                  <div className="h-1.5 w-1/3 rounded bg-white/[0.06]" />
+                  <div className="mt-2 space-y-1.5">
+                    <div className="h-1.5 w-full rounded bg-white/[0.04]" />
+                    <div className="h-1.5 w-5/6 rounded bg-white/[0.04]" />
+                    <div className="h-1.5 w-3/4 rounded bg-white/[0.03]" />
+                  </div>
+                </div>
+
+                <div className="text-[10px] text-slate-600 font-mono flex justify-between">
+                  <span>A4</span>
+                  <span className="text-emerald-500/60 font-bold">ATS {tmpl.atsRating}%</span>
+                </div>
+
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-slate-950/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <Link href={`/onboarding?template=${tmpl.id}`}>
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="h-9 px-5 text-xs bg-white text-slate-950 hover:bg-slate-100 font-bold rounded-xl shadow-lg transition-all"
+                    >
+                      Use Template
+                    </Button>
+                  </Link>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono">
-                <span>FORMAT: A4</span>
-                <span className="text-emerald-400 font-bold">ATS OPTIMIZED</span>
-              </div>
-            </div>
-
-            {/* Template Info Card Header */}
-            <div className="p-5 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">
-                  {tmpl.category}
-                </span>
-                <Badge className="bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-[10px] font-bold">
-                  ATS {tmpl.atsRating}%
-                </Badge>
-              </div>
-
-              <div className="space-y-1">
-                <h4 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors">
+              {/* Info */}
+              <div className="p-4 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span
+                    className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md border ${style.badge}`}
+                  >
+                    {tmpl.category}
+                  </span>
+                </div>
+                <h4 className="text-sm font-bold text-white group-hover:text-slate-200 transition-colors">
                   {tmpl.name}
                 </h4>
-                <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
-                  {tmpl.description}
-                </p>
               </div>
-
-              <Link href={`/onboarding?template=${tmpl.id}`} className="block pt-2">
-                <Button
-                  type="button"
-                  size="sm"
-                  className="w-full h-8 text-xs bg-slate-800 hover:bg-indigo-600 text-slate-200 hover:text-white font-medium rounded-xl transition-all"
-                >
-                  Use This Template
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          );
+        })}
       </div>
     </section>
   );

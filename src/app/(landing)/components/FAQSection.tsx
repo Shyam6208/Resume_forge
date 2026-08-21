@@ -7,85 +7,86 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
-import { HelpCircle } from "lucide-react";
 
 const FAQS = [
   {
     id: "faq-1",
     question: "Is it really 100% free?",
     answer:
-      "Yes! ResumeForge is completely free to create, edit, score, and download your resumes. There are no hidden paywalls, trial expirations, or subscription traps.",
+      "Yes. No trials, no paywalls, and no hidden premium tiers. Create, edit, score, and download as many resumes as you need.",
   },
   {
     id: "faq-2",
-    question: "No watermark on PDF?",
+    question: "Is there any watermark on the exported PDF?",
     answer:
-      "Absolutely zero watermarks. All exported PDF and DOCX documents look 100% clean, professional, and executive.",
+      "None. Exported PDF and DOCX documents are completely clean — with no branding, logos, or watermarks.",
   },
   {
     id: "faq-3",
-    question: "Does it work without AI?",
+    question: "Does it use AI to write my resume?",
     answer:
-      "Yes! ResumeForge uses deterministic, rule-based algorithms for ATS keyword matching and score calculations. Your data stays fast, private, and authentic without AI hallucinations.",
+      "No. ResumeForge uses deterministic, rule-based algorithms for ATS matching and scoring. Your content stays authentic and private.",
   },
   {
     id: "faq-4",
     question: "Can I create multiple resumes?",
     answer:
-      "Yes, you can build and manage unlimited resumes tailored for different target roles directly in your personal dashboard.",
+      "Yes. You can create unlimited resumes tailored for different job roles, all managed directly from your dashboard.",
   },
   {
     id: "faq-5",
-    question: "Is my data secure?",
+    question: "Is my personal data secure?",
     answer:
-      "Your privacy is our priority. Your data is encrypted and saved securely with Supabase row-level security. We never sell your personal data or email.",
+      "Your data is encrypted and protected with Supabase row-level security. We never share or sell your personal information.",
   },
   {
     id: "faq-6",
-    question: "Does it work on mobile?",
+    question: "Does it work on mobile devices?",
     answer:
-      "Yes! ResumeForge is fully responsive with a mobile tab bar allowing you to edit, preview, score, and export your resume directly from your smartphone or tablet.",
+      "Yes, fully. The editor features a responsive tabbed interface on mobile devices — allowing you to edit, preview, score, and export from anywhere.",
   },
 ];
 
+const col1 = FAQS.filter((_, i) => i % 2 === 0);
+const col2 = FAQS.filter((_, i) => i % 2 === 1);
+
 export function FAQSection() {
   return (
-    <section className="py-20 px-4 sm:px-6 max-w-4xl mx-auto space-y-10">
-      <div className="text-center space-y-3">
-        <h2 className="text-xs font-bold uppercase tracking-wider text-indigo-400 flex items-center justify-center gap-1.5">
-          <HelpCircle className="w-4 h-4" />
-          <span>Got Questions?</span>
+    <section id="faq" className="py-24 px-4 sm:px-6 max-w-5xl mx-auto">
+      <div className="text-center space-y-3 mb-14">
+        <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+          Questions & answers
         </h2>
-        <h3 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-          Frequently Asked Questions
-        </h3>
-        <p className="text-xs sm:text-sm text-slate-400">
-          Everything you need to know about building your resume on ResumeForge.
+        <p className="text-sm text-slate-400 max-w-md mx-auto">
+          The short version of everything you need to know.
         </p>
       </div>
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 15 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
+        className="grid grid-cols-1 md:grid-cols-2 gap-4"
       >
-        <Accordion className="w-full space-y-3">
-          {FAQS.map((faq) => (
-            <AccordionItem
-              key={faq.id}
-              value={faq.id}
-              className="bg-slate-900/80 border border-slate-800 rounded-2xl px-5 py-1 text-slate-100 transition-colors"
-            >
-              <AccordionTrigger className="text-sm font-bold text-left hover:text-indigo-400 hover:no-underline py-4">
-                {faq.question}
-              </AccordionTrigger>
-              <AccordionContent className="text-xs text-slate-400 leading-relaxed pb-4">
-                {faq.answer}
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
+        {[col1, col2].map((column, colIdx) => (
+          <Accordion key={colIdx} className="space-y-3">
+            {column.map((faq) => (
+              <AccordionItem
+                key={faq.id}
+                value={faq.id}
+                className="bg-slate-900/40 border border-white/[0.05] rounded-xl px-5 py-1 text-slate-100 hover:border-white/[0.08] transition-colors"
+              >
+                <AccordionTrigger className="text-sm font-semibold text-left hover:text-white hover:no-underline py-4 text-slate-200">
+                  {faq.question}
+                </AccordionTrigger>
+                <AccordionContent className="text-xs text-slate-400 leading-relaxed pb-4">
+                  {faq.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        ))}
       </motion.div>
     </section>
   );

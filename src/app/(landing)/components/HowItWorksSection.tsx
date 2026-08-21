@@ -1,95 +1,102 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Layout, Edit3, Target, Download, ArrowRight } from "lucide-react";
+import { Layout, Edit3, Target, Download } from "lucide-react";
 
 const STEPS = [
   {
-    number: "1",
+    number: "01",
     icon: Layout,
-    title: "Choose Template",
-    description: "Pick from ATS-optimized minimalist, corporate, developer, or fresher templates.",
-    color: "bg-indigo-600 text-white",
+    title: "Pick a template",
+    description:
+      "Choose from 40+ ATS-optimized layouts — minimalist, corporate, developer, or fresher. All tested against real applicant tracking systems.",
+    color: "bg-indigo-500",
+    ring: "ring-indigo-500/30",
   },
   {
-    number: "2",
+    number: "02",
     icon: Edit3,
-    title: "Fill Information",
-    description: "Enter your work experience, education, projects, skills, and achievements.",
-    color: "bg-purple-600 text-white",
+    title: "Fill in your details",
+    description:
+      "Add experience, education, projects, and skills. The split-screen preview shows your resume updating in real time.",
+    color: "bg-violet-500",
+    ring: "ring-violet-500/30",
   },
   {
-    number: "3",
+    number: "03",
     icon: Target,
-    title: "Check ATS Score",
-    description: "Paste your target job description to verify keyword match & score suggestions.",
-    color: "bg-emerald-600 text-white",
+    title: "Check your ATS score",
+    description:
+      "Paste your target job description to get a keyword match percentage and specific suggestions to improve your score.",
+    color: "bg-emerald-500",
+    ring: "ring-emerald-500/30",
   },
   {
-    number: "4",
+    number: "04",
     icon: Download,
-    title: "Download Free PDF",
-    description: "Export high-resolution watermark-free PDF or Word DOCX document instantly.",
-    color: "bg-amber-600 text-white",
+    title: "Download for free",
+    description:
+      "Export a high-resolution PDF or editable DOCX — no watermark, no paywall, no sign-up friction.",
+    color: "bg-amber-500",
+    ring: "ring-amber-500/30",
   },
 ];
 
 export function HowItWorksSection() {
   return (
-    <section className="py-20 px-4 sm:px-6 bg-slate-900/60 border-y border-slate-800/80">
-      <div className="max-w-7xl mx-auto space-y-12">
-        <div className="text-center space-y-3 max-w-2xl mx-auto">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-purple-400">
-            Simple 4-Step Process
+    <section id="how-it-works" className="py-24 px-4 sm:px-6">
+      <div className="max-w-3xl mx-auto">
+        <div className="text-center space-y-3 mb-16">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+            Four steps. One resume.
           </h2>
-          <h3 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            How It Works — Ready in 4 Simple Steps
-          </h3>
-          <p className="text-xs sm:text-sm text-slate-400">
-            Building a job-winning resume has never been faster or easier.
+          <p className="text-sm text-slate-400 max-w-md mx-auto">
+            From template to download in under ten minutes.
           </p>
         </div>
 
-        {/* 4 Steps Flow */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
-          {STEPS.map((step, idx) => {
-            const Icon = step.icon;
-            return (
-              <motion.div
-                key={step.number}
-                initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: idx * 0.1 }}
-                className="relative p-6 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col justify-between space-y-4 group hover:border-slate-700 transition-all"
-              >
-                <div className="flex items-center justify-between">
-                  <span
-                    className={`w-9 h-9 rounded-xl font-bold text-xs flex items-center justify-center shadow ${step.color}`}
+        {/* Vertical timeline */}
+        <div className="relative">
+          {/* Connector line */}
+          <div className="absolute left-6 sm:left-8 top-0 bottom-0 w-px bg-gradient-to-b from-indigo-500/40 via-violet-500/20 to-amber-500/40" />
+
+          <div className="space-y-10">
+            {STEPS.map((step, idx) => {
+              const Icon = step.icon;
+              return (
+                <motion.div
+                  key={step.number}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.4, delay: idx * 0.1 }}
+                  className="relative flex items-start gap-5 sm:gap-6"
+                >
+                  {/* Number circle on the timeline */}
+                  <div
+                    className={`relative z-10 w-12 h-12 sm:w-16 sm:h-16 rounded-full ${step.color} ring-4 ${step.ring} flex items-center justify-center shrink-0 shadow-lg`}
                   >
-                    {step.number}
-                  </span>
-                  <Icon className="w-5 h-5 text-slate-500 group-hover:text-slate-300 transition-colors" />
-                </div>
-
-                <div className="space-y-1.5 pt-2">
-                  <h4 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors">
-                    {step.title}
-                  </h4>
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    {step.description}
-                  </p>
-                </div>
-
-                {/* Connecting arrow indicator for desktop (except last item) */}
-                {idx < STEPS.length - 1 && (
-                  <div className="hidden md:block absolute -right-3 top-1/2 -translate-y-1/2 z-10 p-1 rounded-full bg-slate-900 border border-slate-800 text-slate-500">
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
-                )}
-              </motion.div>
-            );
-          })}
+
+                  {/* Content */}
+                  <div className="pt-1 sm:pt-3 space-y-1.5">
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-xs font-mono text-slate-600 tracking-wider">
+                        {step.number}
+                      </span>
+                      <h3 className="text-base sm:text-lg font-bold text-white">
+                        {step.title}
+                      </h3>
+                    </div>
+                    <p className="text-sm text-slate-400 leading-relaxed max-w-md">
+                      {step.description}
+                    </p>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
