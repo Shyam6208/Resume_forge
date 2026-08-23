@@ -222,3 +222,68 @@ select:-webkit-autofill:active {
   box-shadow: 0 0 0px 1000px #090d16 inset !important;
   transition: background-color 5000s ease-in-out 0s;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN PANEL — Premium Animations & Utilities
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Floating orb animation for sidebar background */
+@keyframes admin-float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.05); }
+}
+
+/* Pulsing glow for active elements */
+@keyframes admin-pulse-glow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.1); }
+}
+
+/* Animated gradient background */
+@keyframes admin-gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Shimmer effect for card borders */
+@keyframes admin-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Staggered slide-in-up for cards */
+@keyframes admin-slide-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Live indicator blink */
+@keyframes admin-live-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Progress ring fill */
+@keyframes admin-ring-fill {
+  from { stroke-dashoffset: var(--ring-circumference, 283); }
+  to { stroke-dashoffset: var(--ring-offset, 0); }
+}
+
+/* Gentle breathing for sidebar orb */
+@keyframes admin-breathe {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+  50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.5; }
+}
+
+/* Skeleton shimmer gradient */
+@keyframes admin-skeleton-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}

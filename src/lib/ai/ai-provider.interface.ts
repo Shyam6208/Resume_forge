@@ -12,6 +12,9 @@ import type {
   ReadinessReportResult,
   SkillGapResult,
   RoleOptimizationResult,
+  AutoTailorResult,
+  OutreachResult,
+  SalaryEstimateResult,
 } from "./types";
 
 export interface IAIProvider {
@@ -132,4 +135,34 @@ export interface IAIProvider {
     jdContext?: string,
     targetRole?: string
   ): Promise<ReadinessReportResult>;
+
+  /**
+   * Auto-tailors resume content to match a specific job description.
+   * Rewrites bullets, injects ATS keywords, and estimates score change.
+   */
+  autoTailorResume(
+    data: ResumeData,
+    jobDescription: string,
+    targetRole?: string
+  ): Promise<AutoTailorResult>;
+
+  /**
+   * Generates recruiter outreach messages: LinkedIn InMail, Cold Email, Follow-Up Email.
+   */
+  generateRecruiterOutreach(
+    data: ResumeData,
+    targetRole: string,
+    companyName: string,
+    recruiterName?: string,
+    context?: string
+  ): Promise<OutreachResult>;
+
+  /**
+   * Estimates salary range and generates a 6-month career growth roadmap.
+   */
+  estimateSalaryAndRoadmap(
+    data: ResumeData,
+    targetRole: string,
+    location?: string
+  ): Promise<SalaryEstimateResult>;
 }

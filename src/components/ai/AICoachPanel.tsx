@@ -645,26 +645,24 @@ export function AICoachPanel() {
             </div>
           )}
 
-          {jobDescription.trim().length >= 30 && (
-            <div className="pt-2 grid grid-cols-2 gap-2">
-              <Button
-                type="button"
-                onClick={() => setIsCoverLetterModalOpen(true)}
-                className="w-full h-9 text-xs bg-slate-900 border border-indigo-500/30 text-indigo-300 font-semibold rounded-xl"
-              >
-                <FileText className="w-3.5 h-3.5 mr-1.5" />
-                <span>Generate Cover Letter</span>
-              </Button>
-              <Button
-                type="button"
-                onClick={() => setIsInterviewPrepModalOpen(true)}
-                className="w-full h-9 text-xs bg-slate-900 border border-emerald-500/30 text-emerald-300 font-semibold rounded-xl"
-              >
-                <HelpCircle className="w-3.5 h-3.5 mr-1.5" />
-                <span>Practice Interview</span>
-              </Button>
-            </div>
-          )}
+          <div className="pt-2 grid grid-cols-2 gap-2">
+            <Button
+              type="button"
+              onClick={() => setIsCoverLetterModalOpen(true)}
+              className="w-full h-9 text-xs bg-slate-900 border border-indigo-500/30 text-indigo-300 font-semibold rounded-xl hover:bg-slate-800"
+            >
+              <FileText className="w-3.5 h-3.5 mr-1.5" />
+              <span>Cover Letter</span>
+            </Button>
+            <Button
+              type="button"
+              onClick={() => setIsInterviewPrepModalOpen(true)}
+              className="w-full h-9 text-xs bg-gradient-to-r from-emerald-600/20 to-indigo-600/20 border border-emerald-500/30 text-emerald-300 font-semibold rounded-xl hover:from-emerald-600/30 hover:to-indigo-600/30"
+            >
+              <HelpCircle className="w-3.5 h-3.5 mr-1.5 text-emerald-400" />
+              <span>AI Mock Interview</span>
+            </Button>
+          </div>
         </div>
       )}
 

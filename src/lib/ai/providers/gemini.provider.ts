@@ -13,6 +13,9 @@ import type {
   AnswerEvaluation,
   InterviewAnswer,
   ReadinessReportResult,
+  AutoTailorResult,
+  OutreachResult,
+  SalaryEstimateResult,
 } from "../types";
 import { compactResumeForPrompt, compactResumeForCoverLetter, compactResumeForInterviewPrep, compactSectionForPrompt } from "../prompt-utils";
 
@@ -595,17 +598,65 @@ REQUIRED JSON OUTPUT FORMAT:
   ): Promise<InterviewPrepResult> {
     const compactData = compactResumeForInterviewPrep(data);
     const candidateName = data.personalInfo?.fullName || "Candidate";
+    const inferredRole = targetRole || data.personalInfo?.professionalTitle || "Software Professional";
 
-    if (compactData.length < 50) {
-      throw new Error("Add some resume content before preparing for your interview.");
-    }
+    const defaultFallback: InterviewPrepResult = {
+      jobRole: inferredRole,
+      questions: [
+        {
+          category: "Technical",
+          question: `Can you walk me through the system architecture of the most technically complex project you built for ${inferredRole}?`,
+          whyAsked: "Evaluates architectural depth, trade-off analysis, and system understanding.",
+          answerGuide: [
+            "Outline the high-level architecture (frontend, API layer, database, caching).",
+            "Explain technology choices and trade-offs.",
+            "Highlight quantifiable performance impact (latency, throughput, scaling)."
+          ]
+        },
+        {
+          category: "Behavioral",
+          question: "Tell me about a time when you had to debug a critical issue or production outage under tight deadline pressure.",
+          whyAsked: "Tests composure, systematic troubleshooting, root-cause analysis, and communication during critical situations.",
+          answerGuide: [
+            "Describe the situation, urgency, and potential user impact.",
+            "Detail your systematic debugging steps and isolation of root cause.",
+            "Share the outcome, recovery timeline, and preventive post-mortem improvements."
+          ]
+        },
+        {
+          category: "Resume",
+          question: "Looking at your experience and projects, what technical achievement are you most proud of and why?",
+          whyAsked: "Assesses personal ownership, passion for engineering, and authentic hands-on contribution.",
+          answerGuide: [
+            "Pick your strongest project from your resume.",
+            "Explain why the challenge was technically complex.",
+            "Highlight measurable results (% performance gain, user adoption)."
+          ]
+        },
+        {
+          category: "Job-Specific",
+          question: `What makes you a great fit for this ${inferredRole} position, and how do your skills align with what the team needs?`,
+          whyAsked: "Assesses role motivation, domain knowledge, and alignment with team goals.",
+          answerGuide: [
+            "Connect your technical strengths directly to the core challenges of the role.",
+            "Demonstrate enthusiasm for continuous learning and rapid ramp-up.",
+            "Cite concrete examples from your resume demonstrating reliability."
+          ]
+        }
+      ],
+      overallTips: [
+        "Structure all situational answers using the STAR method (Situation, Task, Action, Result).",
+        "Back up claims with quantifiable metrics (%, users, latency).",
+        "Communicate trade-offs clearly before jumping into code."
+      ]
+    };
 
     const prompt = `
 You are an expert technical recruiter and hiring manager conducting interview preparation for ${candidateName}.
 Generate a concise, targeted interview preparation set.
 
 PRIORITY CONTEXT:
-1. EXPLICIT TARGET ROLE: ${targetRole || "N/A"}
+1. EXPLICIT TARGET ROLE: ${inferredRole}
 2. ROLE PROFILE: ${roleContext || "N/A"}
 3. JOB DESCRIPTION: ${jobDescription || "N/A"}
 4. RESUME EVIDENCE: (See below)
@@ -615,42 +666,43 @@ CRITICAL FACTUAL SAFETY RULES:
 1. ONLY generate questions based on the candidate's actual resume or the job description.
 2. NEVER invent employers, projects, technologies, responsibilities, achievements, or metrics.
 3. If the Job Description requires a skill (e.g., "TypeScript") that is NOT in the resume, DO NOT assume they know it. 
-   - BAD: "Tell me about your TypeScript project."
-   - GOOD: "The role requires TypeScript. How would you approach working with it given your current experience?"
-4. NEVER generate a first-person fake answer pretending to be the candidate.
-5. Provide a bulleted \`answerGuide\` explaining HOW to answer (e.g., "Mention your React project", "Explain your state management approach").
-6. Maximize at approximately 15 questions total (4 Resume, 5 Tech, 3 Behavioral, 3 JD). Do not pad.
+4. Provide a bulleted \`answerGuide\` explaining HOW to answer (e.g., "Mention your React project", "Explain your state management approach").
+5. Maximize at approximately 6-10 questions total across categories: Technical, Behavioral, Resume, Job-Specific.
 
 CANDIDATE RESUME:
-${compactData}
+${compactData.length > 20 ? compactData : JSON.stringify({ name: candidateName, targetRole: inferredRole })}
 
 REQUIRED JSON OUTPUT FORMAT:
 {
-  "jobRole": "The inferred role title",
+  "jobRole": "${inferredRole}",
   "questions": [
     {
-      "category": "Resume",
-      "question": "Can you explain your React architecture in [Project]?",
+      "category": "Technical",
+      "question": "Can you explain your architecture in your primary project?",
       "whyAsked": "To verify practical experience.",
       "answerGuide": ["Explain the architecture you actually used.", "Mention a real technical challenge."]
     },
     {
-      "category": "Job-Specific",
-      "question": "The role requires AWS, which isn't on your resume. How would you approach learning it?",
-      "whyAsked": "To evaluate adaptability and honesty.",
-      "answerGuide": ["Be honest about your current level.", "Mention similar cloud experience if applicable."]
+      "category": "Behavioral",
+      "question": "Describe a difficult technical conflict and how you resolved it.",
+      "whyAsked": "To evaluate teamwork and conflict resolution.",
+      "answerGuide": ["Describe the situation with STAR.", "Focus on constructive data-driven resolution."]
     }
   ],
   "overallTips": ["Review key metrics from your experience section", "Be honest about skills you are currently learning"]
 }
 `;
 
-    const rawResult = await this.callGeminiAPI(prompt, 2048);
-    return this.parseJSON<InterviewPrepResult>(rawResult, {
-      jobRole: "Candidate",
-      questions: [],
-      overallTips: ["Review your resume bullet points and practice the STAR technique."],
-    });
+    try {
+      const rawResult = await this.callGeminiAPI(prompt, 2048);
+      const parsed = await this.parseJSON<InterviewPrepResult>(rawResult, defaultFallback);
+      if (parsed && Array.isArray(parsed.questions) && parsed.questions.length > 0) {
+        return parsed;
+      }
+      return defaultFallback;
+    } catch {
+      return defaultFallback;
+    }
   }
 
   async analyzeSkillGap(
@@ -819,11 +871,402 @@ REQUIRED JSON OUTPUT FORMAT:
   }
 
   async generateInterviewReadinessReport(
-    _answers: InterviewAnswer[],
-    _resumeContext?: string,
-    _jdContext?: string,
-    _targetRole?: string
+    answers: InterviewAnswer[],
+    resumeContext?: string,
+    jdContext?: string,
+    targetRole?: string
   ): Promise<ReadinessReportResult> {
-    throw new Error("Readiness report generation not yet implemented.");
+    const answeredList = answers.filter((a) => !a.skipped && a.userAnswer && a.userAnswer.trim().length > 0);
+
+    // Fallback default calculation if no answered questions
+    if (answeredList.length === 0) {
+      return {
+        overallScore: 60,
+        categoryScores: {
+          Technical: 60,
+          Behavioral: 60,
+          "Resume Depth": 60,
+          Communication: 60,
+        },
+        keyStrengths: ["Started interview preparation proactively"],
+        criticalGaps: ["Practice answering sample questions out loud or in writing"],
+        repeatedMistakes: ["Questions were skipped without recording an answer"],
+        actionablePlan: [
+          "Complete at least 3 practice questions using the STAR framework.",
+          "Review key achievements from your recent projects.",
+          "Prepare 2-minute elevator pitch for your target role."
+        ],
+      };
+    }
+
+    const answersSummary = answeredList
+      .map((a, idx) => {
+        return `[Question ${idx + 1}] ID: ${a.questionId}
+User Answer: "${a.userAnswer}"
+Evaluation: Score ${a.evaluation?.score ?? "N/A"}/100 | Strengths: ${(a.evaluation?.strengths || []).join("; ")} | Improvements: ${(a.evaluation?.improvements || []).join("; ")}`;
+      })
+      .join("\n\n");
+
+    const prompt = `
+You are a Senior Bar Raiser & Hiring Committee Chair conducting an overall Interview Readiness Assessment for a candidate applying for "${targetRole || "Software Professional"}".
+
+<CONTEXT>
+Target Role: ${targetRole || "General Role"}
+Resume Context: ${resumeContext || "Standard Professional Background"}
+Job Description Context: ${jdContext || "Standard Industry Requirements"}
+</CONTEXT>
+
+<CANDIDATE_PRACTICE_SESSION>
+${answersSummary}
+</CANDIDATE_PRACTICE_SESSION>
+
+<TASK>
+Synthesize all answers and evaluations into a definitive, encouraging, yet rigorous Interview Readiness Scorecard.
+1. Compute overallScore (0-100) reflecting realistic interview pass probability.
+2. Compute categoryScores for: "Technical Depth", "Behavioral & STAR", "Project Articulation", "Communication Clarity".
+3. Extract 3-4 keyStrengths (specific to candidate's best points).
+4. Identify 2-3 criticalGaps (technical or structural deficiencies).
+5. Identify 1-2 repeatedMistakes (e.g., lack of quantifiable metrics, vague answers).
+6. Create an actionablePlan of 3-5 concrete 48-hour action items.
+</TASK>
+
+REQUIRED JSON OUTPUT FORMAT:
+{
+  "overallScore": 85,
+  "categoryScores": {
+    "Technical Depth": 88,
+    "Behavioral & STAR": 82,
+    "Project Articulation": 86,
+    "Communication Clarity": 84
+  },
+  "keyStrengths": ["Clear articulation of microservices trade-offs", "Good situational ownership in conflict resolution"],
+  "criticalGaps": ["Need deeper quantitative metrics on business impact", "Explain recovery strategies for production failures"],
+  "repeatedMistakes": ["Tendency to jump directly into code without clarifying system requirements"],
+  "actionablePlan": ["Refine project metric statements with precise % or latency numbers", "Review system design fundamentals on caching and rate limiting"]
+}
+`;
+
+    const rawResult = await this.callGeminiAPI(prompt, 2048);
+    const parsed = await this.parseJSON<ReadinessReportResult>(rawResult, {
+      overallScore: 78,
+      categoryScores: {
+        "Technical Depth": 80,
+        "Behavioral & STAR": 75,
+        "Project Articulation": 80,
+        "Communication Clarity": 78,
+      },
+      keyStrengths: ["Solid understanding of core role concepts", "Articulate communication style"],
+      criticalGaps: ["Add more quantifiable results (metrics, % gains) in project answers"],
+      repeatedMistakes: ["Ensure answers stay focused and structured using STAR"],
+      actionablePlan: [
+        "Practice 2-minute project summaries emphasizing quantifiable results.",
+        "Review common behavioral questions with the STAR technique.",
+        "Rehearse explaining technical trade-offs clearly."
+      ],
+    });
+
+    return {
+      ...parsed,
+      overallScore: Math.max(0, Math.min(100, typeof parsed.overallScore === "number" ? parsed.overallScore : 75)),
+    };
+  }
+
+  // ============================================================
+  // Auto-Tailor Resume for Job Description
+  // ============================================================
+
+  async autoTailorResume(
+    data: ResumeData,
+    jobDescription: string,
+    targetRole = ""
+  ): Promise<AutoTailorResult> {
+    const compactData = compactResumeForPrompt(data);
+    const currentSummary = data.summary || "";
+
+    const prompt = `
+You are an expert ATS Resume Optimizer and Senior Recruiter. Your task is to tailor the candidate's resume to perfectly match the given Job Description.
+
+CANDIDATE RESUME:
+${compactData}
+
+JOB DESCRIPTION:
+${jobDescription}
+
+TARGET ROLE: ${targetRole || "Infer from JD"}
+
+INSTRUCTIONS:
+1. Rewrite the professional summary to align with the JD requirements.
+2. For each experience entry, rewrite bullet points to incorporate relevant JD keywords naturally (don't fabricate).
+3. For each project, rewrite description and highlights to emphasize JD-relevant technologies.
+4. Suggest optimized skills categories that match the JD.
+5. List all keywords injected.
+6. Estimate ATS score before and after tailoring (0-100).
+7. NEVER fabricate experiences, projects, or skills the candidate doesn't have. Only reframe existing content.
+
+REQUIRED JSON OUTPUT:
+{
+  "originalSummary": "${currentSummary.substring(0, 100)}...",
+  "tailoredSummary": "Rewritten summary optimized for JD...",
+  "tailoredExperience": [
+    {
+      "company": "Company Name",
+      "position": "Position",
+      "originalBullets": ["original bullet 1"],
+      "tailoredBullets": ["rewritten bullet with JD keywords"],
+      "injectedKeywords": ["keyword1", "keyword2"]
+    }
+  ],
+  "tailoredProjects": [
+    {
+      "name": "Project Name",
+      "originalDescription": "original desc",
+      "tailoredDescription": "rewritten desc",
+      "originalHighlights": ["original highlight"],
+      "tailoredHighlights": ["rewritten highlight"],
+      "injectedKeywords": ["keyword1"]
+    }
+  ],
+  "tailoredSkills": {
+    "frontend": ["React", "TypeScript"],
+    "backend": ["Node.js", "Python"]
+  },
+  "keywordInjections": ["keyword1", "keyword2", "keyword3"],
+  "atsScoreBefore": 62,
+  "atsScoreAfter": 91,
+  "changesSummary": ["Added 'microservices' to experience bullets", "Reframed project to emphasize cloud deployment"]
+}
+`;
+
+    try {
+      const rawResult = await this.callGeminiAPI(prompt, 4096);
+      const parsed = await this.parseJSON<AutoTailorResult>(rawResult, {
+        originalSummary: currentSummary,
+        tailoredSummary: currentSummary,
+        tailoredExperience: [],
+        tailoredProjects: [],
+        tailoredSkills: {},
+        keywordInjections: [],
+        atsScoreBefore: 60,
+        atsScoreAfter: 60,
+        changesSummary: [],
+      });
+      return {
+        ...parsed,
+        atsScoreBefore: Math.max(0, Math.min(100, parsed.atsScoreBefore || 60)),
+        atsScoreAfter: Math.max(0, Math.min(100, parsed.atsScoreAfter || 85)),
+      };
+    } catch {
+      return {
+        originalSummary: currentSummary,
+        tailoredSummary: currentSummary,
+        tailoredExperience: [],
+        tailoredProjects: [],
+        tailoredSkills: {},
+        keywordInjections: [],
+        atsScoreBefore: 60,
+        atsScoreAfter: 60,
+        changesSummary: ["Could not auto-tailor at this time. Please try again."],
+      };
+    }
+  }
+
+  // ============================================================
+  // Recruiter Outreach Generator
+  // ============================================================
+
+  async generateRecruiterOutreach(
+    data: ResumeData,
+    targetRole: string,
+    companyName: string,
+    recruiterName = "",
+    context = ""
+  ): Promise<OutreachResult> {
+    const compactData = compactResumeForCoverLetter(data);
+    const candidateName = data.personalInfo?.fullName || "Candidate";
+
+    const prompt = `
+You are a career coach specializing in professional outreach messaging. Generate 3 types of personalized messages for ${candidateName} applying for "${targetRole}" at "${companyName}".
+
+CANDIDATE RESUME:
+${compactData}
+
+${recruiterName ? `RECRUITER/HR NAME: ${recruiterName}` : ""}
+${context ? `ADDITIONAL CONTEXT: ${context}` : ""}
+
+Generate these 3 messages:
+
+1. **LinkedIn InMail** — Short (150-200 words), professional but warm, with a compelling hook. Include a specific achievement from their resume.
+2. **Cold Email to Hiring Manager** — Professional (200-300 words), structured with clear value proposition. Include subject line.
+3. **Post-Interview Follow-Up Email** — Grateful, reinforces key discussion points, professional (150-200 words).
+
+RULES:
+- Use the candidate's ACTUAL achievements and skills from the resume.
+- Be specific, not generic. Reference real projects/experience.
+- Keep tone confident but not arrogant.
+- Each message should be ready to send with minimal editing.
+
+REQUIRED JSON OUTPUT:
+{
+  "linkedinInMail": {
+    "subject": "Connecting about the ${targetRole} opportunity",
+    "body": "Hi [Recruiter],\\n\\nI noticed...",
+    "tone": "professional"
+  },
+  "coldEmail": {
+    "subject": "Application: ${targetRole} at ${companyName} — ${candidateName}",
+    "body": "Dear Hiring Manager,\\n\\n...",
+    "tone": "formal"
+  },
+  "followUpEmail": {
+    "subject": "Thank You — ${targetRole} Interview",
+    "body": "Dear [Interviewer],\\n\\nThank you for...",
+    "tone": "professional"
+  },
+  "targetRole": "${targetRole}",
+  "companyName": "${companyName}"
+}
+`;
+
+    try {
+      const rawResult = await this.callGeminiAPI(prompt, 3072);
+      return await this.parseJSON<OutreachResult>(rawResult, {
+        linkedinInMail: {
+          subject: `Connecting about ${targetRole} at ${companyName}`,
+          body: `Hi,\n\nI'm ${candidateName}, and I'm very interested in the ${targetRole} role at ${companyName}. With my background in the technologies your team uses, I'd love to explore how I can contribute.\n\nWould you be open to a brief conversation?\n\nBest regards,\n${candidateName}`,
+          tone: "professional",
+        },
+        coldEmail: {
+          subject: `Application: ${targetRole} at ${companyName}`,
+          body: `Dear Hiring Manager,\n\nI am writing to express my strong interest in the ${targetRole} position at ${companyName}.\n\nI bring relevant experience and skills that align well with your team's requirements.\n\nI would welcome the opportunity to discuss how my background can contribute to ${companyName}'s success.\n\nBest regards,\n${candidateName}`,
+          tone: "formal",
+        },
+        followUpEmail: {
+          subject: `Thank You — ${targetRole} Interview`,
+          body: `Dear Interviewer,\n\nThank you for taking the time to discuss the ${targetRole} position. I'm even more excited about the opportunity after our conversation.\n\nI look forward to hearing from you.\n\nBest regards,\n${candidateName}`,
+          tone: "professional",
+        },
+        targetRole,
+        companyName,
+      });
+    } catch {
+      return {
+        linkedinInMail: {
+          subject: `Connecting about ${targetRole}`,
+          body: `Hi,\n\nI'm ${candidateName}, interested in the ${targetRole} role at ${companyName}. I'd love to connect and discuss how my experience aligns with your team's needs.\n\nBest,\n${candidateName}`,
+          tone: "professional",
+        },
+        coldEmail: {
+          subject: `${targetRole} Application — ${candidateName}`,
+          body: `Dear Hiring Manager,\n\nI am writing to express my interest in the ${targetRole} position at ${companyName}.\n\nBest regards,\n${candidateName}`,
+          tone: "formal",
+        },
+        followUpEmail: {
+          subject: `Thank You — ${targetRole} Interview`,
+          body: `Dear Interviewer,\n\nThank you for our conversation about the ${targetRole} role.\n\nBest regards,\n${candidateName}`,
+          tone: "professional",
+        },
+        targetRole,
+        companyName,
+      };
+    }
+  }
+
+  // ============================================================
+  // Salary Estimator & Career Growth Roadmap
+  // ============================================================
+
+  async estimateSalaryAndRoadmap(
+    data: ResumeData,
+    targetRole: string,
+    location = "India"
+  ): Promise<SalaryEstimateResult> {
+    const compactData = compactResumeForPrompt(data);
+
+    const prompt = `
+You are a Senior Technical Recruiter and Career Advisor with deep knowledge of global tech compensation benchmarks.
+
+Analyze this candidate's resume and provide:
+1. Accurate salary range estimation for the target role and location
+2. A 6-month career growth roadmap with prioritized skills
+
+CANDIDATE RESUME:
+${compactData}
+
+TARGET ROLE: ${targetRole}
+LOCATION: ${location}
+
+INSTRUCTIONS:
+1. Infer experience level from resume (entry/mid/senior/staff).
+2. Estimate salary range in both INR and USD based on market data for 2024-2025.
+3. For India: use LPA (Lakhs Per Annum). For US: use annual salary.
+4. Identify 3-4 competitive advantages from the resume.
+5. Create a realistic 6-month skill roadmap (3-6 skills max).
+6. Suggest the next career promotion target.
+
+REQUIRED JSON OUTPUT:
+{
+  "role": "${targetRole}",
+  "location": "${location}",
+  "experienceLevel": "Mid-Level (3-5 years)",
+  "salaryRangeINR": {
+    "currency": "INR",
+    "min": 800000,
+    "mid": 1200000,
+    "max": 1800000,
+    "label": "₹8L — ₹18L per annum"
+  },
+  "salaryRangeUSD": {
+    "currency": "USD",
+    "min": 65000,
+    "mid": 90000,
+    "max": 130000,
+    "label": "$65K — $130K per annum"
+  },
+  "competitiveAdvantages": ["Strong React + Next.js stack", "Production-scale system design experience"],
+  "marketInsights": ["Remote roles for this profile command 15-20% premium", "Companies hiring aggressively for this stack"],
+  "growthRoadmap": [
+    {
+      "skill": "System Design",
+      "priority": "critical",
+      "timeframe": "Month 1-2",
+      "currentLevel": "Intermediate",
+      "targetLevel": "Advanced",
+      "resources": ["Grokking System Design (Educative)", "System Design Primer (GitHub)"]
+    }
+  ],
+  "nextPromotion": {
+    "targetRole": "Senior Software Engineer",
+    "timeframe": "12-18 months",
+    "requiredSkills": ["System Design", "Team Leadership", "Architecture"]
+  }
+}
+`;
+
+    try {
+      const rawResult = await this.callGeminiAPI(prompt, 3072);
+      return await this.parseJSON<SalaryEstimateResult>(rawResult, {
+        role: targetRole,
+        location,
+        experienceLevel: "Mid-Level",
+        salaryRangeINR: { currency: "INR", min: 600000, mid: 1000000, max: 1500000, label: "₹6L — ₹15L per annum" },
+        salaryRangeUSD: { currency: "USD", min: 50000, mid: 80000, max: 120000, label: "$50K — $120K per annum" },
+        competitiveAdvantages: ["Review your resume for specific advantages"],
+        marketInsights: ["Market data is based on industry benchmarks"],
+        growthRoadmap: [],
+        nextPromotion: { targetRole: "Senior " + targetRole, timeframe: "12-18 months", requiredSkills: ["Leadership", "System Design"] },
+      });
+    } catch {
+      return {
+        role: targetRole,
+        location,
+        experienceLevel: "Mid-Level",
+        salaryRangeINR: { currency: "INR", min: 600000, mid: 1000000, max: 1500000, label: "₹6L — ₹15L per annum" },
+        salaryRangeUSD: { currency: "USD", min: 50000, mid: 80000, max: 120000, label: "$50K — $120K per annum" },
+        competitiveAdvantages: ["Strong technical foundation"],
+        marketInsights: ["Could not fetch detailed market insights"],
+        growthRoadmap: [],
+        nextPromotion: { targetRole: "Senior " + targetRole, timeframe: "12-18 months", requiredSkills: ["Leadership"] },
+      };
+    }
   }
 }

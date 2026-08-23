@@ -36,6 +36,8 @@ interface ResumeActions {
   updateSectionOrder: (order: SectionKey[]) => void;
   updateTitle: (title: string) => void;
   updateTemplateId: (templateId: string) => void;
+  updateIsPublic: (isPublic: boolean) => void;
+  updateSlug: (slug: string) => void;
   addSection: (section: SectionKey) => void;
   removeSection: (section: SectionKey) => void;
   duplicateResume: () => Resume | null;
@@ -132,6 +134,34 @@ export const useResumeStore = create<ResumeState & ResumeActions>()(
           currentResume: {
             ...currentResume,
             templateId,
+            updatedAt: new Date().toISOString(),
+          },
+          isDirty: true,
+        });
+      },
+
+      updateIsPublic: (isPublic) => {
+        const { currentResume } = get();
+        if (!currentResume) return;
+
+        set({
+          currentResume: {
+            ...currentResume,
+            isPublic,
+            updatedAt: new Date().toISOString(),
+          },
+          isDirty: true,
+        });
+      },
+
+      updateSlug: (slug) => {
+        const { currentResume } = get();
+        if (!currentResume) return;
+
+        set({
+          currentResume: {
+            ...currentResume,
+            slug,
             updatedAt: new Date().toISOString(),
           },
           isDirty: true,

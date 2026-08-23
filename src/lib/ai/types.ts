@@ -179,3 +179,91 @@ export interface RoleOptimizationResult {
   missingSkills: SuggestedSkill[];
   recommendations: string[];
 }
+
+// ============================================================
+// Auto-Tailor Types
+// ============================================================
+
+export interface TailoredExperience {
+  company: string;
+  position: string;
+  originalBullets: string[];
+  tailoredBullets: string[];
+  injectedKeywords: string[];
+}
+
+export interface TailoredProject {
+  name: string;
+  originalDescription: string;
+  tailoredDescription: string;
+  originalHighlights: string[];
+  tailoredHighlights: string[];
+  injectedKeywords: string[];
+}
+
+export interface AutoTailorResult {
+  originalSummary: string;
+  tailoredSummary: string;
+  tailoredExperience: TailoredExperience[];
+  tailoredProjects: TailoredProject[];
+  tailoredSkills: Record<string, string[]>;
+  keywordInjections: string[];
+  atsScoreBefore: number;
+  atsScoreAfter: number;
+  changesSummary: string[];
+}
+
+// ============================================================
+// Recruiter Outreach Types
+// ============================================================
+
+export interface OutreachMessage {
+  subject: string;
+  body: string;
+  tone: "professional" | "friendly" | "formal";
+}
+
+export interface OutreachResult {
+  linkedinInMail: OutreachMessage;
+  coldEmail: OutreachMessage;
+  followUpEmail: OutreachMessage;
+  targetRole: string;
+  companyName: string;
+}
+
+// ============================================================
+// Salary Estimator & Career Roadmap Types
+// ============================================================
+
+export interface SalaryRange {
+  currency: string;
+  min: number;
+  mid: number;
+  max: number;
+  label: string;
+}
+
+export interface RoadmapSkill {
+  skill: string;
+  priority: "critical" | "high" | "medium";
+  timeframe: string;
+  currentLevel: string;
+  targetLevel: string;
+  resources: string[];
+}
+
+export interface SalaryEstimateResult {
+  role: string;
+  location: string;
+  experienceLevel: string;
+  salaryRangeINR: SalaryRange;
+  salaryRangeUSD: SalaryRange;
+  competitiveAdvantages: string[];
+  marketInsights: string[];
+  growthRoadmap: RoadmapSkill[];
+  nextPromotion: {
+    targetRole: string;
+    timeframe: string;
+    requiredSkills: string[];
+  };
+}

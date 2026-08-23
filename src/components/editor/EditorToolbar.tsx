@@ -12,6 +12,10 @@ import { useUIStore } from "@/store/ui.store";
 import { AIChatDrawer } from "@/components/ai/AIChatDrawer";
 import { CoverLetterModal } from "@/components/ai/CoverLetterModal";
 import { InterviewPrepModal } from "@/components/ai/InterviewPrepModal";
+import { AutoTailorModal } from "@/components/ai/AutoTailorModal";
+import { SharePortfolioModal } from "@/components/ai/SharePortfolioModal";
+import { OutreachModal } from "@/components/ai/OutreachModal";
+import { SalaryRoadmapModal } from "@/components/ai/SalaryRoadmapModal";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -28,6 +32,10 @@ import {
   HelpCircle,
   MoreVertical,
   Save,
+  Zap,
+  Globe,
+  Send,
+  TrendingUp,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -64,6 +72,10 @@ export function EditorToolbar() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isCoverLetterOpen, setIsCoverLetterOpen] = useState(false);
   const [isInterviewPrepOpen, setIsInterviewPrepOpen] = useState(false);
+  const [isAutoTailorOpen, setIsAutoTailorOpen] = useState(false);
+  const [isSharePortfolioOpen, setIsSharePortfolioOpen] = useState(false);
+  const [isOutreachOpen, setIsOutreachOpen] = useState(false);
+  const [isSalaryRoadmapOpen, setIsSalaryRoadmapOpen] = useState(false);
 
   const handleTitleSubmit = () => {
     if (titleInput.trim()) {
@@ -256,6 +268,39 @@ export function EditorToolbar() {
               <HelpCircle className="w-4 h-4 text-emerald-400" />
               <span>Interview Prep</span>
             </button>
+            <div className="h-px bg-slate-800 my-1" />
+            <button
+              type="button"
+              onClick={() => setIsAutoTailorOpen(true)}
+              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+            >
+              <Zap className="w-4 h-4 text-amber-400" />
+              <span>Auto-Tailor (JD)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsOutreachOpen(true)}
+              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+            >
+              <Send className="w-4 h-4 text-blue-400" />
+              <span>Recruiter Outreach</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsSalaryRoadmapOpen(true)}
+              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+            >
+              <TrendingUp className="w-4 h-4 text-emerald-400" />
+              <span>Salary & Roadmap</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsSharePortfolioOpen(true)}
+              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+            >
+              <Globe className="w-4 h-4 text-cyan-400" />
+              <span>Share Portfolio</span>
+            </button>
           </PopoverContent>
         </Popover>
 
@@ -424,6 +469,38 @@ export function EditorToolbar() {
               <HelpCircle className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>Interview Prep</span>
             </button>
+            <button
+              type="button"
+              onClick={() => setIsAutoTailorOpen(true)}
+              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+            >
+              <Zap className="w-4 h-4 text-amber-400 shrink-0" />
+              <span>Auto-Tailor (JD)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsOutreachOpen(true)}
+              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+            >
+              <Send className="w-4 h-4 text-blue-400 shrink-0" />
+              <span>Recruiter Outreach</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsSalaryRoadmapOpen(true)}
+              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+            >
+              <TrendingUp className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>Salary & Roadmap</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsSharePortfolioOpen(true)}
+              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+            >
+              <Globe className="w-4 h-4 text-cyan-400 shrink-0" />
+              <span>Share Portfolio</span>
+            </button>
 
             <div className="h-px bg-slate-800 my-1" />
 
@@ -498,6 +575,10 @@ export function EditorToolbar() {
       <AIChatDrawer isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
       <CoverLetterModal isOpen={isCoverLetterOpen} onClose={() => setIsCoverLetterOpen(false)} />
       <InterviewPrepModal isOpen={isInterviewPrepOpen} onClose={() => setIsInterviewPrepOpen(false)} />
+      <AutoTailorModal isOpen={isAutoTailorOpen} onClose={() => setIsAutoTailorOpen(false)} />
+      <SharePortfolioModal isOpen={isSharePortfolioOpen} onClose={() => setIsSharePortfolioOpen(false)} />
+      <OutreachModal isOpen={isOutreachOpen} onClose={() => setIsOutreachOpen(false)} />
+      <SalaryRoadmapModal isOpen={isSalaryRoadmapOpen} onClose={() => setIsSalaryRoadmapOpen(false)} />
     </header>
   );
 }

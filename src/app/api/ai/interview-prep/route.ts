@@ -14,15 +14,10 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
+    const safeJD = typeof jobDescription === "string" ? jobDescription.trim() : "";
     
-    if (!jobDescription || jobDescription.trim().length < 30) {
-      return NextResponse.json(
-        { error: "Add a valid job description to prepare for your interview." },
-        { status: 400 }
-      );
-    }
-    
-    if (jobDescription.length > 20000) {
+    if (safeJD.length > 20000) {
       return NextResponse.json(
         { error: "Job description is too long (max 20,000 characters)." },
         { status: 400 }
@@ -41,7 +36,7 @@ export async function POST(request: Request) {
       "interview-prep",
       compactResumeForInterviewPrep(resumeData),
       targetRole?.trim().toLowerCase() || "",
-      jobDescription.trim().slice(0, 1000), // hash is generated over this in buildCacheKey
+      safeJD.slice(0, 1000), // hash is generated over this in buildCacheKey
       jdMatchContext ? JSON.stringify(jdMatchContext) : ""
     );
     const cached = getCached(cacheKey);
@@ -51,7 +46,7 @@ export async function POST(request: Request) {
 
     const prepResult = await aiService.generateInterviewPrep(
       resumeData,
-      jobDescription,
+      safeJD,
       jdMatchContext ? JSON.stringify(jdMatchContext) : "",
       targetRole || "",
       roleContext ? JSON.stringify(roleContext) : ""
