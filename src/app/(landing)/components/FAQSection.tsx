@@ -11,39 +11,39 @@ import {
 const FAQS = [
   {
     id: "faq-1",
-    question: "Is it really 100% free?",
+    question: "Is ResumeForge really 100% free with no paywalls?",
     answer:
-      "Yes. No trials, no paywalls, and no hidden premium tiers. Create, edit, score, and download as many resumes as you need.",
+      "Yes. There are zero credit card requirements, no hidden subscriptions, and no paywalls. You can create unlimited resumes, use AI auto-tailoring, and export clean PDF and DOCX files without any watermarks.",
   },
   {
     id: "faq-2",
-    question: "Is there any watermark on the exported PDF?",
+    question: "How does the 1-Click AI Auto-Tailor feature work?",
     answer:
-      "None. Exported PDF and DOCX documents are completely clean — with no branding, logos, or watermarks.",
+      "Simply paste the target Job Description into the Auto-Tailor tool. Our AI analyzes the requirements and reframes your existing bullet points and summary with missing ATS keywords, elevating your match score without fabricating fake information.",
   },
   {
     id: "faq-3",
-    question: "Does it use AI to write my resume?",
+    question: "What is the Real-Time Web Portfolio and QR Code?",
     answer:
-      "No. ResumeForge uses deterministic, rule-based algorithms for ATS matching and scoring. Your content stays authentic and private.",
+      "Every resume you create can be published as a live, mobile-friendly web portfolio (e.g. /r/your-name). It includes an instant SVG QR code for business cards and resumes, plus a public/private toggle so you control who views it.",
   },
   {
     id: "faq-4",
-    question: "Can I create multiple resumes?",
+    question: "How does the Live Voice Mock Interview Simulator work?",
     answer:
-      "Yes. You can create unlimited resumes tailored for different job roles, all managed directly from your dashboard.",
+      "The Mock Interview Suite generates role-tailored technical and behavioral questions from your resume and target job description. You can speak your answers via voice dictation, practice with a 2-minute countdown timer, and receive instant STAR scoring.",
   },
   {
     id: "faq-5",
-    question: "Is my personal data secure?",
+    question: "Is my personal data safe and private?",
     answer:
-      "Your data is encrypted and protected with Supabase row-level security. We never share or sell your personal information.",
+      "Yes. Your resume data is encrypted and protected by Supabase Row-Level Security (RLS). Only you have access to your drafts unless you choose to make a portfolio public.",
   },
   {
     id: "faq-6",
-    question: "Does it work on mobile devices?",
+    question: "What export formats are supported?",
     answer:
-      "Yes, fully. The editor features a responsive tabbed interface on mobile devices — allowing you to edit, preview, score, and export from anywhere.",
+      "You can export your resume as a pixel-perfect, printer-ready A4 PDF, an editable Microsoft Word (.docx) document, or a clean ATS Plain Text (.txt) format.",
   },
 ];
 
@@ -55,10 +55,10 @@ export function FAQSection() {
     <section id="faq" className="py-24 px-4 sm:px-6 max-w-5xl mx-auto">
       <div className="text-center space-y-3 mb-14">
         <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-          Questions & answers
+          Frequently Asked Questions
         </h2>
         <p className="text-sm text-slate-400 max-w-md mx-auto">
-          The short version of everything you need to know.
+          Everything you need to know about ResumeForge and its AI career tools.
         </p>
       </div>
 
@@ -75,12 +75,12 @@ export function FAQSection() {
               <AccordionItem
                 key={faq.id}
                 value={faq.id}
-                className="bg-slate-900/40 border border-white/[0.05] rounded-xl px-5 py-1 text-slate-100 hover:border-white/[0.08] transition-colors"
+                className="bg-slate-900/40 border border-white/[0.05] rounded-2xl px-5 py-1 text-slate-100 hover:border-white/[0.1] transition-colors"
               >
-                <AccordionTrigger className="text-sm font-semibold text-left hover:text-white hover:no-underline py-4 text-slate-200">
+                <AccordionTrigger className="text-sm font-semibold text-left hover:text-indigo-300 hover:no-underline py-4 text-slate-200">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-xs text-slate-400 leading-relaxed pb-4">
+                <AccordionContent className="text-xs sm:text-sm text-slate-400 leading-relaxed pb-4">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>

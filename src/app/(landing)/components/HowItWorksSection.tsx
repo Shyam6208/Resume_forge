@@ -1,42 +1,42 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Layout, Edit3, Target, Download } from "lucide-react";
+import { Layout, Edit3, Zap, Globe } from "lucide-react";
 
 const STEPS = [
   {
     number: "01",
     icon: Layout,
-    title: "Pick a template",
+    title: "Pick an ATS-tested layout",
     description:
-      "Choose from 40+ ATS-optimized layouts — minimalist, corporate, developer, or fresher. All tested against real applicant tracking systems.",
+      "Choose from Minimalist, Corporate Executive, Developer, or Fresher templates — all tested against top ATS parsers.",
     color: "bg-indigo-500",
     ring: "ring-indigo-500/30",
   },
   {
     number: "02",
     icon: Edit3,
-    title: "Fill in your details",
+    title: "Craft your experience",
     description:
-      "Add experience, education, projects, and skills. The split-screen preview shows your resume updating in real time.",
+      "Add experience, education, projects, and skills. Live preview updates on every keystroke with instant scoring.",
     color: "bg-violet-500",
     ring: "ring-violet-500/30",
   },
   {
     number: "03",
-    icon: Target,
-    title: "Check your ATS score",
+    icon: Zap,
+    title: "1-Click AI Auto-Tailor",
     description:
-      "Paste your target job description to get a keyword match percentage and specific suggestions to improve your score.",
+      "Paste any Job Description and let AI automatically reframe your bullets, inject missing ATS keywords, and practice live mock questions.",
     color: "bg-emerald-500",
     ring: "ring-emerald-500/30",
   },
   {
     number: "04",
-    icon: Download,
-    title: "Download for free",
+    icon: Globe,
+    title: "Export & share live portfolio",
     description:
-      "Export a high-resolution PDF or editable DOCX — no watermark, no paywall, no sign-up friction.",
+      "Download watermark-free A4 PDF / Word DOCX, or share your live hosted portfolio link (/r/[slug]) and downloadable QR code.",
     color: "bg-amber-500",
     ring: "ring-amber-500/30",
   },
@@ -48,10 +48,10 @@ export function HowItWorksSection() {
       <div className="max-w-3xl mx-auto">
         <div className="text-center space-y-3 mb-16">
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Four steps. One resume.
+            Four steps. Instant career edge.
           </h2>
           <p className="text-sm text-slate-400 max-w-md mx-auto">
-            From template to download in under ten minutes.
+            From blank page to a tailored resume and live web portfolio in minutes.
           </p>
         </div>
 

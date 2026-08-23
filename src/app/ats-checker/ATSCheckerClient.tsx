@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,13 @@ import {
   Award,
   Layers,
   BookOpen,
+  Upload,
+  Image as ImageIcon,
+  FileCheck,
+  Loader2,
+  Edit3,
+  X,
+  FileUp,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -82,10 +89,84 @@ Requirements:
 - Experience with AWS, Docker, Kubernetes, CI/CD, and Redis caching.
 - Strong knowledge of RESTful API design and GraphQL.`;
 
+interface UploadedFileInfo {
+  fileName: string;
+  fileType: "pdf" | "image" | "docx";
+  wordCount: number;
+  detectedSections?: string[];
+}
+
 export function ATSCheckerClient() {
   const [resumeText, setResumeText] = useState(SAMPLE_RESUME);
   const [jobDescription, setJobDescription] = useState(SAMPLE_JD);
   const [activeTab, setActiveTab] = useState<"overview" | "keywords" | "structure">("overview");
+
+  // Upload States
+  const [inputMode, setInputMode] = useState<"upload" | "paste">("upload");
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState<UploadedFileInfo | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isDragOver, setIsDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async (file: File) => {
+    setUploadError(null);
+    setIsUploading(true);
+    const toastId = toast.loading(`📄 Reading & verifying "${file.name}"...`);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/resume/parse-ats-upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "The uploaded file could not be verified as a valid resume.");
+      }
+
+      setResumeText(data.extractedText);
+      setUploadedFile({
+        fileName: data.fileName,
+        fileType: data.fileType,
+        wordCount: data.wordCount,
+        detectedSections: data.detectedSections,
+      });
+
+      toast.dismiss(toastId);
+      toast.success(`✅ Resume verified! Extracted ${data.wordCount} words.`, { duration: 4000 });
+    } catch (err: unknown) {
+      toast.dismiss(toastId);
+      const msg = err instanceof Error ? err.message : "Failed to verify resume document.";
+      setUploadError(msg);
+      toast.error(msg, { duration: 5000 });
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleFileUpload(file);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      handleFileUpload(file);
+    }
+  };
 
   // Calculate ATS metrics
   const analysis = useMemo(() => {
@@ -98,54 +179,59 @@ export function ATSCheckerClient() {
     const resumeWordSet = new Set(resumeWords);
 
     // Extract action verbs used
-    const foundVerbs = Array.from(new Set(resumeWords.filter((w) => ACTION_VERBS.has(w))));
+    const foundVerbs: string[] = [];
+    ACTION_VERBS.forEach((verb) => {
+      if (cleanResume.includes(verb)) {
+        foundVerbs.push(verb);
+      }
+    });
 
-    // Extract metrics/numbers (e.g. 40%, 2M, 5+)
-    const metricsMatches = resumeText.match(/\b\d+(\.\d+)?(%|k|m|x|\+)?\b/gi) || [];
+    // Check for quantifiable metrics (numbers, %, $, etc.)
+    const metricsMatches = resumeText.match(/\b(\d+[%kKmMbB]?|\$\d+|\d+\+|\d+x)\b/g) || [];
 
-    // Extract keywords from JD if provided
+    // Extract JD Keywords & Match
     let matchedKeywords: string[] = [];
     let missingKeywords: string[] = [];
-    let keywordScore = 75;
+    let keywordScore = 70; // default baseline
 
     if (jobDescription.trim()) {
       const cleanJD = jobDescription.toLowerCase();
       const jdWords = cleanJD.match(/\b[a-z0-9+#.-]{3,}\b/g) || [];
+      const jdWordFreq: Record<string, number> = {};
 
-      // Frequency map of JD words
-      const freq: Record<string, number> = {};
-      jdWords.forEach((w) => {
-        if (!STOP_WORDS.has(w) && !/^\d+$/.test(w)) {
-          freq[w] = (freq[w] || 0) + 1;
+      jdWords.forEach((word) => {
+        if (!STOP_WORDS.has(word) && isNaN(Number(word))) {
+          jdWordFreq[word] = (jdWordFreq[word] || 0) + 1;
         }
       });
 
-      // Top 20 keywords from JD
-      const topKeywords = Object.entries(freq)
+      // Sort by frequency to find top keywords
+      const topKeywords = Object.entries(jdWordFreq)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 20)
-        .map(([w]) => w);
+        .map(([word]) => word);
 
       matchedKeywords = topKeywords.filter((kw) => resumeWordSet.has(kw) || cleanResume.includes(kw));
-      missingKeywords = topKeywords.filter((kw) => !resumeWordSet.has(kw) && !cleanResume.includes(kw));
+      missingKeywords = topKeywords.filter((kw) => !matchedKeywords.includes(kw));
 
-      const matchRatio = topKeywords.length > 0 ? matchedKeywords.length / topKeywords.length : 0.8;
-      keywordScore = Math.round(matchRatio * 100);
+      if (topKeywords.length > 0) {
+        keywordScore = Math.round((matchedKeywords.length / topKeywords.length) * 100);
+      }
     }
 
-    // Section completeness check
-    const hasSummary = /summary|profile|about/i.test(resumeText);
-    const hasExperience = /experience|work|employment|history/i.test(resumeText);
-    const hasEducation = /education|university|college|degree/i.test(resumeText);
-    const hasSkills = /skills|technologies|proficiencies/i.test(resumeText);
-    const hasContact = /@|\.com|\d{3}[-.\s]\d{3}/i.test(resumeText);
+    // Check standard section completeness
+    const hasSummary = /\b(summary|objective|profile|about)\b/i.test(resumeText);
+    const hasExperience = /\b(experience|employment|work history)\b/i.test(resumeText);
+    const hasEducation = /\b(education|academic|degree|university)\b/i.test(resumeText);
+    const hasSkills = /\b(skills|technical|technologies|proficiencies)\b/i.test(resumeText);
+    const hasContact = /\b(email|phone|linkedin|github|@)\b/i.test(resumeText);
 
-    const sectionsFound = [hasSummary, hasExperience, hasEducation, hasSkills, hasContact].filter(Boolean).length;
-    const structureScore = Math.round((sectionsFound / 5) * 100);
+    const structureCount = [hasSummary, hasExperience, hasEducation, hasSkills, hasContact].filter(Boolean).length;
+    const structureScore = Math.round((structureCount / 5) * 100);
 
-    // Overall Weighted ATS Score
+    // Compute aggregate overall score
     const overallScore = Math.min(
-      100,
+      98,
       Math.max(
         20,
         Math.round(
@@ -218,15 +304,15 @@ export function ATSCheckerClient() {
       <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 space-y-8">
         {/* Hero Title */}
         <div className="text-center space-y-3 max-w-3xl mx-auto pt-4">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-medium">
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-medium">
             <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span>Instant & 100% Free ATS Compatibility Analyzer</span>
+            <span>AI OCR PDF/Image Scanner & Free ATS Compatibility Analyzer</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
             Free ATS Resume Checker
           </h1>
           <p className="text-sm sm:text-base text-slate-400 max-w-xl mx-auto">
-            Scan your resume against any target job description. Identify missing keywords, verify structure, and boost your interview callback rate.
+            Upload your resume as a <strong>PDF, Image, or DOCX</strong>. Our AI verifies and extracts the content to analyze keyword matching against any job description.
           </p>
         </div>
 
@@ -289,36 +375,171 @@ export function ATSCheckerClient() {
 
         {/* Input Split Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left: Resume Text */}
-          <div className="space-y-2">
+          {/* Left: Resume Input (Upload or Paste) */}
+          <div className="space-y-3">
+            {/* Header with Mode Toggle */}
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                <FileText className="w-4 h-4 text-indigo-400" />
-                <span>1. Paste Your Resume Text</span>
-              </label>
+              <div className="flex items-center gap-1.5 bg-slate-900/80 p-1 rounded-xl border border-white/[0.08]">
+                <button
+                  type="button"
+                  onClick={() => setInputMode("upload")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
+                    inputMode === "upload"
+                      ? "bg-indigo-600 text-white shadow-sm"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>Upload PDF / Image</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setInputMode("paste")}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
+                    inputMode === "paste"
+                      ? "bg-indigo-600 text-white shadow-sm"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  <Edit3 className="w-3.5 h-3.5" />
+                  <span>Paste Text</span>
+                </button>
+              </div>
+
               <button
                 type="button"
-                onClick={() => setResumeText(SAMPLE_RESUME)}
+                onClick={() => {
+                  setResumeText(SAMPLE_RESUME);
+                  setUploadedFile(null);
+                  setUploadError(null);
+                }}
                 className="text-[11px] text-indigo-400 hover:text-indigo-300 transition-colors"
               >
                 Load Sample
               </button>
             </div>
-            <textarea
-              rows={14}
-              value={resumeText}
-              onChange={(e) => setResumeText(e.target.value)}
-              placeholder="Paste your full resume text here..."
-              className="w-full p-4 bg-slate-900/70 border border-white/[0.08] rounded-2xl text-xs sm:text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 font-mono leading-relaxed resize-y"
+
+            {/* Hidden File Input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.png,.jpg,.jpeg,.webp,.docx,application/pdf,image/*,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              onChange={handleFileChange}
+              className="hidden"
             />
+
+            {/* Mode 1: File Upload Box */}
+            {inputMode === "upload" && (
+              <div className="space-y-3">
+                {/* Drag & Drop Zone */}
+                <div
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setIsDragOver(true);
+                  }}
+                  onDragLeave={() => setIsDragOver(false)}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`cursor-pointer border-2 border-dashed rounded-2xl p-8 text-center transition-all ${
+                    isDragOver
+                      ? "border-indigo-400 bg-indigo-500/10 scale-[1.01]"
+                      : "border-slate-800 hover:border-indigo-500/40 bg-slate-900/40 hover:bg-slate-900/60"
+                  }`}
+                >
+                  {isUploading ? (
+                    <div className="flex flex-col items-center gap-3 py-4">
+                      <Loader2 className="w-10 h-10 text-indigo-400 animate-spin" />
+                      <div className="space-y-1">
+                        <p className="text-sm font-bold text-white">
+                          Scanning & Verifying Resume Document...
+                        </p>
+                        <p className="text-xs text-slate-400">
+                          Extracting text via AI OCR & verifying resume content structure
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center gap-3 py-2">
+                      <div className="p-4 rounded-2xl bg-indigo-600/10 border border-indigo-500/20 text-indigo-400">
+                        <FileUp className="w-8 h-8" />
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-sm font-bold text-white">
+                          Click to upload or drag & drop your resume
+                        </p>
+                        <p className="text-xs text-slate-400">
+                          Supports <strong>PDF, PNG, JPG, WEBP, or Word DOCX</strong> (Max 10 MB)
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Upload Error Banner */}
+                {uploadError && (
+                  <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-start gap-3">
+                    <XCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                    <div>
+                      <strong className="block font-bold text-rose-200 mb-0.5">
+                        Document Verification Failed
+                      </strong>
+                      <span>{uploadError}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Verified File Badge */}
+                {uploadedFile && !uploadError && (
+                  <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-slate-300 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 shrink-0">
+                        <FileCheck className="w-5 h-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-bold text-white truncate text-sm">
+                          {uploadedFile.fileName}
+                        </p>
+                        <p className="text-[11px] text-emerald-400">
+                          Verified Resume ({uploadedFile.wordCount} words extracted)
+                          {uploadedFile.detectedSections && (
+                            <span className="text-slate-400 ml-1">
+                              · Sections: {uploadedFile.detectedSections.slice(0, 3).join(", ")}
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setInputMode("paste")}
+                      className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 text-xs font-semibold shrink-0"
+                    >
+                      View Text
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Mode 2: Paste / Edit Textarea */}
+            {inputMode === "paste" && (
+              <textarea
+                rows={12}
+                value={resumeText}
+                onChange={(e) => setResumeText(e.target.value)}
+                placeholder="Paste your full resume text here..."
+                className="w-full p-4 bg-slate-900/70 border border-white/[0.08] rounded-2xl text-xs sm:text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 font-mono leading-relaxed resize-y"
+              />
+            )}
           </div>
 
           {/* Right: Job Description */}
-          <div className="space-y-2">
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
                 <Target className="w-4 h-4 text-emerald-400" />
-                <span>2. Paste Target Job Description (Optional)</span>
+                <span>Target Job Description (Optional)</span>
               </label>
               <button
                 type="button"
@@ -329,10 +550,10 @@ export function ATSCheckerClient() {
               </button>
             </div>
             <textarea
-              rows={14}
+              rows={inputMode === "upload" ? 10 : 12}
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
-              placeholder="Paste job posting description from LinkedIn, Indeed, or company site..."
+              placeholder="Paste job posting description from LinkedIn, Indeed, or company career site..."
               className="w-full p-4 bg-slate-900/70 border border-white/[0.08] rounded-2xl text-xs sm:text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 font-mono leading-relaxed resize-y"
             />
           </div>
@@ -399,33 +620,35 @@ export function ATSCheckerClient() {
 
                 <div className="p-4 rounded-xl bg-slate-950/60 border border-white/[0.06] space-y-2">
                   <div className="text-xs font-bold text-slate-400 flex items-center justify-between">
-                    <span>Action Verbs</span>
-                    <span className="text-emerald-400 font-mono">{analysis.foundVerbs.length} verbs</span>
+                    <span>Structure & Format</span>
+                    <span className="text-emerald-400 font-mono">{analysis.structureScore}%</span>
                   </div>
                   <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-emerald-500 rounded-full"
-                      style={{ width: `${Math.min(analysis.foundVerbs.length * 10, 100)}%` }}
+                      style={{ width: `${analysis.structureScore}%` }}
                     />
                   </div>
                   <p className="text-[11px] text-slate-500">
-                    Strong power verbs identified (e.g. {analysis.foundVerbs.slice(0, 3).join(", ")}).
+                    Essential resume sections (Experience, Education, Skills, Contact) detected.
                   </p>
                 </div>
 
                 <div className="p-4 rounded-xl bg-slate-950/60 border border-white/[0.06] space-y-2">
                   <div className="text-xs font-bold text-slate-400 flex items-center justify-between">
-                    <span>Measurable Metrics</span>
-                    <span className="text-amber-400 font-mono">{analysis.metricsCount} numbers</span>
+                    <span>Action Verbs & Impact</span>
+                    <span className="text-amber-400 font-mono">
+                      {analysis.foundVerbs.length} Verbs
+                    </span>
                   </div>
                   <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-amber-500 rounded-full"
-                      style={{ width: `${Math.min(analysis.metricsCount * 15, 100)}%` }}
+                      style={{ width: `${Math.min(analysis.foundVerbs.length * 10, 100)}%` }}
                     />
                   </div>
                   <p className="text-[11px] text-slate-500">
-                    Quantified achievements (percentages, revenue, team sizes).
+                    {analysis.metricsCount} quantifiable metrics (% or figures) detected in achievements.
                   </p>
                 </div>
               </div>
@@ -433,19 +656,40 @@ export function ATSCheckerClient() {
 
             {/* TAB 2: KEYWORDS */}
             {activeTab === "keywords" && (
-              <div className="space-y-6">
-                {/* Missing keywords */}
-                {analysis.missingKeywords.length > 0 && (
-                  <div className="space-y-2.5">
-                    <h3 className="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
-                      <XCircle className="w-4 h-4" />
-                      <span>Missing High-Priority Keywords ({analysis.missingKeywords.length})</span>
+              <div className="space-y-4">
+                {analysis.matchedKeywords.length > 0 && (
+                  <div className="space-y-2">
+                    <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>Matched Keywords ({analysis.matchedKeywords.length})</span>
                     </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {analysis.matchedKeywords.map((kw) => (
+                        <span
+                          key={kw}
+                          className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 text-xs font-medium"
+                        >
+                          {kw}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {analysis.missingKeywords.length > 0 && (
+                  <div className="space-y-2 pt-2 border-t border-white/[0.06]">
+                    <h3 className="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
+                      <XCircle className="w-3.5 h-3.5" />
+                      <span>Missing Job Keywords ({analysis.missingKeywords.length})</span>
+                    </h3>
+                    <p className="text-xs text-slate-400">
+                      Recruiters and ATS scanners look for these exact terms from the job posting:
+                    </p>
                     <div className="flex flex-wrap gap-2">
                       {analysis.missingKeywords.map((kw) => (
                         <span
                           key={kw}
-                          className="px-2.5 py-1 rounded-lg text-xs font-mono bg-rose-500/10 text-rose-300 border border-rose-500/20"
+                          className="px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-300 border border-rose-500/20 text-xs font-medium"
                         >
                           + {kw}
                         </span>
@@ -453,51 +697,31 @@ export function ATSCheckerClient() {
                     </div>
                   </div>
                 )}
-
-                {/* Matched keywords */}
-                <div className="space-y-2.5">
-                  <h3 className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-                    <CheckCircle2 className="w-4 h-4" />
-                    <span>Matched Keywords in Resume ({analysis.matchedKeywords.length})</span>
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {analysis.matchedKeywords.map((kw) => (
-                      <span
-                        key={kw}
-                        className="px-2.5 py-1 rounded-lg text-xs font-mono bg-emerald-500/10 text-emerald-300 border border-emerald-500/20"
-                      >
-                        ✓ {kw}
-                      </span>
-                    ))}
-                  </div>
-                </div>
               </div>
             )}
 
             {/* TAB 3: STRUCTURE */}
             {activeTab === "structure" && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
-                  { label: "Contact Information", found: analysis.sections.hasContact },
-                  { label: "Professional Summary", found: analysis.sections.hasSummary },
-                  { label: "Work Experience", found: analysis.sections.hasExperience },
-                  { label: "Education Section", found: analysis.sections.hasEducation },
-                  { label: "Skills Section", found: analysis.sections.hasSkills },
-                ].map((s) => (
+                  { name: "Professional Summary", present: analysis.sections.hasSummary },
+                  { name: "Work Experience", present: analysis.sections.hasExperience },
+                  { name: "Education", present: analysis.sections.hasEducation },
+                  { name: "Technical Skills", present: analysis.sections.hasSkills },
+                  { name: "Contact Details", present: analysis.sections.hasContact },
+                ].map((item) => (
                   <div
-                    key={s.label}
+                    key={item.name}
                     className="p-3.5 rounded-xl bg-slate-950/60 border border-white/[0.06] flex items-center justify-between"
                   >
-                    <span className="text-xs font-medium text-slate-300">{s.label}</span>
-                    {s.found ? (
-                      <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-400">
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        <span>Present</span>
+                    <span className="text-xs font-semibold text-white">{item.name}</span>
+                    {item.present ? (
+                      <span className="text-xs text-emerald-400 font-bold flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5" /> Found
                       </span>
                     ) : (
-                      <span className="flex items-center gap-1 text-[11px] font-bold text-rose-400">
-                        <XCircle className="w-3.5 h-3.5" />
-                        <span>Missing</span>
+                      <span className="text-xs text-rose-400 font-bold flex items-center gap-1">
+                        <XCircle className="w-3.5 h-3.5" /> Missing
                       </span>
                     )}
                   </div>
@@ -507,24 +731,6 @@ export function ATSCheckerClient() {
           </div>
         )}
       </main>
-
-      {/* Footer */}
-      <footer className="w-full border-t border-slate-800/80 p-6 text-center text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span>© 2026 ResumeForge — Free ATS Resume Builder & Analyzer</span>
-          <div className="flex items-center gap-4">
-            <Link href="/" className="hover:text-slate-300 transition-colors">
-              Home
-            </Link>
-            <Link href="/templates" className="hover:text-slate-300 transition-colors">
-              Templates
-            </Link>
-            <Link href="/onboarding" className="hover:text-slate-300 transition-colors">
-              Build Resume
-            </Link>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

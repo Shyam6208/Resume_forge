@@ -15,32 +15,33 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "ResumeForge — Free Professional Resume Builder",
+  title: "ResumeForge — Free AI Resume Builder & Career Suite",
   description:
-    "Build ATS-friendly resumes for free. 40+ templates, PDF export, no watermark, no AI.",
+    "Build ATS-optimized resumes with 1-Click AI Auto-Tailor, Live Voice Mock Interviews, Real-Time Web Portfolios, and clean PDF/DOCX export with zero watermarks.",
   keywords: [
-    "resume builder",
-    "free resume",
-    "ATS resume",
-    "ATS checker",
-    "professional resume builder",
-    "no watermark resume",
+    "AI resume builder",
+    "free resume builder",
+    "ATS resume optimizer",
+    "AI mock interview",
+    "real-time portfolio",
+    "job description match",
     "PDF export resume",
+    "no watermark resume",
   ],
   authors: [{ name: "ResumeForge Team" }],
   openGraph: {
-    title: "ResumeForge — Free Professional Resume Builder",
+    title: "ResumeForge — Free AI Resume Builder & Career Suite",
     description:
-      "Build ATS-friendly resumes for free. 40+ templates, PDF export, no watermark, no AI.",
+      "Build ATS-optimized resumes with 1-Click AI Auto-Tailor, Live Voice Mock Interviews, Real-Time Web Portfolios, and clean PDF/DOCX export with zero watermarks.",
     url: "https://resumeforge.app",
     siteName: "ResumeForge",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "ResumeForge — Free Professional Resume Builder",
+    title: "ResumeForge — Free AI Resume Builder & Career Suite",
     description:
-      "Build ATS-friendly resumes for free. 40+ templates, PDF export, no watermark, no AI.",
+      "Build ATS-optimized resumes with 1-Click AI Auto-Tailor, Live Voice Mock Interviews, Real-Time Web Portfolios, and clean PDF/DOCX export with zero watermarks.",
   },
 };
 
