@@ -45,6 +45,7 @@ export function usePDFExport(): UsePDFExportReturn {
           id: validId,
           title: resumeToExport.title || "My Resume",
           templateId: resumeToExport.templateId || "minimal-white",
+          templateConfig: resumeToExport.templateConfig || null,
           targetJob: resumeToExport.targetJob || "",
           data: resumeToExport.data || {},
           theme: resumeToExport.theme || {},
@@ -90,6 +91,8 @@ export function usePDFExport(): UsePDFExportReturn {
             resumeData: resumeToExport.data,
             resumeTheme: resumeToExport.theme,
             templateId: resumeToExport.templateId,
+            templateConfig: resumeToExport.templateConfig || null,
+            sectionOrder: resumeToExport.sectionOrder || [],
             title: resumeToExport.title,
           }),
         });
@@ -139,7 +142,9 @@ export function usePDFExport(): UsePDFExportReturn {
                 resumeToExport.templateId,
                 resumeToExport.data,
                 resumeToExport.theme,
-                resumeToExport.title
+                resumeToExport.title,
+                resumeToExport.templateConfig || null,
+                resumeToExport.sectionOrder || []
               );
               printWindow.document.write(html);
               printWindow.document.close();

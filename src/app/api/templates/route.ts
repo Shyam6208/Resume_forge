@@ -1,10 +1,21 @@
 import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import { TEMPLATES as BUILTIN_TEMPLATES, TemplateConfig } from "@/config/templates.config";
 
 export async function GET() {
   try {
-    const supabase = await createServerSupabaseClient();
+    let supabase;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (serviceKey && serviceKey !== "your_supabase_service_role_key_here") {
+      try {
+        supabase = createAdminSupabaseClient();
+      } catch {
+        supabase = await createServerSupabaseClient();
+      }
+    } else {
+      supabase = await createServerSupabaseClient();
+    }
 
     // Query ONLY published templates for public users
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

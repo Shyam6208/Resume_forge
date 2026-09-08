@@ -21,7 +21,6 @@ import {
   Users,
   Plus,
   Trash2,
-  GripVertical,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -74,6 +73,16 @@ export function EditorSidebar() {
       addSection(sectionKey);
     }
     setActiveSection(sectionKey);
+  };
+
+  const handleRemoveSection = (e: React.MouseEvent, sectionKey: SectionKey) => {
+    e.stopPropagation();
+    e.preventDefault();
+    removeSection(sectionKey);
+    if (activeSection === sectionKey) {
+      const remaining = sectionOrder.filter((s) => s !== sectionKey);
+      setActiveSection(remaining[0] || "personalInfo");
+    }
   };
 
   return (
@@ -135,14 +144,11 @@ export function EditorSidebar() {
                 {config.optional && isAdded && sectionKey !== "personalInfo" && (
                   <button
                     type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeSection(sectionKey);
-                    }}
+                    onClick={(e) => handleRemoveSection(e, sectionKey)}
                     className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-rose-400 transition-opacity p-0.5"
-                    title="Hide section"
+                    title="Remove section"
                   >
-                    <Trash2 className="w-3 h-3" />
+                    <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 )}
               </div>

@@ -1,8 +1,9 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useResumeStore } from "@/store/resume.store";
 import { useUIStore } from "@/store/ui.store";
-import { TEMPLATES } from "@/config/templates.config";
+import { TEMPLATES, TemplateConfig } from "@/config/templates.config";
 import type { PageMargins } from "@/types/resume.types";
 import {
   Sheet,
@@ -63,6 +64,18 @@ export function ThemeCustomizer() {
 
   const theme = currentResume?.theme || DEFAULT_THEME;
   const currentTemplateId = currentResume?.templateId || "minimal-white";
+  const [allTemplates, setAllTemplates] = useState<TemplateConfig[]>(TEMPLATES);
+
+  useEffect(() => {
+    fetch("/api/templates")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.templates && Array.isArray(data.templates)) {
+          setAllTemplates(data.templates);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const handleResetTheme = () => {
     updateTheme(DEFAULT_THEME);
@@ -352,13 +365,13 @@ export function ThemeCustomizer() {
             </h3>
 
             <div className="grid grid-cols-2 gap-2.5">
-              {TEMPLATES.map((tmpl) => {
+              {allTemplates.map((tmpl) => {
                 const isSelected = currentTemplateId === tmpl.id;
                 return (
                   <button
                     key={tmpl.id}
                     type="button"
-                    onClick={() => updateTemplateId(tmpl.id)}
+                    onClick={() => updateTemplateId(tmpl.id, tmpl.templateConfig || null)}
                     className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all group relative overflow-hidden ${
                       isSelected
                         ? "bg-indigo-950/60 border-indigo-500 ring-1 ring-indigo-500 shadow-md"

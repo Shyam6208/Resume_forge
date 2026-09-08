@@ -1,7 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdminApi, logAdminActivity } from "@/lib/auth/require-admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import { nanoid } from "nanoid";
+
+async function getAdminDb() {
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (serviceKey && serviceKey !== "your_supabase_service_role_key_here") {
+    try {
+      return createAdminSupabaseClient();
+    } catch {
+      return await createServerSupabaseClient();
+    }
+  }
+  return await createServerSupabaseClient();
+}
 
 export async function POST(
   request: NextRequest,
@@ -14,13 +27,13 @@ export async function POST(
 
   const { user } = authResult;
   const { id, action } = await params;
-  const supabase = await createServerSupabaseClient();
+  const supabase = await getAdminDb();
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: template, error: fetchErr } = await (supabase.from("resume_templates") as any)
       .select("*")
-      .eq("id", id)
+      .or(`id.eq.${id},slug.eq.${id}`)
       .single();
 
     if (fetchErr || !template) {
@@ -94,7 +107,7 @@ export async function POST(
         is_ats_friendly: template.is_ats_friendly ?? true,
         ats_rating: template.ats_rating || 90,
         sort_order: (template.sort_order || 0) + 1,
-        version: template.version || "1.0",
+        version: typeof template.version === "number" ? Math.floor(template.version) : parseInt(String(template.version || 1), 10) || 1,
         created_by: user.id,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),

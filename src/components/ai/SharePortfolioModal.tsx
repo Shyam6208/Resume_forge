@@ -37,17 +37,18 @@ export function SharePortfolioModal({ isOpen, onClose }: SharePortfolioModalProp
   const currentResume = useResumeStore((s) => s.currentResume);
   const updateIsPublic = useResumeStore((s) => s.updateIsPublic);
 
+  const resumeIsPublic = currentResume?.isPublic ?? false;
+  const [prevResumeIsPublic, setPrevResumeIsPublic] = useState(resumeIsPublic);
+  const [isPublic, setIsPublic] = useState(resumeIsPublic);
   const [copied, setCopied] = useState(false);
-  const [isPublic, setIsPublic] = useState(currentResume?.isPublic ?? false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [showQR, setShowQR] = useState(true);
 
-  // Sync state when currentResume changes or modal opens
-  useEffect(() => {
-    if (currentResume) {
-      setIsPublic(currentResume.isPublic ?? false);
-    }
-  }, [currentResume, isOpen]);
+  // Sync state when currentResume changes without cascading render
+  if (resumeIsPublic !== prevResumeIsPublic) {
+    setPrevResumeIsPublic(resumeIsPublic);
+    setIsPublic(resumeIsPublic);
+  }
 
   const slug = currentResume?.slug || currentResume?.id || "";
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";

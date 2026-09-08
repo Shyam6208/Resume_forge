@@ -227,6 +227,8 @@ export interface Resume {
   createdAt: string;
   updatedAt: string;
   isTemporary?: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  templateConfig?: any | null;
 }
 
 // ============================================================

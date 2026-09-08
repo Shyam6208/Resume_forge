@@ -5,7 +5,7 @@ import { generatePDF } from "@/lib/pdf";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { resumeId, resumeData, resumeTheme, templateId, title } = body || {};
+    const { resumeId, resumeData, resumeTheme, templateId, templateConfig, sectionOrder, title } = body || {};
 
     if (!resumeId && !resumeData) {
       return NextResponse.json(
@@ -32,6 +32,8 @@ export async function POST(request: Request) {
       data: resumeData,
       theme: resumeTheme,
       templateId,
+      templateConfig,
+      sectionOrder,
       title,
     });
 

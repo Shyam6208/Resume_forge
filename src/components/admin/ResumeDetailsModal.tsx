@@ -92,12 +92,24 @@ export function ResumeDetailsModal({
   const [pendingVisibility, setPendingVisibility] = useState<boolean | null>(null);
   const [toggling, setToggling] = useState(false);
 
-  useEffect(() => {
-    if (!resumeId || !open) {
+  const [prevOpen, setPrevOpen] = useState(open);
+  const [prevResumeId, setPrevResumeId] = useState(resumeId);
+
+  if (open !== prevOpen || resumeId !== prevResumeId) {
+    setPrevOpen(open);
+    setPrevResumeId(resumeId);
+    if (!open || !resumeId) {
       setResume(null);
       setError("");
+    }
+  }
+
+  useEffect(() => {
+    if (!resumeId || !open) {
       return;
     }
+
+    let isCancelled = false;
 
     const fetchDetail = async () => {
       setLoading(true);
@@ -108,16 +120,26 @@ export function ResumeDetailsModal({
           const body = await res.json().catch(() => ({}));
           throw new Error((body as { error?: string }).error || "Failed to load resume details.");
         }
-        const data = await res.json();
-        setResume(data.resume as ResumeFullDetail);
+        const data: ResumeFullDetail = await res.json();
+        if (!isCancelled) {
+          setResume(data);
+        }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Unable to load resume.");
+        if (!isCancelled) {
+          setError(err instanceof Error ? err.message : "Failed to load resume.");
+        }
       } finally {
-        setLoading(false);
+        if (!isCancelled) {
+          setLoading(false);
+        }
       }
     };
 
     fetchDetail();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [resumeId, open]);
 
   if (!open) return null;

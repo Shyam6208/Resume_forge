@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
       is_ats_friendly: Boolean(body.is_ats_friendly ?? true),
       ats_rating: Number(body.ats_rating) || 90,
       sort_order: Number(body.sort_order) || 0,
-      version: body.version || "1.0",
+      version: typeof body.version === "number" ? Math.floor(body.version) : parseInt(String(body.version || 1), 10) || 1,
       created_by: user.id,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let error: any = null;
 
-    // Resilient insert: automatically strip columns missing from database schema cache
+    // Resilient insert: automatically strip columns missing from database schema cache or fix type errors
     const MAX_RETRIES = 10;
     for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
       const result = await (supabase.from("resume_templates") as any)
@@ -167,6 +167,14 @@ export async function POST(request: NextRequest) {
         delete insertPayload[colMatch[1]];
         continue;
       }
+
+      // If invalid integer syntax error occurs on version, strip or reset to integer 1
+      if (error.message?.includes("invalid input syntax for type integer")) {
+        console.warn(`Integer syntax mismatch, stripping 'version' column and retrying (attempt ${attempt + 1})`);
+        delete insertPayload.version;
+        continue;
+      }
+
       // Non-schema-cache error — stop retrying
       break;
     }

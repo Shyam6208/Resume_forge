@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import { isValidUUID, generateUUID } from "@/utils/uuid";
 import type { Resume, ResumeData, ResumeTheme, UserType, SectionKey } from "@/types/resume.types";
 import { DEFAULT_THEME, DEFAULT_SECTION_ORDER } from "@/types/resume.types";
 import { SECTION_ORDER_BY_USER_TYPE } from "@/config/sections.config";
+import { normalizeTemplateData } from "@/lib/templates/normalize-template-data";
 
 export const dynamic = "force-dynamic";
 
@@ -75,6 +77,7 @@ export async function POST(request: Request) {
       sectionOrder: payloadSectionOrder,
       data: payloadData,
       theme: payloadTheme,
+      templateConfig: payloadTemplateConfig,
     } = body || {};
 
     const supabase = await createServerSupabaseClient();
@@ -100,8 +103,54 @@ export async function POST(request: Request) {
     const sectionOrder: SectionKey[] =
       payloadSectionOrder || SECTION_ORDER_BY_USER_TYPE[userType as UserType] || DEFAULT_SECTION_ORDER;
 
-    const resumeData: ResumeData = payloadData || DEFAULT_RESUME_DATA;
-    const resumeTheme: ResumeTheme = payloadTheme || DEFAULT_THEME;
+    const BUILTIN_IDS = ["minimal-white", "corporate-pro", "fresher-basic", "dev-template", "modern-pro"];
+    let finalTemplateConfig = payloadTemplateConfig || null;
+
+    if (!finalTemplateConfig && templateId && !BUILTIN_IDS.includes(templateId)) {
+      try {
+        let dbClient;
+        const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+        if (serviceKey && serviceKey !== "your_supabase_service_role_key_here") {
+          try {
+            dbClient = createAdminSupabaseClient();
+          } catch {
+            dbClient = supabase;
+          }
+        } else {
+          dbClient = supabase;
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: tmpl } = await (dbClient.from("resume_templates") as any)
+          .select("template_config")
+          .or(`id.eq.${templateId},slug.eq.${templateId}`)
+          .single();
+        if (tmpl?.template_config) {
+          finalTemplateConfig = tmpl.template_config;
+        }
+      } catch {
+        // ignore fallback
+      }
+    }
+
+    let resumeData: ResumeData = payloadData;
+    if (!resumeData && finalTemplateConfig) {
+      resumeData = normalizeTemplateData(finalTemplateConfig, DEFAULT_RESUME_DATA);
+    }
+    if (!resumeData) {
+      resumeData = DEFAULT_RESUME_DATA;
+    }
+
+    let resumeTheme: ResumeTheme = payloadTheme;
+    if (!resumeTheme && finalTemplateConfig?.themeOverrides) {
+      resumeTheme = {
+        ...DEFAULT_THEME,
+        ...finalTemplateConfig.themeOverrides,
+      };
+    }
+    if (!resumeTheme) {
+      resumeTheme = DEFAULT_THEME;
+    }
 
     const newResume: Resume = {
       id,
@@ -109,6 +158,7 @@ export async function POST(request: Request) {
       title,
       slug,
       templateId,
+      templateConfig: finalTemplateConfig,
       targetJob,
       data: resumeData,
       theme: resumeTheme,

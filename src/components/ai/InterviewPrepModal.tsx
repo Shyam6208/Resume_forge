@@ -176,17 +176,21 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
 
   // Timer Effect
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isTimerRunning && timerSeconds > 0) {
-      interval = setInterval(() => {
-        setTimerSeconds((prev) => prev - 1);
-      }, 1000);
-    } else if (timerSeconds === 0 && isTimerRunning) {
-      setIsTimerRunning(false);
-      toast("⏰ Time's up for this question! Submit your answer for AI review.", { icon: "⏰" });
-    }
+    if (!isTimerRunning) return;
+
+    const interval = setInterval(() => {
+      setTimerSeconds((prev) => {
+        if (prev <= 1) {
+          setIsTimerRunning(false);
+          toast("⏰ Time's up for this question! Submit your answer for AI review.", { icon: "⏰" });
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
     return () => clearInterval(interval);
-  }, [isTimerRunning, timerSeconds]);
+  }, [isTimerRunning]);
 
   // Voice Dictation (Web Speech API) Setup
   const toggleVoiceRecording = () => {

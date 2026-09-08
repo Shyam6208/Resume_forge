@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import {
-  ServerCrash,
   RefreshCw,
   Database,
   Lock,
@@ -47,37 +46,51 @@ export function AdminReliabilityClient() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastChecked, setLastChecked] = useState<Date | null>(null);
 
-  const fetchHealth = useCallback(async (isRefresh = false) => {
-    if (isRefresh) setIsRefreshing(true);
-    else setLoadingState("loading");
-    setErrorMessage("");
-
-    try {
-      const res = await fetch("/api/admin/system-health");
-      if (!res.ok) {
-        throw new Error(`Health check failed (${res.status})`);
-      }
-
-      const data: SystemHealthData = await res.json();
-      if (!data.success) {
-        throw new Error("System health check returned unsuccessful status.");
-      }
-      
-      setHealthData(data);
-      setLastChecked(new Date());
-      setLoadingState("loaded");
-    } catch (err) {
-      console.error(err);
-      setErrorMessage(err instanceof Error ? err.message : "Unable to check system health.");
-      setLoadingState("error");
-    } finally {
-      if (isRefresh) setIsRefreshing(false);
-    }
-  }, []);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
-    fetchHealth();
-  }, [fetchHealth]);
+    let isCancelled = false;
+    async function loadHealth() {
+      try {
+        const res = await fetch("/api/admin/system-health");
+        if (!res.ok) {
+          throw new Error(`Health check failed (${res.status})`);
+        }
+
+        const data: SystemHealthData = await res.json();
+        if (!data.success) {
+          throw new Error("System health check returned unsuccessful status.");
+        }
+
+        if (!isCancelled) {
+          setHealthData(data);
+          setLastChecked(new Date());
+          setErrorMessage("");
+          setLoadingState("loaded");
+        }
+      } catch (err) {
+        if (!isCancelled) {
+          console.error(err);
+          setErrorMessage(err instanceof Error ? err.message : "Unable to check system health.");
+          setLoadingState("error");
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsRefreshing(false);
+        }
+      }
+    }
+
+    loadHealth();
+    return () => {
+      isCancelled = true;
+    };
+  }, [refreshTrigger]);
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    setRefreshTrigger((prev) => prev + 1);
+  };
 
   if (loadingState === "loading" && !healthData) {
     return (
@@ -112,7 +125,7 @@ export function AdminReliabilityClient() {
             <p className="text-sm font-bold text-white">Unable to check system health.</p>
             <p className="text-xs text-slate-400">{errorMessage}</p>
           </div>
-          <Button onClick={() => fetchHealth(false)} className="h-9 px-4 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl">
+          <Button onClick={handleRefresh} className="h-9 px-4 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl">
             <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
             Try Again
           </Button>
@@ -150,7 +163,7 @@ export function AdminReliabilityClient() {
             </span>
           )}
           <Button
-            onClick={() => fetchHealth(true)}
+            onClick={handleRefresh}
             disabled={isRefreshing}
             className="h-10 px-4 text-xs bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-700"
           >

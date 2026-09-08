@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuthStore } from "@/store/auth.store";
 import { useResumeStore } from "@/store/resume.store";
@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { JobRoleCombobox } from "@/components/ui/job-role-combobox";
 import { TEMPLATES } from "@/config/templates.config";
+import type { TemplateConfig } from "@/config/templates.config";
 import {
   GraduationCap,
   Sparkles,
@@ -27,6 +28,7 @@ import {
   Zap,
   FileText,
   Target,
+  Loader2,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -110,8 +112,11 @@ const RECOMMENDED_TEMPLATES: Record<UserType, string> = {
   other: "minimal-white",
 };
 
-export default function OnboardingPage() {
+function OnboardingContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const templateQuery = searchParams.get("template");
+
   const setUserType = useAuthStore((s) => s.setUserType);
   const setOnboardingCompleted = useAuthStore((s) => s.setOnboardingCompleted);
   const setResume = useResumeStore((s) => s.setResume);
@@ -119,13 +124,34 @@ export default function OnboardingPage() {
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [selectedUserType, setSelectedUserType] = useState<UserType | null>(null);
   const [targetJob, setTargetJob] = useState("");
-  const [startMode, setStartMode] = useState<"quick" | "choose" | "fresh">("quick");
-  const [selectedTemplateId, setSelectedTemplateId] = useState("minimal-white");
+  const [startMode, setStartMode] = useState<"quick" | "choose" | "fresh">(
+    templateQuery ? "choose" : "quick"
+  );
+  const [selectedTemplateId, setSelectedTemplateId] = useState(
+    templateQuery || "minimal-white"
+  );
   const [isCreating, setIsCreating] = useState(false);
+  const [allTemplates, setAllTemplates] = useState<TemplateConfig[]>(TEMPLATES);
+
+  // Load published templates (built-in + dynamic) from API
+  useEffect(() => {
+    fetch("/api/templates")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.templates && Array.isArray(data.templates)) {
+          setAllTemplates(data.templates);
+        }
+      })
+      .catch(() => {
+        /* fallback to hardcoded TEMPLATES */
+      });
+  }, []);
 
   const handleUserTypeSelect = (type: UserType) => {
     setSelectedUserType(type);
-    setSelectedTemplateId(RECOMMENDED_TEMPLATES[type] || "minimal-white");
+    if (!templateQuery) {
+      setSelectedTemplateId(RECOMMENDED_TEMPLATES[type] || "minimal-white");
+    }
   };
 
   const handleFinish = async () => {
@@ -151,6 +177,12 @@ export default function OnboardingPage() {
         finalTemplateId = "minimal-white";
       }
 
+      const matchedTemplate = allTemplates.find(
+        (t) => t.id === finalTemplateId || t.slug === finalTemplateId
+      );
+      const effectiveTemplateId = matchedTemplate?.id || finalTemplateId;
+      const effectiveTemplateConfig = matchedTemplate?.templateConfig || null;
+
       const res = await fetch("/api/resume", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -158,8 +190,9 @@ export default function OnboardingPage() {
           title: targetJob ? `${targetJob} Resume` : `${selectedUserType.toUpperCase()} Resume`,
           userType: selectedUserType,
           targetJob,
-          templateId: finalTemplateId,
+          templateId: effectiveTemplateId,
           sectionOrder,
+          templateConfig: effectiveTemplateConfig,
         }),
       });
 
@@ -305,7 +338,7 @@ export default function OnboardingPage() {
                   <span>What job are you targeting?</span>
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-400">
-                  We'll use this to optimize ATS keyword checks and section order.
+                  We will use this to optimize ATS keyword checks and section order.
                 </p>
               </div>
 
@@ -442,7 +475,7 @@ export default function OnboardingPage() {
                 >
                   <span className="text-xs font-bold text-slate-300">Select Template:</span>
                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
-                    {TEMPLATES.map((tmpl) => {
+                    {allTemplates.map((tmpl) => {
                       const isSelected = selectedTemplateId === tmpl.id;
                       return (
                         <button
@@ -502,5 +535,19 @@ export default function OnboardingPage() {
         </p>
       </footer>
     </div>
+  );
+}
+
+export default function OnboardingPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400">
+          <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+        </div>
+      }
+    >
+      <OnboardingContent />
+    </Suspense>
   );
 }

@@ -1,0 +1,665 @@
+"use client";
+
+import { useState, useMemo } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import {
+  ArrowLeft, FileCode2, Sparkles, Save,
+  CheckCircle2, Loader2, Eye, X, Code, Sliders,
+  Upload, Check, Copy, ZoomIn, ZoomOut, Maximize2
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import toast from "react-hot-toast";
+import { PreviewRenderer } from "@/components/preview/PreviewRenderer";
+import { DEFAULT_THEME } from "@/types/resume.types";
+import { normalizeTemplateData } from "@/lib/templates/normalize-template-data";
+
+const DEFAULT_STARTER_JSON = JSON.stringify(
+  {
+    template: "modern-developer-sidebar",
+    layoutStyle: {
+      page: {
+        display: "grid",
+        gridTemplateColumns: "30% 70%",
+      },
+      sidebar: {
+        background: "#182131",
+      },
+      main: {
+        background: "#ffffff",
+      },
+    },
+    themeOverrides: {
+      primaryColor: "#3b82f6",
+      sidebarColor: "#182131",
+      textColor: "#1e293b",
+      mutedColor: "#64748b",
+      borderColor: "#e2e8f0",
+      backgroundColor: "#ffffff",
+      fontFamily: "Inter, sans-serif",
+    },
+    headerConfig: {
+      style: "sidebar",
+      alignment: "left",
+      showProfileIcon: true,
+      profileIcon: "Code",
+    },
+    personalInfo: {
+      name: "RAHUL",
+      lastName: "SHARMA",
+      designation: "Full Stack Developer",
+      email: "rahul.sharma@example.com",
+      phone: "+91 98765 43210",
+      location: "Bengaluru, India",
+      linkedin: "linkedin.com/in/rahulsharma",
+      github: "github.com/rahulsharma",
+    },
+    professionalSummary: {
+      title: "Professional Summary",
+      content:
+        "Results-driven Full Stack Developer with 4+ years of experience building high-performance, scalable web applications with React, Next.js, and Node.js microservices.",
+    },
+    experience: {
+      title: "Work Experience",
+      timeline: {
+        enabled: true,
+        lineColor: "#cbd5e1",
+        lineWidth: "2px",
+        dotColor: "#3b82f6",
+        dotSize: "8px",
+      },
+      items: [
+        {
+          company: "Tech Innovations Inc.",
+          position: "Senior Software Engineer",
+          startDate: "2022",
+          endDate: "Present",
+          responsibilities: [
+            "Architected scalable microservices serving 1M+ monthly active users with 99.99% uptime.",
+            "Led development of core Next.js frontend applications, improving Core Web Vitals by 45%.",
+          ],
+        },
+        {
+          company: "DataCloud Systems",
+          position: "Frontend Developer",
+          startDate: "2020",
+          endDate: "2022",
+          responsibilities: [
+            "Engineered responsive analytics dashboards with React and Tailwind CSS.",
+            "Collaborated with UX teams to implement an accessible component design system.",
+          ],
+        },
+      ],
+    },
+    projects: {
+      title: "Projects",
+      items: [
+        {
+          name: "ResumeForge Platform",
+          technologies: ["Next.js", "TypeScript", "TailwindCSS", "Supabase"],
+          description:
+            "A JSON-driven AI resume builder platform with real-time A4 compilation and live rendering preview.",
+          link: "github.com/arjunpatel/resumeforge",
+        },
+        {
+          name: "DevCollab Real-time IDE",
+          technologies: ["React", "Node.js", "Socket.io", "WebRTC"],
+          description:
+            "Collaborative in-browser code editor with multi-user cursors and audio/video chat.",
+          link: "github.com/arjunpatel/devcollab",
+        },
+      ],
+    },
+    skills: {
+      title: "Skills & Expertise",
+      pill: {
+        background: "#243044",
+        color: "#e2e8f0",
+        borderRadius: "4px",
+        fontSize: "10.5px",
+        border: "1px solid #334155",
+      },
+      categories: {
+        Frontend: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Redux"],
+        Backend: ["Node.js", "Express.js", "PostgreSQL", "Redis", "GraphQL"],
+        DevOps: ["Docker", "AWS", "CI/CD Pipelines", "Git"],
+      },
+    },
+    education: {
+      title: "Education",
+      items: [
+        {
+          institution: "Visvesvaraya Technological University",
+          degree: "B.Tech in Computer Science",
+          startDate: "2019",
+          endDate: "2023",
+          grade: "8.6",
+        },
+      ],
+    },
+    achievementsAndCertifications: {
+      title: "Achievements & Certifications",
+      bottomSection: {
+        columns: 2,
+      },
+      achievements: [
+        "Winner of National Hackathon 2023 (1st prize out of 500+ teams)",
+        "Published research paper on Web Performance Optimization",
+      ],
+      certifications: [
+        "AWS Certified Solutions Architect – Associate",
+        "Meta Certified Frontend Developer Professional",
+      ],
+    },
+  },
+  null,
+  2
+);
+
+export default function CreateTemplatePage() {
+  const router = useRouter();
+
+  // Basic Template Info
+  const [name, setName] = useState("Modern Developer Sidebar");
+  const [slug, setSlug] = useState("modern-developer-sidebar");
+  const [description, setDescription] = useState("JSON-driven modern split sidebar resume template.");
+  const [category, setCategory] = useState("Developer");
+  const [tagsInput, setTagsInput] = useState("Sidebar, Developer, Modern, ATS Friendly");
+  const [atsRating, setAtsRating] = useState(96);
+  const [sortOrder, setSortOrder] = useState(0);
+  const [isFeatured, setIsFeatured] = useState(true);
+  const [isPremium, setIsPremium] = useState(false);
+  const [isAtsFriendly, setIsAtsFriendly] = useState(true);
+
+  // JSON Input is the Source of Truth
+  const [jsonString, setJsonString] = useState(DEFAULT_STARTER_JSON);
+  const [jsonParseError, setJsonParseError] = useState<string | null>(null);
+
+  // Optional preview image (NOT required)
+  const [previewUrl, setPreviewUrl] = useState("");
+  const [previewPublicId, setPreviewPublicId] = useState("");
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+
+  const [isSaving, setIsSaving] = useState(false);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [modalScale, setModalScale] = useState(0.85);
+
+  // Parse JSON in real-time
+  const parsedDataAndConfig = useMemo(() => {
+    try {
+      if (!jsonString.trim()) {
+        return { parsed: null, error: "JSON is empty." };
+      }
+      const parsed = JSON.parse(jsonString);
+      return { parsed, error: null };
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Syntax Error";
+      return { parsed: null, error: msg };
+    }
+  }, [jsonString]);
+
+  const activeConfig = parsedDataAndConfig.parsed || {};
+  const activeResumeData = useMemo(() => {
+    return normalizeTemplateData(activeConfig);
+  }, [activeConfig]);
+
+  // Handle JSON Text Area Change with Auto-Fill
+  const handleJsonChange = (val: string) => {
+    setJsonString(val);
+    try {
+      const p = JSON.parse(val);
+      setJsonParseError(null);
+
+      // Auto-populate name / slug if blank or default
+      if (p.personalInfo?.name && (!name || name === "New Template")) {
+        const candidateName = p.personalInfo.lastName
+          ? `${p.personalInfo.name} ${p.personalInfo.lastName}`
+          : p.personalInfo.name;
+        const newTemplateName = `${candidateName} Template`;
+        setName(newTemplateName);
+        setSlug(
+          newTemplateName
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, "")
+            .replace(/\s+/g, "-")
+        );
+      }
+    } catch (err: unknown) {
+      setJsonParseError(err instanceof Error ? err.message : "Invalid JSON");
+    }
+  };
+
+  // Upload optional image
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/admin/templates/upload-preview", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        throw new Error(data.error || "Failed to upload preview image.");
+      }
+
+      setPreviewUrl(data.url);
+      setPreviewPublicId(data.publicId);
+      toast.success("Optional thumbnail uploaded!");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Image upload failed.");
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
+
+  // Save template (Draft or Published)
+  const handleSave = async (targetStatus: "draft" | "published" = "draft") => {
+    if (!name.trim() || !slug.trim()) {
+      toast.error("Please enter a Template Name and Slug.");
+      return;
+    }
+
+    if (parsedDataAndConfig.error || !parsedDataAndConfig.parsed) {
+      toast.error(`Invalid JSON: ${parsedDataAndConfig.error || "Please fix JSON syntax."}`);
+      return;
+    }
+
+    setIsSaving(true);
+    const toastId = toast.loading(targetStatus === "published" ? "Publishing template..." : "Saving draft...");
+
+    try {
+      const tags = tagsInput.split(",").map((t) => t.trim()).filter(Boolean);
+
+      const payload = {
+        name: name.trim(),
+        slug: slug.trim(),
+        description: description.trim(),
+        category,
+        tags,
+        thumbnail_url: previewUrl || null,
+        thumbnail_public_id: previewPublicId || null,
+        template_config: parsedDataAndConfig.parsed,
+        status: targetStatus,
+        is_featured: isFeatured,
+        is_premium: isPremium,
+        is_ats_friendly: isAtsFriendly,
+        ats_rating: atsRating,
+        sort_order: sortOrder,
+        version: 1,
+      };
+
+      const res = await fetch("/api/admin/templates", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        throw new Error(data.error || "Failed to create template.");
+      }
+
+      toast.dismiss(toastId);
+      toast.success(targetStatus === "published" ? "🎉 Template is LIVE on website!" : "Template saved!");
+      router.push("/admin/templates");
+    } catch (err: unknown) {
+      toast.dismiss(toastId);
+      toast.error(err instanceof Error ? err.message : "Failed to create template.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6 max-w-7xl mx-auto pb-16">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+        <div className="flex items-center gap-3">
+          <Link
+            href="/admin/templates"
+            className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </Link>
+          <div>
+            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
+              <span>JSON-Driven Resume Builder</span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 font-bold uppercase">
+                Direct Engine
+              </span>
+            </h1>
+            <p className="text-xs text-slate-400">
+              Paste or edit resume JSON below. Layout, styles, colors, and content are rendered 100% dynamically.
+            </p>
+          </div>
+        </div>
+
+        {/* Action buttons */}
+        <div className="flex items-center gap-2.5">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setIsPreviewOpen(true)}
+            className="h-10 px-4 text-xs bg-slate-900 border-slate-700 hover:bg-slate-800 text-white font-semibold flex items-center gap-1.5 rounded-xl shadow-sm"
+          >
+            <Eye className="w-4 h-4 text-indigo-400" />
+            <span>Full A4 Modal</span>
+          </Button>
+
+          <Button
+            type="button"
+            disabled={isSaving}
+            onClick={() => handleSave("draft")}
+            className="h-10 px-4 text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded-xl"
+          >
+            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4 mr-1" />}
+            <span>Save Draft</span>
+          </Button>
+
+          <Button
+            type="button"
+            disabled={isSaving}
+            onClick={() => handleSave("published")}
+            className="h-10 px-5 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/30 flex items-center gap-1.5"
+          >
+            <CheckCircle2 className="w-4 h-4" />
+            <span>Save & Publish</span>
+          </Button>
+        </div>
+      </div>
+
+      {/* Main Grid: Left Column JSON Editor, Right Column Live A4 Preview */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Column: JSON Editor & Template Metadata (7 cols) */}
+        <div className="lg:col-span-7 space-y-6">
+          {/* Section 1: JSON Editor */}
+          <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 shadow-lg space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-2">
+                <FileCode2 className="w-4 h-4" />
+                <span>Resume JSON (Content & Layout Styles)</span>
+              </h2>
+
+              <div className="flex items-center gap-2 text-xs">
+                {jsonParseError ? (
+                  <span className="text-rose-400 text-[11px] font-semibold bg-rose-950/40 px-2.5 py-0.5 rounded-full border border-rose-800/40">
+                    Syntax Error: {jsonParseError}
+                  </span>
+                ) : (
+                  <span className="text-emerald-400 text-[11px] font-semibold bg-emerald-950/40 px-2.5 py-0.5 rounded-full border border-emerald-800/40 flex items-center gap-1">
+                    <Check className="w-3 h-3" /> Valid JSON
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <p className="text-[11px] text-slate-400">
+              The JSON contains <code>layoutStyle</code>, <code>themeOverrides</code>, <code>headerConfig</code>, and content (<code>personalInfo</code>, <code>experience</code>, <code>skills</code>, etc.). Changing anything immediately updates the Live Rendering Preview!
+            </p>
+
+            <div className="relative">
+              <textarea
+                rows={22}
+                value={jsonString}
+                onChange={(e) => handleJsonChange(e.target.value)}
+                className="w-full p-4 bg-slate-950 border border-slate-800 rounded-2xl text-slate-200 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500/50 leading-relaxed"
+                placeholder="Paste your resume JSON here..."
+                spellCheck={false}
+              />
+            </div>
+          </div>
+
+          {/* Section 2: Metadata (Name, Slug, Category) */}
+          <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 shadow-lg space-y-4">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-purple-400 flex items-center gap-2">
+              <Sliders className="w-4 h-4" />
+              <span>Template Metadata & Listing</span>
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-300">Template Name *</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full h-10 px-4 bg-slate-950 border border-slate-800 rounded-xl text-white text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                  required
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-300">Slug (URL identifier) *</label>
+                <input
+                  type="text"
+                  value={slug}
+                  onChange={(e) => setSlug(e.target.value)}
+                  className="w-full h-10 px-4 bg-slate-950 border border-slate-800 rounded-xl text-white text-xs font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-300">Category</label>
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="w-full h-10 px-3 bg-slate-950 border border-slate-800 rounded-xl text-white text-xs focus:outline-none"
+                >
+                  <option value="Developer">Developer</option>
+                  <option value="Modern">Modern</option>
+                  <option value="Corporate">Corporate</option>
+                  <option value="Minimal">Minimal</option>
+                  <option value="Fresher">Fresher</option>
+                  <option value="Creative">Creative</option>
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-300">ATS Rating (%)</label>
+                <input
+                  type="number"
+                  min={50}
+                  max={100}
+                  value={atsRating}
+                  onChange={(e) => setAtsRating(Number(e.target.value))}
+                  className="w-full h-10 px-3 bg-slate-950 border border-slate-800 rounded-xl text-white text-xs font-bold text-emerald-400 focus:outline-none"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-300">Sort Order</label>
+                <input
+                  type="number"
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(Number(e.target.value))}
+                  className="w-full h-10 px-3 bg-slate-950 border border-slate-800 rounded-xl text-white text-xs focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-wrap gap-5 pt-3 border-t border-slate-800 text-xs font-semibold text-slate-300">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isAtsFriendly}
+                  onChange={(e) => setIsAtsFriendly(e.target.checked)}
+                  className="w-4 h-4 rounded bg-slate-950 border-slate-800 text-indigo-600 focus:ring-0"
+                />
+                <span>ATS Friendly Badge</span>
+              </label>
+
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isFeatured}
+                  onChange={(e) => setIsFeatured(e.target.checked)}
+                  className="w-4 h-4 rounded bg-slate-950 border-slate-800 text-indigo-600 focus:ring-0"
+                />
+                <span>★ Featured</span>
+              </label>
+
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={isPremium}
+                  onChange={(e) => setIsPremium(e.target.checked)}
+                  className="w-4 h-4 rounded bg-slate-950 border-slate-800 text-indigo-600 focus:ring-0"
+                />
+                <span>Premium Template</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Live A4 Rendering Preview (5 cols) */}
+        <div className="lg:col-span-5 space-y-6">
+          <div className="p-5 rounded-3xl bg-slate-900 border border-slate-800 shadow-xl space-y-3 sticky top-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                <span>Live Rendering Preview (A4 Scaled)</span>
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsPreviewOpen(true)}
+                className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1 bg-indigo-950/60 px-2.5 py-1 rounded-lg border border-indigo-800/40"
+              >
+                <span>Fullscreen</span>
+                <Eye className="w-3 h-3" />
+              </button>
+            </div>
+
+            {/* A4 Canvas Container: Scaled down preserving complete 2-column / custom layout */}
+            <div className="w-full h-[620px] rounded-2xl bg-slate-950 border border-slate-800 overflow-hidden relative shadow-inner flex items-start justify-center pt-2">
+              <div
+                className="origin-top transform scale-[0.48] shrink-0"
+                style={{
+                  width: "210mm",
+                  minHeight: "297mm",
+                }}
+              >
+                <PreviewRenderer
+                  templateId={slug || "custom-dynamic"}
+                  data={activeResumeData}
+                  theme={DEFAULT_THEME}
+                  templateConfig={activeConfig}
+                />
+              </div>
+            </div>
+
+            <p className="text-[10.5px] text-slate-500 text-center">
+              The preview scales the exact 210mm A4 canvas. Layout & styling are computed directly from the JSON.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Fullscreen Live Preview Modal */}
+      {isPreviewOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex flex-col p-4 sm:p-6 overflow-hidden">
+          {/* Modal Header */}
+          <div className="flex items-center justify-between pb-4 border-b border-slate-800 max-w-6xl mx-auto w-full shrink-0">
+            <div className="flex items-center gap-2.5">
+              <Sparkles className="w-5 h-5 text-indigo-400" />
+              <div>
+                <span className="font-bold text-white text-sm sm:text-base block">
+                  Full-Size A4 Preview: {name}
+                </span>
+                <span className="text-[11px] text-slate-400 block">
+                  Exact 210mm × 297mm A4 Paper Document
+                </span>
+              </div>
+            </div>
+
+            {/* Modal Zoom & Close Controls */}
+            <div className="flex items-center gap-2">
+              <div className="flex items-center bg-slate-900 border border-slate-800 rounded-xl p-1">
+                <button
+                  type="button"
+                  onClick={() => setModalScale((prev) => Math.max(0.4, Number((prev - 0.1).toFixed(2))))}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                  title="Zoom Out"
+                >
+                  <ZoomOut className="w-4 h-4" />
+                </button>
+                <span className="text-xs font-mono text-slate-300 px-2.5 min-w-[48px] text-center">
+                  {Math.round(modalScale * 100)}%
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setModalScale((prev) => Math.min(1.4, Number((prev + 0.1).toFixed(2))))}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                  title="Zoom In"
+                >
+                  <ZoomIn className="w-4 h-4" />
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setModalScale(0.85)}
+                className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800"
+              >
+                Fit
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setModalScale(1.0)}
+                className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800"
+              >
+                100% (1:1)
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsPreviewOpen(false)}
+                className="p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 ml-2"
+                title="Close Modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Modal Scrollable Canvas Container */}
+          <div className="flex-1 w-full overflow-auto py-6 flex items-start justify-center">
+            <div
+              className="shrink-0 shadow-2xl rounded-sm bg-white transition-all my-4"
+              style={{
+                width: `${794 * modalScale}px`,
+                height: `${1123 * modalScale}px`,
+              }}
+            >
+              <div
+                className="origin-top-left"
+                style={{
+                  width: "794px",
+                  height: "1123px",
+                  transform: `scale(${modalScale})`,
+                }}
+              >
+                <PreviewRenderer
+                  templateId={slug || "custom-dynamic"}
+                  data={activeResumeData}
+                  theme={DEFAULT_THEME}
+                  templateConfig={activeConfig}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

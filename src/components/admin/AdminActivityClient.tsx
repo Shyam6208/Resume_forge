@@ -108,13 +108,17 @@ export function AdminActivityClient() {
     router.replace(newUrl, { scroll: false });
   }, [pathname, searchParams, router]);
 
-  // Sync state from URL (handles Browser Back/Forward)
-  useEffect(() => {
+  // Sync state from URL during render (handles Browser Back/Forward)
+  const [prevParams, setPrevParams] = useState(searchParams.toString());
+  const currentParamsStr = searchParams.toString();
+
+  if (currentParamsStr !== prevParams) {
+    setPrevParams(currentParamsStr);
     const urlPage = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
     const urlSearch = searchParams.get("search") || "";
     const urlType = searchParams.get("type") || "all";
     const urlDays = searchParams.get("days") || "30";
-    
+
     if (urlPage !== page) setPage(urlPage);
     if (urlSearch !== debouncedSearch) {
       setDebouncedSearch(urlSearch);
@@ -122,7 +126,7 @@ export function AdminActivityClient() {
     }
     if (urlType !== typeFilter) setTypeFilter(urlType);
     if (urlDays !== daysFilter) setDaysFilter(urlDays);
-  }, [searchParams]);
+  }
 
   // Debounced Search
   useEffect(() => {
@@ -139,55 +143,54 @@ export function AdminActivityClient() {
     };
   }, [search, debouncedSearch, typeFilter, daysFilter, updateUrl]);
 
-  const fetchActivity = useCallback(async (isRefresh = false) => {
-    if (isRefresh) setIsRefreshing(true);
-    else setLoadingState("loading");
-    setErrorMessage("");
-
-    try {
-      const params = new URLSearchParams({
-        page: String(page),
-        pageSize: String(PAGE_SIZE),
-        days: daysFilter,
-        type: typeFilter,
-      });
-      if (debouncedSearch) params.set("search", debouncedSearch);
-
-      const res = await fetch(`/api/admin/activity?${params.toString()}`);
-      if (!res.ok) {
-        throw new Error(`Failed to fetch activity (${res.status})`);
-      }
-
-      const data: ActivityResponse = await res.json();
-      setEvents(data.events);
-      setTotalCount(data.totalCount);
-      setLoadingState("loaded");
-    } catch (err) {
-      console.error(err);
-      setErrorMessage(err instanceof Error ? err.message : "Unable to load activity.");
-      setLoadingState("error");
-    } finally {
-      if (isRefresh) setIsRefreshing(false);
-    }
-  }, [page, daysFilter, typeFilter, debouncedSearch]);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
-    fetchActivity();
-  }, [fetchActivity]);
+    let isCancelled = false;
+    async function loadActivity() {
+      try {
+        const params = new URLSearchParams({
+          page: String(page),
+          pageSize: String(PAGE_SIZE),
+          days: daysFilter,
+          type: typeFilter,
+        });
+        if (debouncedSearch) params.set("search", debouncedSearch);
 
-  const handleFilterChange = (key: 'type' | 'days', value: string) => {
-    let newType = typeFilter;
-    let newDays = daysFilter;
+        const res = await fetch(`/api/admin/activity?${params.toString()}`);
+        if (!res.ok) {
+          throw new Error(`Failed to fetch activity (${res.status})`);
+        }
 
-    if (key === 'type') newType = value;
-    if (key === 'days') newDays = value;
+        const data: ActivityResponse = await res.json();
+        if (!isCancelled) {
+          setEvents(data.events);
+          setTotalCount(data.totalCount);
+          setErrorMessage("");
+          setLoadingState("loaded");
+        }
+      } catch (err) {
+        if (!isCancelled) {
+          console.error(err);
+          setErrorMessage(err instanceof Error ? err.message : "Unable to load activity.");
+          setLoadingState("error");
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsRefreshing(false);
+        }
+      }
+    }
 
-    setPage(1);
-    
-    if (key === 'type') setTypeFilter(value);
-    if (key === 'days') setDaysFilter(value);
+    loadActivity();
+    return () => {
+      isCancelled = true;
+    };
+  }, [page, daysFilter, typeFilter, debouncedSearch, refreshTrigger]);
 
-    updateUrl(1, debouncedSearch, newType, newDays);
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    setRefreshTrigger(prev => prev + 1);
   };
 
   const handlePageChange = (newPage: number) => {
@@ -309,7 +312,7 @@ export function AdminActivityClient() {
             <p className="text-sm font-bold text-white">Unable to load activity logs.</p>
             <p className="text-xs text-slate-400">{errorMessage}</p>
           </div>
-          <Button onClick={() => fetchActivity(false)} className="h-9 px-4 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl">
+          <Button onClick={handleRefresh} className="h-9 px-4 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl">
             <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
             Try Again
           </Button>
@@ -336,7 +339,7 @@ export function AdminActivityClient() {
           </p>
         </div>
         <Button
-          onClick={() => fetchActivity(true)}
+          onClick={handleRefresh}
           disabled={isRefreshing}
           className="h-10 px-4 text-xs bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-700"
         >

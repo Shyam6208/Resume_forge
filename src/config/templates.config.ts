@@ -2,11 +2,17 @@ export interface TemplateConfig {
   id: string;
   name: string;
   slug: string;
-  category: "Modern" | "Minimal" | "Fresher" | "Developer" | "Corporate";
+  category: string;
   atsRating: number;
   tags: string[];
   description: string;
   previewImage?: string;
+  isFeatured?: boolean;
+  isPremium?: boolean;
+  isDynamic?: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  templateConfig?: any | null;
+  status?: "draft" | "published" | "archived";
 }
 
 export const TEMPLATES: TemplateConfig[] = [

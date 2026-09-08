@@ -105,7 +105,7 @@ export function SkillsSuggestions() {
         {/* Skills Pills List */}
         <div className="max-h-[180px] overflow-y-auto flex flex-wrap gap-1.5 p-1">
           {filteredSkills.length === 0 ? (
-            <span className="text-xs text-slate-400 italic py-2">No skills matching "{search}"</span>
+            <span className="text-xs text-slate-400 italic py-2">No skills matching &ldquo;{search}&rdquo;</span>
           ) : (
             filteredSkills.map((skill) => {
               const currentList = existingSkills[activeCategory] || [];

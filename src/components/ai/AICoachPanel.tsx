@@ -58,14 +58,14 @@ export function AICoachPanel() {
   // Duplicate request prevention
   const analyzeInFlight = useRef(false);
   const matchInFlight = useRef(false);
-  const lastAnalyzedJdRef = useRef(jobDescription);
-  const lastAnalyzedResumeIdRef = useRef(currentResume?.id || "");
+  const [lastAnalyzedJd, setLastAnalyzedJd] = useState(jobDescription);
+  const [lastAnalyzedResumeId, setLastAnalyzedResumeId] = useState(currentResume?.id || "");
 
   // Skill Gap derivation
   const skillGapData = useMemo(() => {
     if (!jdMatch) return null;
-    if (jobDescription !== lastAnalyzedJdRef.current) return null;
-    if (currentResume?.id !== lastAnalyzedResumeIdRef.current) return null;
+    if (jobDescription !== lastAnalyzedJd) return null;
+    if (currentResume?.id !== lastAnalyzedResumeId) return null;
 
     const strongMatch = new Set<string>();
     const notFound = new Set<string>();
@@ -99,7 +99,7 @@ export function AICoachPanel() {
       notFoundInResume: Array.from(notFound),
       needsReview: Array.from(review),
     };
-  }, [jdMatch, jobDescription, currentResume?.id]);
+  }, [jdMatch, jobDescription, currentResume?.id, lastAnalyzedJd, lastAnalyzedResumeId]);
 
   // Accordion toggles
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
@@ -210,8 +210,8 @@ export function AICoachPanel() {
     const cached = getClientCached<JDMatchResult>(cacheKey);
     if (cached) {
       setJdMatch(cached);
-      lastAnalyzedJdRef.current = jobDescription;
-      lastAnalyzedResumeIdRef.current = currentResume.id;
+      setLastAnalyzedJd(jobDescription);
+      setLastAnalyzedResumeId(currentResume.id);
       toast.success("JD Match loaded from cache!", { duration: 2000 });
       return;
     }
@@ -237,8 +237,8 @@ export function AICoachPanel() {
 
       const result: JDMatchResult = await res.json();
       setJdMatch(result);
-      lastAnalyzedJdRef.current = jobDescription;
-      lastAnalyzedResumeIdRef.current = currentResume.id;
+      setLastAnalyzedJd(jobDescription);
+      setLastAnalyzedResumeId(currentResume.id);
 
       // Cache the result
       setClientCached(cacheKey, result);

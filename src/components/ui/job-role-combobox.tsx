@@ -13,14 +13,17 @@ interface JobRoleComboboxProps {
 export function JobRoleCombobox({ value, onChange, placeholder = "e.g. Senior Frontend Developer", className }: JobRoleComboboxProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState(value);
+  const [prevValue, setPrevValue] = useState(value);
   const [activeIndex, setActiveIndex] = useState(-1);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const listboxRef = useRef<HTMLUListElement>(null);
 
-  // Sync internal search state with external value changes
-  useEffect(() => {
+  // Sync internal search state with external value changes during render
+  if (value !== prevValue) {
+    setPrevValue(value);
     setSearch(value);
-  }, [value]);
+    setActiveIndex(-1);
+  }
 
   // Handle outside click
   useEffect(() => {
@@ -82,11 +85,6 @@ export function JobRoleCombobox({ value, onChange, placeholder = "e.g. Senior Fr
       .sort((a, b) => b.score - a.score)
       .slice(0, 8)
       .map((item) => item.role);
-  }, [search]);
-
-  // Reset active index when search changes
-  useEffect(() => {
-    setActiveIndex(-1);
   }, [search]);
 
   const handleSelect = (roleValue: string) => {
@@ -154,6 +152,7 @@ export function JobRoleCombobox({ value, onChange, placeholder = "e.g. Senior Fr
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
+            setActiveIndex(-1);
             onChange(e.target.value); // Keep parent in sync even for custom input
             setIsOpen(true);
           }}
@@ -186,7 +185,7 @@ export function JobRoleCombobox({ value, onChange, placeholder = "e.g. Senior Fr
                   <Check className="w-3.5 h-3.5" />
                 </div>
                 <div className="flex-1 truncate">
-                  Use custom role: <span className="font-semibold text-white">"{search.trim()}"</span>
+                  Use custom role: <span className="font-semibold text-white">&ldquo;{search.trim()}&rdquo;</span>
                 </div>
               </button>
             </div>

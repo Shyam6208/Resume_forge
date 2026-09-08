@@ -84,14 +84,26 @@ export function UserDetailsModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
+  const [prevOpen, setPrevOpen] = useState(open);
+  const [prevUserId, setPrevUserId] = useState(user?.id);
+
+  if (open !== prevOpen || user?.id !== prevUserId) {
+    setPrevOpen(open);
+    setPrevUserId(user?.id);
     if (!open || !user) {
       setFullUser(null);
       setStats(null);
       setResumes([]);
       setError("");
+    }
+  }
+
+  useEffect(() => {
+    if (!open || !user) {
       return;
     }
+
+    let isCancelled = false;
 
     const fetchDetails = async () => {
       setLoading(true);
@@ -103,18 +115,28 @@ export function UserDetailsModal({
           throw new Error(data.error || "Failed to load user details.");
         }
         const data = await res.json();
-        setFullUser(data.user);
-        setStats(data.stats);
-        setResumes(data.resumes);
+        if (!isCancelled) {
+          setFullUser(data.user);
+          setStats(data.stats);
+          setResumes(data.resumes);
+        }
       } catch (err) {
-        console.error(err);
-        setError(err instanceof Error ? err.message : "Unable to load user details.");
+        if (!isCancelled) {
+          console.error(err);
+          setError(err instanceof Error ? err.message : "Unable to load user details.");
+        }
       } finally {
-        setLoading(false);
+        if (!isCancelled) {
+          setLoading(false);
+        }
       }
     };
 
     fetchDetails();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [open, user]);
 
   if (!user) return null;

@@ -352,7 +352,7 @@ export function ResumeCard({
               <span>Delete Resume?</span>
             </DialogTitle>
             <DialogDescription className="text-xs text-slate-400">
-              Are you sure you want to delete <span className="font-semibold text-white">"{resume.title}"</span>? This action cannot be undone.
+              Are you sure you want to delete <span className="font-semibold text-white">&ldquo;{resume.title}&rdquo;</span>? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
 

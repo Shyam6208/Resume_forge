@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useResumeStore } from "@/store/resume.store";
 import { useResumeScore } from "@/hooks/useResumeScore";
 import { useATSCheck } from "@/hooks/useATSCheck";
 import { useAutoSave } from "@/hooks/useAutoSave";
 import { useSaveImportedResume } from "@/hooks/useSaveImportedResume";
-import { TEMPLATES } from "@/config/templates.config";
+import { TEMPLATES, TemplateConfig } from "@/config/templates.config";
 import { useUIStore } from "@/store/ui.store";
 import { AIChatDrawer } from "@/components/ai/AIChatDrawer";
 import { CoverLetterModal } from "@/components/ai/CoverLetterModal";
@@ -36,6 +36,7 @@ import {
   Globe,
   Send,
   TrendingUp,
+  Printer,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -67,6 +68,18 @@ export function EditorToolbar() {
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleInput, setTitleInput] = useState(currentResume?.title || "My Resume");
+  const [allTemplates, setAllTemplates] = useState<TemplateConfig[]>(TEMPLATES);
+
+  useEffect(() => {
+    fetch("/api/templates")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.templates && Array.isArray(data.templates)) {
+          setAllTemplates(data.templates);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   // AI Modal States
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -336,11 +349,11 @@ export function EditorToolbar() {
               Select Resume Template
             </h4>
             <div className="space-y-1 max-h-60 overflow-y-auto">
-              {TEMPLATES.map((tmpl) => (
+              {allTemplates.map((tmpl) => (
                 <button
                   key={tmpl.id}
                   type="button"
-                  onClick={() => updateTemplateId(tmpl.id)}
+                  onClick={() => updateTemplateId(tmpl.id, tmpl.templateConfig || null)}
                   className={`w-full text-left p-2 rounded-lg text-xs flex items-center justify-between transition-colors ${
                     currentResume?.templateId === tmpl.id
                       ? "bg-indigo-600 text-white font-medium"
@@ -541,6 +554,18 @@ export function EditorToolbar() {
             >
               <FileSpreadsheet className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>{isExportingDOCX ? "Exporting DOCX..." : "Download DOCX"}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                toast("Opening instant PDF / Print dialog...", { icon: "🖨️", duration: 1500 });
+                setTimeout(() => window.print(), 150);
+              }}
+              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+            >
+              <Printer className="w-4 h-4 text-indigo-400 shrink-0" />
+              <span>Quick Print / Instant PDF</span>
             </button>
           </PopoverContent>
         </Popover>

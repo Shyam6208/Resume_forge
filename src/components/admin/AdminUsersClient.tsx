@@ -96,17 +96,21 @@ export function AdminUsersClient() {
     router.replace(newUrl, { scroll: false });
   }, [pathname, searchParams, router]);
 
-  // Sync state from URL (handles Browser Back/Forward)
-  useEffect(() => {
+  // Sync state from URL during render (handles Browser Back/Forward)
+  const [prevParams, setPrevParams] = useState(searchParams.toString());
+  const currentParamsStr = searchParams.toString();
+
+  if (currentParamsStr !== prevParams) {
+    setPrevParams(currentParamsStr);
     const urlPage = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
     const urlSearch = searchParams.get("search") || "";
-    
+
     if (urlPage !== page) setPage(urlPage);
     if (urlSearch !== debouncedSearch) {
       setDebouncedSearch(urlSearch);
       setSearch(urlSearch);
     }
-  }, [searchParams]);
+  }
 
   // ── Debounced search (300ms) ─────────────────────────────────
   useEffect(() => {
@@ -124,43 +128,56 @@ export function AdminUsersClient() {
   }, [search, debouncedSearch, updateUrl]);
 
   // ── Fetch users from admin API ───────────────────────────────
-  const fetchUsers = useCallback(async () => {
-    setLoadingState("loading");
-    setErrorMessage("");
-    try {
-      const params = new URLSearchParams({
-        page: String(page),
-        pageSize: String(PAGE_SIZE),
-      });
-      if (debouncedSearch) {
-        params.set("search", debouncedSearch);
-      }
-
-      const res = await fetch(`/api/admin/users?${params.toString()}`);
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(
-          (body as { error?: string }).error || `Request failed (${res.status})`
-        );
-      }
-
-      const data: UsersApiResponse = await res.json();
-      setUsers(data.users);
-      setTotalCount(data.totalCount);
-      setLoadingState("loaded");
-    } catch (err) {
-      console.error("Failed to fetch admin users:", err);
-      setErrorMessage(
-        err instanceof Error ? err.message : "Unable to load users."
-      );
-      setLoadingState("error");
-    }
-  }, [page, debouncedSearch]);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
+    let isCancelled = false;
+    async function loadUsers() {
+      try {
+        const params = new URLSearchParams({
+          page: String(page),
+          pageSize: String(PAGE_SIZE),
+        });
+        if (debouncedSearch) {
+          params.set("search", debouncedSearch);
+        }
+
+        const res = await fetch(`/api/admin/users?${params.toString()}`);
+
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(
+            (body as { error?: string }).error || `Request failed (${res.status})`
+          );
+        }
+
+        const data: UsersApiResponse = await res.json();
+        if (!isCancelled) {
+          setUsers(data.users);
+          setTotalCount(data.totalCount);
+          setErrorMessage("");
+          setLoadingState("loaded");
+        }
+      } catch (err) {
+        if (!isCancelled) {
+          console.error("Failed to fetch admin users:", err);
+          setErrorMessage(
+            err instanceof Error ? err.message : "Unable to load users."
+          );
+          setLoadingState("error");
+        }
+      }
+    }
+
+    loadUsers();
+    return () => {
+      isCancelled = true;
+    };
+  }, [page, debouncedSearch, refreshTrigger]);
+
+  const handleRefresh = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
 
   // ── Pagination helpers ───────────────────────────────────────
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
@@ -262,7 +279,7 @@ export function AdminUsersClient() {
             <p className="text-xs text-slate-400">{errorMessage}</p>
           </div>
           <Button
-            onClick={fetchUsers}
+            onClick={handleRefresh}
             className="h-9 px-4 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl"
           >
             <RefreshCw className="w-3.5 h-3.5 mr-1.5" />

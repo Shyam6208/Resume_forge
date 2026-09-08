@@ -1,6 +1,6 @@
 "use client";
 
-import { ResumeData, ResumeTheme } from "@/types/resume.types";
+import { ResumeData, ResumeTheme, SectionKey } from "@/types/resume.types";
 import { PreviewRenderer } from "@/components/preview/PreviewRenderer";
 import { TEMPLATES } from "@/config/templates.config";
 import { ArrowLeft, Printer, ShieldAlert } from "lucide-react";
@@ -21,6 +21,7 @@ interface AdminResumeViewerProps {
   ownerName: string;
   ownerEmail: string;
   templateConfig?: DynamicTemplateConfig | null;
+  sectionOrder?: SectionKey[];
 }
 
 export function AdminResumeViewer({
@@ -35,7 +36,8 @@ export function AdminResumeViewer({
   targetJob,
   ownerName,
   ownerEmail,
-  templateConfig
+  templateConfig,
+  sectionOrder,
 }: AdminResumeViewerProps) {
   const router = useRouter();
 
@@ -48,67 +50,58 @@ export function AdminResumeViewer({
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col items-center pb-12">
-      {/* Admin Context Bar (Hidden on print) */}
-      <div className="w-full bg-slate-900 border-b border-slate-800 print:hidden sticky top-0 z-50">
-        <div className="max-w-[210mm] mx-auto px-4 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => router.push("/admin/resumes")}
-              className="p-2 text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-800 rounded-xl transition-colors"
-              title="Back to Resumes"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-sm font-bold text-white truncate max-w-[200px]">{title}</h1>
-                <span className="px-2 py-0.5 rounded-md bg-rose-500/10 border border-rose-500/20 text-[10px] font-bold text-rose-400 flex items-center gap-1">
-                  <ShieldAlert className="w-3 h-3" />
-                  READ ONLY
+      {/* Top Admin Action Bar */}
+      <div className="w-full bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between sticky top-0 z-50 print:hidden shadow-md">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => router.back()}
+            className="flex items-center gap-1 text-sm font-medium text-slate-400 hover:text-slate-200 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Resumes
+          </button>
+          <div className="h-4 w-px bg-slate-800" />
+          <div>
+            <h1 className="text-base font-bold text-slate-100 flex items-center gap-2">
+              {title}
+              <span className="text-xs font-normal px-2 py-0.5 rounded bg-slate-800 text-slate-400">
+                {templateName}
+              </span>
+              {isPublic ? (
+                <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  Public
                 </span>
-                {isPublic && (
-                  <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold text-emerald-400">
-                    Public
-                  </span>
-                )}
-              </div>
-              <div className="text-xs text-slate-400 flex items-center gap-2 mt-1">
-                <span className="truncate max-w-[150px]">{ownerName} ({ownerEmail})</span>
-                <span className="w-1 h-1 rounded-full bg-slate-700"></span>
-                <span>{templateName}</span>
-                {targetJob && (
-                  <>
-                    <span className="w-1 h-1 rounded-full bg-slate-700"></span>
-                    <span className="truncate max-w-[120px]">{targetJob}</span>
-                  </>
-                )}
-              </div>
-            </div>
+              ) : (
+                <span className="text-xs px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">
+                  Private
+                </span>
+              )}
+            </h1>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Created by <span className="text-slate-200 font-medium">{ownerName}</span> ({ownerEmail}) • {new Date(updatedAt).toLocaleDateString()}
+            </p>
           </div>
-          
-          <div className="flex items-center gap-4 text-xs">
-            <div className="flex flex-col items-end">
-              <span className="text-slate-500">Downloads: <span className="text-slate-300 font-bold">{downloadCount}</span></span>
-              <span className="text-slate-500">Updated: <span className="text-slate-300">{new Date(updatedAt).toLocaleDateString()}</span></span>
-            </div>
-            <button
-              onClick={handlePrint}
-              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl transition-colors"
-            >
-              <Printer className="w-4 h-4" />
-              Print
-            </button>
-          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handlePrint}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-colors shadow-xs"
+          >
+            <Printer className="w-4 h-4" />
+            Print / Save PDF
+          </button>
         </div>
       </div>
 
+      {/* Legacy/Unknown Template Warning */}
       {isLegacyTemplate && (
-        <div className="max-w-[210mm] w-full mt-6 mb-2 px-4 print:hidden">
-          <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-200 text-sm flex items-center gap-3">
-            <ShieldAlert className="w-5 h-5 shrink-0" />
+        <div className="w-full max-w-4xl mt-6 px-4 print:hidden">
+          <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 flex items-start gap-3 text-amber-300 text-sm">
+            <ShieldAlert className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
             <div>
               <p className="font-bold">Legacy or Unavailable Template</p>
-              <p className="text-xs text-amber-200/80 mt-0.5">This resume uses an unknown template ID ("{templateId}"). Rendering with a safe generic fallback.</p>
+              <p className="text-xs text-amber-200/80 mt-0.5">This resume uses an unknown template ID (&ldquo;{templateId}&rdquo;). Rendering with a safe generic fallback.</p>
             </div>
           </div>
         </div>
@@ -122,6 +115,7 @@ export function AdminResumeViewer({
             theme={theme}
             templateId={templateId}
             templateConfig={templateConfig}
+            sectionOrder={sectionOrder}
           />
         </div>
       </div>

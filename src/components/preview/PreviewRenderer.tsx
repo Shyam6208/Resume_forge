@@ -1,7 +1,7 @@
 "use client";
 
 import { Component, ReactNode, ErrorInfo, memo } from "react";
-import type { ResumeData, ResumeTheme } from "@/types/resume.types";
+import type { ResumeData, ResumeTheme, SectionKey } from "@/types/resume.types";
 import {
   ModernPro,
   MinimalWhite,
@@ -17,6 +17,7 @@ interface PreviewRendererProps {
   data: ResumeData;
   theme: ResumeTheme;
   templateConfig?: DynamicTemplateConfig | null;
+  sectionOrder?: SectionKey[];
 }
 
 // Error Boundary for template rendering
@@ -55,22 +56,40 @@ export const PreviewRenderer = memo(function PreviewRenderer({
   data,
   theme,
   templateConfig,
+  sectionOrder,
 }: PreviewRendererProps) {
   const renderTemplate = () => {
+    if (templateConfig && typeof templateConfig === "object") {
+      return (
+        <DynamicTemplate
+          data={data}
+          theme={theme}
+          config={templateConfig}
+          sectionOrder={sectionOrder}
+        />
+      );
+    }
     switch (templateId) {
       case "modern-pro":
-        return <ModernPro data={data} theme={theme} />;
+        return <ModernPro data={data} theme={theme} sectionOrder={sectionOrder} />;
       case "minimal-white":
-        return <MinimalWhite data={data} theme={theme} />;
+        return <MinimalWhite data={data} theme={theme} sectionOrder={sectionOrder} />;
       case "fresher-basic":
-        return <FresherBasic data={data} theme={theme} />;
+        return <FresherBasic data={data} theme={theme} sectionOrder={sectionOrder} />;
       case "dev-template":
-        return <DevTemplate data={data} theme={theme} />;
+        return <DevTemplate data={data} theme={theme} sectionOrder={sectionOrder} />;
       case "corporate-pro":
-        return <CorporatePro data={data} theme={theme} />;
+        return <CorporatePro data={data} theme={theme} sectionOrder={sectionOrder} />;
       default:
         // Dynamic / Custom Database Template
-        return <DynamicTemplate data={data} theme={theme} config={templateConfig} />;
+        return (
+          <DynamicTemplate
+            data={data}
+            theme={theme}
+            config={templateConfig}
+            sectionOrder={sectionOrder}
+          />
+        );
     }
   };
 

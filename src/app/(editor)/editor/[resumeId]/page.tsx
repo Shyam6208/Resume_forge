@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import { EditorClient } from "@/components/editor/EditorClient";
 import type { Resume, ResumeData, ResumeTheme } from "@/types/resume.types";
 import { DEFAULT_THEME, DEFAULT_SECTION_ORDER } from "@/types/resume.types";
@@ -125,6 +126,8 @@ export default async function EditorPage({ params }: EditorPageProps) {
     return <EditorClient initialResume={DEMO_RESUME} />;
   }
 
+  let initialResume: (Resume & { isNotFound?: boolean }) | null = null;
+
   try {
     const supabase = await createServerSupabaseClient();
     const {
@@ -132,44 +135,76 @@ export default async function EditorPage({ params }: EditorPageProps) {
     } = await supabase.auth.getUser();
 
     if (!user) {
-      return <EditorClient initialResume={{ ...DEMO_RESUME, id: resumeId }} />;
+      initialResume = { ...DEMO_RESUME, id: resumeId };
+    } else {
+      // Query resume from database
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: dbResume, error } = await (supabase.from("resumes") as any)
+        .select("*")
+        .eq("id", resumeId)
+        .eq("user_id", user.id)
+        .single();
+
+      if (error || !dbResume) {
+        console.warn("Resume not found in Supabase DB for user, using fallback initial object:", error);
+        initialResume = { ...DEMO_RESUME, id: resumeId, userId: user.id, isNotFound: true };
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const row = dbResume as Record<string, any>;
+        const templateId = row.template_id || "minimal-white";
+
+        // If templateId is a custom dynamic template, fetch its template_config from resume_templates
+        const BUILTIN_IDS = ["minimal-white", "corporate-pro", "fresher-basic", "dev-template", "modern-pro"];
+        let dynamicConfig = null;
+        if (templateId && !BUILTIN_IDS.includes(templateId)) {
+          try {
+            let dbClient;
+            const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+            if (serviceKey && serviceKey !== "your_supabase_service_role_key_here") {
+              try {
+                dbClient = createAdminSupabaseClient();
+              } catch {
+                dbClient = supabase;
+              }
+            } else {
+              dbClient = supabase;
+            }
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data: tmpl } = await (dbClient.from("resume_templates") as any)
+              .select("template_config")
+              .or(`id.eq.${templateId},slug.eq.${templateId}`)
+              .single();
+            if (tmpl?.template_config) {
+              dynamicConfig = tmpl.template_config;
+            }
+          } catch (tmplErr) {
+            console.warn("Could not query dynamic template config:", tmplErr);
+          }
+        }
+
+        initialResume = {
+          id: row.id || resumeId,
+          userId: row.user_id || user.id,
+          title: row.title || "My Resume",
+          slug: row.slug || resumeId,
+          templateId,
+          templateConfig: dynamicConfig,
+          data: mergeSafeResumeData(row.data),
+          theme: (row.theme as ResumeTheme) || DEFAULT_THEME,
+          sectionOrder: Array.isArray(row.section_order) && row.section_order.length > 0 ? row.section_order : DEFAULT_SECTION_ORDER,
+          isPublic: row.is_public ?? false,
+          targetJob: row.target_job ?? undefined,
+          downloadCount: row.download_count ?? 0,
+          createdAt: row.created_at || new Date().toISOString(),
+          updatedAt: row.updated_at || new Date().toISOString(),
+        };
+      }
     }
-
-    // Query resume from database
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: dbResume, error } = await (supabase.from("resumes") as any)
-      .select("*")
-      .eq("id", resumeId)
-      .eq("user_id", user.id)
-      .single();
-
-    if (error || !dbResume) {
-      console.warn("Resume not found in Supabase DB for user, using fallback initial object:", error);
-      return <EditorClient initialResume={{ ...DEMO_RESUME, id: resumeId, userId: user.id, isNotFound: true } as any} />;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const row = dbResume as Record<string, any>;
-
-    const resume: Resume = {
-      id: row.id || resumeId,
-      userId: row.user_id || user.id,
-      title: row.title || "My Resume",
-      slug: row.slug || resumeId,
-      templateId: row.template_id || "minimal-white",
-      data: mergeSafeResumeData(row.data),
-      theme: (row.theme as ResumeTheme) || DEFAULT_THEME,
-      sectionOrder: Array.isArray(row.section_order) && row.section_order.length > 0 ? row.section_order : DEFAULT_SECTION_ORDER,
-      isPublic: row.is_public ?? false,
-      targetJob: row.target_job ?? undefined,
-      downloadCount: row.download_count ?? 0,
-      createdAt: row.created_at || new Date().toISOString(),
-      updatedAt: row.updated_at || new Date().toISOString(),
-    };
-
-    return <EditorClient initialResume={resume} />;
   } catch (err) {
     console.error("Editor page server error:", err);
-    return <EditorClient initialResume={{ ...DEMO_RESUME, id: resumeId, isNotFound: true } as any} />;
+    initialResume = { ...DEMO_RESUME, id: resumeId, isNotFound: true };
   }
+
+  return <EditorClient initialResume={initialResume || DEMO_RESUME} />;
 }

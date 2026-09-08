@@ -11,35 +11,55 @@ import toast from "react-hot-toast";
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();
-  const [fullName, setFullName] = useState("");
-  const [photoUrl, setPhotoUrl] = useState("");
+  const [fullName, setFullName] = useState(
+    () => user?.user_metadata?.full_name || user?.user_metadata?.name || ""
+  );
+  const [photoUrl, setPhotoUrl] = useState(
+    () =>
+      user?.user_metadata?.avatar_url ||
+      user?.user_metadata?.picture ||
+      user?.user_metadata?.avatar ||
+      user?.user_metadata?.photoUrl ||
+      ""
+  );
+  const [prevUserId, setPrevUserId] = useState(user?.id);
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      setFullName(user.user_metadata?.full_name || user.user_metadata?.name || "");
-      const initialPhoto =
-        user.user_metadata?.avatar_url ||
-        user.user_metadata?.picture ||
-        user.user_metadata?.avatar ||
-        user.user_metadata?.photoUrl ||
-        "";
-      setPhotoUrl(initialPhoto);
+  // Sync state if user changes
+  if (user && user.id !== prevUserId) {
+    setPrevUserId(user.id);
+    setFullName(user.user_metadata?.full_name || user.user_metadata?.name || "");
+    setPhotoUrl(
+      user.user_metadata?.avatar_url ||
+      user.user_metadata?.picture ||
+      user.user_metadata?.avatar ||
+      user.user_metadata?.photoUrl ||
+      ""
+    );
+  }
 
-      // Check profiles table for updated avatar
-      supabase
-        .from("profiles")
-        .select("name, avatar_url")
-        .eq("id", user.id)
-        .maybeSingle()
-        .then(({ data }) => {
-          const profile = data as { name?: string | null; avatar_url?: string | null } | null;
-          if (profile) {
-            if (profile.name) setFullName(profile.name);
-            if (profile.avatar_url) setPhotoUrl(profile.avatar_url);
-          }
-        });
-    }
+  useEffect(() => {
+    if (!user) return;
+    let isCancelled = false;
+
+    // Check profiles table for updated avatar
+    supabase
+      .from("profiles")
+      .select("name, avatar_url")
+      .eq("id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (isCancelled) return;
+        const profile = data as { name?: string | null; avatar_url?: string | null } | null;
+        if (profile) {
+          if (profile.name) setFullName(profile.name);
+          if (profile.avatar_url) setPhotoUrl(profile.avatar_url);
+        }
+      });
+
+    return () => {
+      isCancelled = true;
+    };
   }, [user]);
 
   const handleSaveProfile = async (e: React.FormEvent) => {

@@ -2,11 +2,14 @@ import type { Metadata, Viewport } from "next";
 import { Toaster } from "react-hot-toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./globals.css";
-import { Geist, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
-const inter = Inter({ subsets: ["latin"], display: "swap" });
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  preload: true,
+});
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -51,7 +54,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={cn("dark font-sans", geist.variable, inter.className)}>
+    <html lang="en" suppressHydrationWarning className={cn("dark", inter.className)}>
       <body className="bg-slate-950 text-slate-100 antialiased min-h-screen flex flex-col w-full min-w-0">
         <TooltipProvider>{children}</TooltipProvider>
         <Toaster

@@ -1,12 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { TEMPLATES as BUILTIN_TEMPLATES, TemplateConfig } from "@/config/templates.config";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Layout, Search, ArrowRight, CheckCircle2, Loader2, Sparkles } from "lucide-react";
+import { PreviewRenderer } from "@/components/preview/PreviewRenderer";
+import { DEFAULT_THEME } from "@/types/resume.types";
+import { normalizeTemplateData } from "@/lib/templates/normalize-template-data";
 
 export default function TemplatesPage() {
   const [templates, setTemplates] = useState<TemplateConfig[]>(BUILTIN_TEMPLATES);
@@ -14,7 +17,10 @@ export default function TemplatesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
-  const categories = ["all", "minimal", "corporate", "fresher", "developer", "modern"];
+  const categories = useMemo(() => {
+    const set = new Set(["all", ...templates.map((t) => (t.category || "Modern").toLowerCase())]);
+    return Array.from(set);
+  }, [templates]);
 
   useEffect(() => {
     async function loadPublishedTemplates() {
@@ -162,6 +168,20 @@ export default function TemplatesPage() {
                       alt={tmpl.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
+                  ) : tmpl.templateConfig ? (
+                    <div className="w-full h-full bg-slate-950 overflow-hidden relative flex items-start justify-center pt-1 pointer-events-none group-hover:scale-105 transition-transform duration-300">
+                      <div
+                        className="origin-top transform scale-[0.20] shrink-0 shadow-lg"
+                        style={{ width: "210mm", minHeight: "297mm" }}
+                      >
+                        <PreviewRenderer
+                          templateId={tmpl.id}
+                          data={normalizeTemplateData(tmpl.templateConfig)}
+                          theme={DEFAULT_THEME}
+                          templateConfig={tmpl.templateConfig}
+                        />
+                      </div>
+                    </div>
                   ) : (
                     <div className="w-full h-full p-4 flex flex-col justify-between group-hover:bg-slate-950/80 transition-colors">
                       <div className="h-2 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full" />

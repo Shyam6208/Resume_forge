@@ -172,7 +172,7 @@ export function ATSChecker() {
 
         <p className="text-[11px] text-slate-400 flex items-center gap-1">
           <Info className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-          <span>We'll check your resume against it in real-time</span>
+          <span>We will check your resume against it in real-time</span>
         </p>
       </div>
 

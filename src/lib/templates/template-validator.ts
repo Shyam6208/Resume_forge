@@ -4,27 +4,80 @@
 // NO EXECUTABLE CODE, SCRIPT TAGS, OR DANGEROUS PATTERNS ALLOWED.
 // ============================================================
 
+export interface LayoutStyleConfig {
+  page?: {
+    display?: string;
+    gridTemplateColumns?: string;
+    gap?: string;
+    background?: string;
+    backgroundColor?: string;
+    padding?: string;
+    margin?: string;
+  };
+  sidebar?: {
+    background?: string;
+    backgroundColor?: string;
+    color?: string;
+    textColor?: string;
+    padding?: string;
+    borderRadius?: string;
+    order?: number;
+    width?: string;
+  };
+  main?: {
+    background?: string;
+    backgroundColor?: string;
+    color?: string;
+    textColor?: string;
+    padding?: string;
+    order?: number;
+  };
+}
+
 export interface DynamicTemplateConfig {
-  version: string;
-  layoutStyle: "single-column" | "two-column-left" | "two-column-right" | "top-banner";
+  version?: string | number;
+  template?: string;
+  layoutStyle?: string | LayoutStyleConfig;
   themeOverrides?: {
     primaryColor?: string;
     secondaryColor?: string;
+    sidebarColor?: string;
+    sidebarBg?: string;
+    sidebarBackground?: string;
     textColor?: string;
+    sidebarTextColor?: string;
+    mutedColor?: string;
+    mutedTextColor?: string;
+    borderColor?: string;
     backgroundColor?: string;
-    fontFamily?: "inter" | "roboto" | "outfit" | "serif" | "mono";
-    fontSize?: "sm" | "md" | "lg";
+    pageBackground?: string;
+    accentColor?: string;
+    fontFamily?: string;
+    fontSize?: string | number;
+    lineHeight?: string | number;
+    headingFont?: string;
+    bodyFont?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: any;
   };
   headerConfig?: {
-    style?: "minimal" | "centered" | "banner" | "sidebar";
+    style?: "minimal" | "centered" | "banner" | "sidebar" | string;
+    alignment?: "left" | "center" | "right" | string;
     showPhoto?: boolean;
-    photoShape?: "circle" | "rounded" | "square";
+    photoShape?: "circle" | "rounded" | "square" | string;
+    taglineColor?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: any;
   };
   sectionStyles?: {
-    headingStyle?: "underlined" | "left-border" | "uppercase-bold" | "badge";
-    spacing?: "compact" | "normal" | "spacious";
-    dividerStyle?: "solid" | "dashed" | "none";
+    headingStyle?: "underlined" | "left-border" | "uppercase-bold" | "badge" | string;
+    spacing?: "compact" | "normal" | "spacious" | string;
+    dividerStyle?: "solid" | "dashed" | "none" | string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: any;
   };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
 }
 
 const DANGEROUS_PATTERNS = [
@@ -52,6 +105,7 @@ export interface ValidationResult {
 
 /**
  * Strictly validates raw JSON string or object for dynamic template configuration.
+ * Preserves all layoutStyle, themeOverrides, headerConfig, and custom data.
  */
 export function validateTemplateConfig(
   rawInput: string | object
@@ -62,8 +116,8 @@ export function validateTemplateConfig(
 
   if (typeof rawInput === "string") {
     jsonString = rawInput;
-    if (jsonString.length > 500000) {
-      return { isValid: false, error: "Template JSON file exceeds maximum size limit (500KB)." };
+    if (jsonString.length > 1000000) {
+      return { isValid: false, error: "Template JSON file exceeds maximum size limit (1MB)." };
     }
     try {
       parsed = JSON.parse(rawInput);
@@ -92,17 +146,10 @@ export function validateTemplateConfig(
     return { isValid: false, error: "Template JSON must be a top-level JSON object." };
   }
 
-  const validLayouts = ["single-column", "two-column-left", "two-column-right", "top-banner"];
-  if (parsed.layoutStyle && !validLayouts.includes(parsed.layoutStyle)) {
-    return {
-      isValid: false,
-      error: `Invalid layoutStyle "${parsed.layoutStyle}". Allowed values: ${validLayouts.join(", ")}`,
-    };
-  }
-
-  // Return clean sanitized object
+  // Return clean configuration without stripping or destroying layoutStyle or custom fields
   const cleanConfig: DynamicTemplateConfig = {
-    version: parsed.version || "1.0",
+    ...parsed,
+    version: parsed.version ? String(parsed.version) : "1.0",
     layoutStyle: parsed.layoutStyle || "single-column",
     themeOverrides: parsed.themeOverrides || {},
     headerConfig: parsed.headerConfig || {},

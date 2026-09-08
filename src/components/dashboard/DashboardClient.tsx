@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useSyncExternalStore } from "react";
 import Link from "next/link";
 import type { Resume, UserType } from "@/types/resume.types";
 import { ResumeCard } from "./ResumeCard";
@@ -52,9 +52,12 @@ export function DashboardClient({
   const [sortBy, setSortBy] = useState<SortOption>("updated");
   const [filterBy, setFilterBy] = useState<FilterOption>("all");
 
-  // Hydration fix for skeletons
-  const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => setIsMounted(true), []);
+  // Hydration fix for skeletons (using React 18/19 useSyncExternalStore)
+  const isMounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 

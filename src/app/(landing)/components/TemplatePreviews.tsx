@@ -1,9 +1,10 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { TEMPLATES } from "@/config/templates.config";
+import { TEMPLATES, TemplateConfig } from "@/config/templates.config";
 import { ArrowRight } from "lucide-react";
 
 /* Visual configs for template categories to make each card distinct */
@@ -47,7 +48,20 @@ const DEFAULT_STYLE = {
 };
 
 export function TemplatePreviews() {
-  const previewTemplates = TEMPLATES.slice(0, 4);
+  const [templates, setTemplates] = useState<TemplateConfig[]>(TEMPLATES);
+
+  useEffect(() => {
+    fetch("/api/templates")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.templates && Array.isArray(data.templates)) {
+          setTemplates(data.templates);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const previewTemplates = templates.slice(0, 4);
 
   return (
     <section className="py-24 px-4 sm:px-6 max-w-7xl mx-auto">
@@ -67,7 +81,7 @@ export function TemplatePreviews() {
             variant="outline"
             className="h-10 px-5 text-xs bg-white/[0.03] border-white/[0.08] text-slate-300 hover:bg-white/[0.06] hover:text-white flex items-center gap-2 shrink-0 rounded-xl transition-all"
           >
-            <span>See all 40+ templates</span>
+            <span>See all {templates.length}+ templates</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Button>
         </Link>
@@ -88,26 +102,36 @@ export function TemplatePreviews() {
               transition={{ duration: 0.4, delay: idx * 0.08 }}
               className={`group rounded-2xl bg-slate-900/50 border border-white/[0.06] overflow-hidden hover:border-white/[0.12] transition-all duration-200`}
             >
-              {/* Template thumbnail mockup — distinct per category */}
-              <div className="relative h-48 bg-slate-950/60 p-5 flex flex-col justify-between overflow-hidden">
-                {/* Gradient header bar */}
-                <div className={`h-1.5 w-full ${style.bar} rounded-full`} />
+              {/* Template thumbnail mockup / image */}
+              <div className="relative h-48 bg-slate-950/60 flex flex-col justify-between overflow-hidden">
+                {tmpl.previewImage ? (
+                  <img
+                    src={tmpl.previewImage}
+                    alt={tmpl.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                ) : (
+                  <div className="p-5 flex-1 flex flex-col justify-between">
+                    {/* Gradient header bar */}
+                    <div className={`h-1.5 w-full ${style.bar} rounded-full`} />
 
-                {/* Layout preview — varies per template */}
-                <div className="flex-1 py-3 space-y-2">
-                  <div className="h-2.5 w-2/5 rounded bg-slate-700/80" />
-                  <div className="h-1.5 w-1/3 rounded bg-white/[0.06]" />
-                  <div className="mt-2 space-y-1.5">
-                    <div className="h-1.5 w-full rounded bg-white/[0.04]" />
-                    <div className="h-1.5 w-5/6 rounded bg-white/[0.04]" />
-                    <div className="h-1.5 w-3/4 rounded bg-white/[0.03]" />
+                    {/* Layout preview */}
+                    <div className="flex-1 py-3 space-y-2">
+                      <div className="h-2.5 w-2/5 rounded bg-slate-700/80" />
+                      <div className="h-1.5 w-1/3 rounded bg-white/[0.06]" />
+                      <div className="mt-2 space-y-1.5">
+                        <div className="h-1.5 w-full rounded bg-white/[0.04]" />
+                        <div className="h-1.5 w-5/6 rounded bg-white/[0.04]" />
+                        <div className="h-1.5 w-3/4 rounded bg-white/[0.03]" />
+                      </div>
+                    </div>
+
+                    <div className="text-[10px] text-slate-600 font-mono flex justify-between">
+                      <span>A4</span>
+                      <span className="text-emerald-500/60 font-bold">ATS {tmpl.atsRating}%</span>
+                    </div>
                   </div>
-                </div>
-
-                <div className="text-[10px] text-slate-600 font-mono flex justify-between">
-                  <span>A4</span>
-                  <span className="text-emerald-500/60 font-bold">ATS {tmpl.atsRating}%</span>
-                </div>
+                )}
 
                 {/* Hover overlay */}
                 <div className="absolute inset-0 bg-slate-950/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">

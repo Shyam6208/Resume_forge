@@ -119,14 +119,18 @@ export function AdminResumesClient() {
     router.replace(newUrl, { scroll: false });
   }, [pathname, searchParams, router]);
 
-  // Sync state from URL (handles Browser Back/Forward)
-  useEffect(() => {
+  // Sync state from URL during render (handles Browser Back/Forward)
+  const [prevParams, setPrevParams] = useState(searchParams.toString());
+  const currentParamsStr = searchParams.toString();
+
+  if (currentParamsStr !== prevParams) {
+    setPrevParams(currentParamsStr);
     const urlPage = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
     const urlSearch = searchParams.get("search") || "";
     const urlUserId = searchParams.get("userId") || "";
     const urlTemplateId = searchParams.get("templateId") || "";
     const urlSort = searchParams.get("sort") || "updated_desc";
-    
+
     if (urlPage !== page) setPage(urlPage);
     if (urlSearch !== debouncedSearch) {
       setDebouncedSearch(urlSearch);
@@ -135,7 +139,7 @@ export function AdminResumesClient() {
     if (urlUserId !== userId) setUserId(urlUserId);
     if (urlTemplateId !== templateId) setTemplateId(urlTemplateId);
     if (urlSort !== sort) setSort(urlSort);
-  }, [searchParams]);
+  }
 
   // ── Debounced search (300ms) ─────────────────────────────────
   useEffect(() => {
@@ -179,44 +183,57 @@ export function AdminResumesClient() {
   }, [usersLoaded]);
 
   // ── Fetch resumes from admin API ─────────────────────────────
-  const fetchResumes = useCallback(async () => {
-    setLoadingState("loading");
-    setErrorMessage("");
-    try {
-      const params = new URLSearchParams({
-        page: String(page),
-        pageSize: String(PAGE_SIZE),
-        sort,
-      });
-      if (debouncedSearch) params.set("search", debouncedSearch);
-      if (userId) params.set("userId", userId);
-      if (templateId) params.set("templateId", templateId);
-
-      const res = await fetch(`/api/admin/resumes?${params.toString()}`);
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(
-          (body as { error?: string }).error || `Request failed (${res.status})`
-        );
-      }
-
-      const data: ResumesApiResponse = await res.json();
-      setResumes(data.resumes);
-      setTotalCount(data.totalCount);
-      setLoadingState("loaded");
-    } catch (err) {
-      console.error("Failed to fetch admin resumes:", err);
-      setErrorMessage(
-        err instanceof Error ? err.message : "Unable to load resumes."
-      );
-      setLoadingState("error");
-    }
-  }, [page, debouncedSearch, userId, templateId, sort]);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
-    fetchResumes();
-  }, [fetchResumes]);
+    let isCancelled = false;
+    async function loadResumes() {
+      try {
+        const params = new URLSearchParams({
+          page: String(page),
+          pageSize: String(PAGE_SIZE),
+          sort,
+        });
+        if (debouncedSearch) params.set("search", debouncedSearch);
+        if (userId) params.set("userId", userId);
+        if (templateId) params.set("templateId", templateId);
+
+        const res = await fetch(`/api/admin/resumes?${params.toString()}`);
+
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}));
+          throw new Error(
+            (body as { error?: string }).error || `Request failed (${res.status})`
+          );
+        }
+
+        const data: ResumesApiResponse = await res.json();
+        if (!isCancelled) {
+          setResumes(data.resumes);
+          setTotalCount(data.totalCount);
+          setErrorMessage("");
+          setLoadingState("loaded");
+        }
+      } catch (err) {
+        if (!isCancelled) {
+          console.error("Failed to fetch admin resumes:", err);
+          setErrorMessage(
+            err instanceof Error ? err.message : "Unable to load resumes."
+          );
+          setLoadingState("error");
+        }
+      }
+    }
+
+    loadResumes();
+    return () => {
+      isCancelled = true;
+    };
+  }, [page, debouncedSearch, userId, templateId, sort, refreshTrigger]);
+
+  const handleRefresh = () => {
+    setRefreshTrigger((prev) => prev + 1);
+  };
 
   // ── Pagination helpers ───────────────────────────────────────
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
@@ -341,7 +358,7 @@ export function AdminResumesClient() {
             <p className="text-xs text-slate-400">{errorMessage}</p>
           </div>
           <Button
-            onClick={fetchResumes}
+            onClick={handleRefresh}
             className="h-9 px-4 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl"
           >
             <RefreshCw className="w-3.5 h-3.5 mr-1.5" />

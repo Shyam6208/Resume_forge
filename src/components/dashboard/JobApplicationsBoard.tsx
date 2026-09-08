@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Resume } from "@/types/resume.types";
 import {
@@ -74,8 +74,24 @@ interface JobApplicationsBoardProps {
 }
 
 export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
-  const [applications, setApplications] = useState<JobApplication[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const isLoaded = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
+
+  const [applications, setApplications] = useState<JobApplication[]>(() => {
+    if (typeof window === "undefined") return DEFAULT_SAMPLE_APPLICATIONS;
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) return JSON.parse(saved);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_SAMPLE_APPLICATIONS));
+      return DEFAULT_SAMPLE_APPLICATIONS;
+    } catch {
+      return DEFAULT_SAMPLE_APPLICATIONS;
+    }
+  });
+
   const [searchQuery, setSearchQuery] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
   const [viewMode, setViewMode] = useState<"kanban" | "list">("kanban");
@@ -94,23 +110,6 @@ export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
   const [formJobUrl, setFormJobUrl] = useState("");
   const [formResumeId, setFormResumeId] = useState("");
   const [formNotes, setFormNotes] = useState("");
-
-  // Load from localStorage on mount
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        setApplications(JSON.parse(saved));
-      } else {
-        setApplications(DEFAULT_SAMPLE_APPLICATIONS);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_SAMPLE_APPLICATIONS));
-      }
-    } catch {
-      setApplications(DEFAULT_SAMPLE_APPLICATIONS);
-    } finally {
-      setIsLoaded(true);
-    }
-  }, []);
 
   // Save on changes
   const saveApplications = (updated: JobApplication[]) => {

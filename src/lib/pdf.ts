@@ -2,7 +2,7 @@ import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { renderResumeToHtml } from "@/lib/render-html";
-import type { ResumeData, ResumeTheme } from "@/types/resume.types";
+import type { ResumeData, ResumeTheme, SectionKey } from "@/types/resume.types";
 import { DEFAULT_THEME } from "@/types/resume.types";
 import fs from "fs";
 
@@ -10,6 +10,9 @@ interface PDFOverrideOptions {
   data?: ResumeData;
   theme?: ResumeTheme;
   templateId?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  templateConfig?: any | null;
+  sectionOrder?: SectionKey[];
   title?: string;
 }
 
@@ -45,6 +48,8 @@ export async function generatePDF(
   let resumeData = options?.data;
   let resumeTheme = options?.theme || DEFAULT_THEME;
   let templateId = options?.templateId || "minimal-white";
+  let templateConfig = options?.templateConfig || null;
+  let sectionOrder = options?.sectionOrder;
   let title = options?.title || "Resume";
 
   // If data not directly passed in options, fetch from Supabase
@@ -67,6 +72,7 @@ export async function generatePDF(
         resumeData = (resume.data as unknown as ResumeData);
         resumeTheme = (resume.theme as unknown as ResumeTheme) || DEFAULT_THEME;
         templateId = resume.template_id || resume.templateId || "minimal-white";
+        sectionOrder = (resume.section_order || resume.sectionOrder || undefined) as SectionKey[] | undefined;
         title = resume.title || "Resume";
       }
     } catch (err: unknown) {
@@ -89,7 +95,9 @@ export async function generatePDF(
     templateId,
     validData,
     resumeTheme,
-    title
+    title,
+    templateConfig,
+    sectionOrder
   );
 
   // Determine executable path and args for Vercel Serverless vs Local Dev

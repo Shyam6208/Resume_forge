@@ -20,6 +20,25 @@ export async function middleware(request: NextRequest) {
     request,
   });
 
+  const { pathname } = request.nextUrl;
+
+  // Allow unauthenticated access to the dedicated admin login page
+  if (pathname === "/admin/login") {
+    return supabaseResponse;
+  }
+
+  // Check if route needs auth verification
+  const isProtectedRoute = PROTECTED_ROUTES.some((route) =>
+    pathname.startsWith(route)
+  );
+  const isAuthRoute = AUTH_ROUTES.some((route) => pathname.startsWith(route));
+
+  // Fast-path for public routes (e.g. landing page, templates, ATS checker, portfolios):
+  // Return immediately without making a blocking external network round-trip to Supabase!
+  if (!isProtectedRoute && !isAuthRoute) {
+    return supabaseResponse;
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -43,23 +62,12 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // Refresh session token & retrieve user
+  // Refresh session token & retrieve user only for protected/auth routes
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { pathname } = request.nextUrl;
-
-  // Allow unauthenticated access to the dedicated admin login page
-  if (pathname === "/admin/login") {
-    return supabaseResponse;
-  }
-
   // 1. Unauthenticated users trying to access protected routes
-  const isProtectedRoute = PROTECTED_ROUTES.some((route) =>
-    pathname.startsWith(route)
-  );
-
   if (!user && isProtectedRoute) {
     const targetLogin = pathname.startsWith("/admin") ? "/admin/login" : "/login";
     const loginUrl = new URL(targetLogin, request.url);
@@ -68,7 +76,6 @@ export async function middleware(request: NextRequest) {
   }
 
   // 2. Authenticated users trying to access public auth pages (login/signup)
-  const isAuthRoute = AUTH_ROUTES.some((route) => pathname.startsWith(route));
   if (user && isAuthRoute) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }

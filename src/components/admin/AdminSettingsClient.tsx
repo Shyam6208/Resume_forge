@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { SystemHealthData } from "@/app/api/admin/system-health/route";
 import { AdminSystemHealthSkeleton } from "./AdminSystemHealthSkeleton";
 import { 
@@ -17,45 +17,82 @@ import {
   MinusCircle
 } from "lucide-react";
 
+const StatusIcon = ({ status, type = "boolean" }: { status: any, type?: "boolean" | "configured" | "healthy" }) => {
+  if (type === "boolean") {
+    return status ? (
+      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+    ) : (
+      <XCircle className="w-4 h-4 text-rose-400" />
+    );
+  }
+  
+  if (type === "configured") {
+    return status === "configured" ? (
+      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+    ) : (
+      <MinusCircle className="w-4 h-4 text-slate-500" />
+    );
+  }
+
+  if (type === "healthy") {
+    return status === "healthy" ? (
+      <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+    ) : (
+      <AlertTriangle className="w-4 h-4 text-rose-400" />
+    );
+  }
+
+  return null;
+};
+
 export function AdminSettingsClient() {
   const [data, setData] = useState<SystemHealthData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const fetchHealth = useCallback(async (showRefresh: boolean = false) => {
-    if (showRefresh) setIsRefreshing(true);
-    else setIsLoading(true);
-    
-    setError(null);
-    
-    try {
-      const res = await fetch("/api/admin/system-health");
-      if (res.status === 401 || res.status === 403) {
-        throw new Error("Unauthorized");
-      }
-      if (!res.ok) {
-        throw new Error("Failed to load system health");
-      }
-      
-      const json: SystemHealthData = await res.json();
-      setData(json);
-    } catch (err: any) {
-      console.error(err);
-      setError(err?.message || "Unable to check system health.");
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, []);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
-    fetchHealth(false);
-  }, [fetchHealth]);
+    let isCancelled = false;
+    async function loadHealth() {
+      try {
+        const res = await fetch("/api/admin/system-health");
+        if (res.status === 401 || res.status === 403) {
+          throw new Error("Unauthorized");
+        }
+        if (!res.ok) {
+          throw new Error("Failed to load system health");
+        }
+        
+        const json: SystemHealthData = await res.json();
+        if (!isCancelled) {
+          setData(json);
+          setError(null);
+        }
+      } catch (err: any) {
+        if (!isCancelled) {
+          console.error(err);
+          setError(err?.message || "Unable to check system health.");
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoading(false);
+          setIsRefreshing(false);
+        }
+      }
+    }
+
+    loadHealth();
+    return () => {
+      isCancelled = true;
+    };
+  }, [refreshTrigger]);
 
   const handleRefresh = () => {
     if (isLoading || isRefreshing) return;
-    fetchHealth(true);
+    setIsRefreshing(true);
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   if (isLoading) {
@@ -73,7 +110,7 @@ export function AdminSettingsClient() {
           {error}
         </p>
         <button
-          onClick={() => fetchHealth(false)}
+          onClick={handleRefresh}
           className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl shadow transition-colors"
         >
           Try Again
@@ -81,34 +118,6 @@ export function AdminSettingsClient() {
       </div>
     );
   }
-
-  const StatusIcon = ({ status, type = "boolean" }: { status: any, type?: "boolean" | "configured" | "healthy" }) => {
-    if (type === "boolean") {
-      return status ? (
-        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-      ) : (
-        <XCircle className="w-4 h-4 text-rose-400" />
-      );
-    }
-    
-    if (type === "configured") {
-      return status === "configured" ? (
-        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-      ) : (
-        <MinusCircle className="w-4 h-4 text-slate-500" />
-      );
-    }
-
-    if (type === "healthy") {
-      return status === "healthy" ? (
-        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-      ) : (
-        <AlertTriangle className="w-4 h-4 text-rose-400" />
-      );
-    }
-
-    return null;
-  };
 
   const formattedLastUpdated = new Date(data.timestamp).toLocaleTimeString(undefined, { 
     hour: 'numeric', 

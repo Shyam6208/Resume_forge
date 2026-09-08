@@ -10,8 +10,6 @@ import type {
   ResumeData,
   ResumeTheme,
   SectionKey,
-  DEFAULT_SECTION_ORDER,
-  DEFAULT_THEME,
 } from "@/types/resume.types";
 
 // --- State shape ---
@@ -35,11 +33,15 @@ interface ResumeActions {
   updateTheme: (theme: Partial<ResumeTheme>) => void;
   updateSectionOrder: (order: SectionKey[]) => void;
   updateTitle: (title: string) => void;
-  updateTemplateId: (templateId: string) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  updateTemplateId: (templateId: string, templateConfig?: any | null) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  updateTemplateConfig: (config: any | null) => void;
   updateIsPublic: (isPublic: boolean) => void;
   updateSlug: (slug: string) => void;
   addSection: (section: SectionKey) => void;
   removeSection: (section: SectionKey) => void;
+  removeSections: (sections: SectionKey[]) => void;
   duplicateResume: () => Resume | null;
   clearResume: () => void;
   setIsSaving: (val: boolean) => void;
@@ -67,137 +69,158 @@ export const useResumeStore = create<ResumeState & ResumeActions>()(
       setTemporaryImport: (resume) =>
         set({ temporaryImport: resume }),
 
-      updateSection: (section, data) => {
-        const { currentResume } = get();
-        if (!currentResume) return;
-
-        set({
-          currentResume: {
-            ...currentResume,
-            data: {
-              ...currentResume.data,
-              [section]: data,
+      updateSection: (section, data) =>
+        set((state) => {
+          if (!state.currentResume) return state;
+          return {
+            currentResume: {
+              ...state.currentResume,
+              data: {
+                ...state.currentResume.data,
+                [section]: data,
+              },
+              updatedAt: new Date().toISOString(),
             },
-            updatedAt: new Date().toISOString(),
-          },
-          isDirty: true,
-        });
-      },
+            isDirty: true,
+          };
+        }),
 
-      updateTheme: (themePartial) => {
-        const { currentResume } = get();
-        if (!currentResume) return;
+      updateTheme: (themePartial) =>
+        set((state) => {
+          if (!state.currentResume) return state;
+          return {
+            currentResume: {
+              ...state.currentResume,
+              theme: { ...state.currentResume.theme, ...themePartial },
+              updatedAt: new Date().toISOString(),
+            },
+            isDirty: true,
+          };
+        }),
 
-        set({
-          currentResume: {
-            ...currentResume,
-            theme: { ...currentResume.theme, ...themePartial },
-            updatedAt: new Date().toISOString(),
-          },
-          isDirty: true,
-        });
-      },
+      updateSectionOrder: (order) =>
+        set((state) => {
+          if (!state.currentResume) return state;
+          return {
+            currentResume: {
+              ...state.currentResume,
+              sectionOrder: order,
+              updatedAt: new Date().toISOString(),
+            },
+            isDirty: true,
+          };
+        }),
 
-      updateSectionOrder: (order) => {
-        const { currentResume } = get();
-        if (!currentResume) return;
+      updateTitle: (title) =>
+        set((state) => {
+          if (!state.currentResume) return state;
+          return {
+            currentResume: {
+              ...state.currentResume,
+              title,
+              updatedAt: new Date().toISOString(),
+            },
+            isDirty: true,
+          };
+        }),
 
-        set({
-          currentResume: {
-            ...currentResume,
-            sectionOrder: order,
-            updatedAt: new Date().toISOString(),
-          },
-          isDirty: true,
-        });
-      },
+      updateTemplateId: (templateId, templateConfig) =>
+        set((state) => {
+          if (!state.currentResume) return state;
+          return {
+            currentResume: {
+              ...state.currentResume,
+              templateId,
+              ...(templateConfig !== undefined ? { templateConfig } : {}),
+              updatedAt: new Date().toISOString(),
+            },
+            isDirty: true,
+          };
+        }),
 
-      updateTitle: (title) => {
-        const { currentResume } = get();
-        if (!currentResume) return;
+      updateTemplateConfig: (config) =>
+        set((state) => {
+          if (!state.currentResume) return state;
+          return {
+            currentResume: {
+              ...state.currentResume,
+              templateConfig: config,
+              updatedAt: new Date().toISOString(),
+            },
+            isDirty: true,
+          };
+        }),
 
-        set({
-          currentResume: {
-            ...currentResume,
-            title,
-            updatedAt: new Date().toISOString(),
-          },
-          isDirty: true,
-        });
-      },
+      updateIsPublic: (isPublic) =>
+        set((state) => {
+          if (!state.currentResume) return state;
+          return {
+            currentResume: {
+              ...state.currentResume,
+              isPublic,
+              updatedAt: new Date().toISOString(),
+            },
+            isDirty: true,
+          };
+        }),
 
-      updateTemplateId: (templateId) => {
-        const { currentResume } = get();
-        if (!currentResume) return;
+      updateSlug: (slug) =>
+        set((state) => {
+          if (!state.currentResume) return state;
+          return {
+            currentResume: {
+              ...state.currentResume,
+              slug,
+              updatedAt: new Date().toISOString(),
+            },
+            isDirty: true,
+          };
+        }),
 
-        set({
-          currentResume: {
-            ...currentResume,
-            templateId,
-            updatedAt: new Date().toISOString(),
-          },
-          isDirty: true,
-        });
-      },
+      addSection: (section) =>
+        set((state) => {
+          if (!state.currentResume) return state;
+          if (state.currentResume.sectionOrder.includes(section)) return state;
+          return {
+            currentResume: {
+              ...state.currentResume,
+              sectionOrder: [...state.currentResume.sectionOrder, section],
+              updatedAt: new Date().toISOString(),
+            },
+            isDirty: true,
+          };
+        }),
 
-      updateIsPublic: (isPublic) => {
-        const { currentResume } = get();
-        if (!currentResume) return;
+      removeSection: (section) =>
+        set((state) => {
+          if (!state.currentResume) return state;
+          return {
+            currentResume: {
+              ...state.currentResume,
+              sectionOrder: state.currentResume.sectionOrder.filter(
+                (s) => s !== section
+              ),
+              updatedAt: new Date().toISOString(),
+            },
+            isDirty: true,
+          };
+        }),
 
-        set({
-          currentResume: {
-            ...currentResume,
-            isPublic,
-            updatedAt: new Date().toISOString(),
-          },
-          isDirty: true,
-        });
-      },
-
-      updateSlug: (slug) => {
-        const { currentResume } = get();
-        if (!currentResume) return;
-
-        set({
-          currentResume: {
-            ...currentResume,
-            slug,
-            updatedAt: new Date().toISOString(),
-          },
-          isDirty: true,
-        });
-      },
-
-      addSection: (section) => {
-        const { currentResume } = get();
-        if (!currentResume) return;
-        if (currentResume.sectionOrder.includes(section)) return;
-
-        set({
-          currentResume: {
-            ...currentResume,
-            sectionOrder: [...currentResume.sectionOrder, section],
-            updatedAt: new Date().toISOString(),
-          },
-          isDirty: true,
-        });
-      },
-
-      removeSection: (section) => {
-        const { currentResume } = get();
-        if (!currentResume) return;
-
-        set({
-          currentResume: {
-            ...currentResume,
-            sectionOrder: currentResume.sectionOrder.filter(
-              (s) => s !== section
-            ),
-            updatedAt: new Date().toISOString(),
-          },
-          isDirty: true,
-        });
-      },
+      removeSections: (sections) =>
+        set((state) => {
+          if (!state.currentResume) return state;
+          const toRemoveSet = new Set(sections);
+          return {
+            currentResume: {
+              ...state.currentResume,
+              sectionOrder: state.currentResume.sectionOrder.filter(
+                (s) => !toRemoveSet.has(s)
+              ),
+              updatedAt: new Date().toISOString(),
+            },
+            isDirty: true,
+          };
+        }),
 
       duplicateResume: () => {
         const { currentResume } = get();

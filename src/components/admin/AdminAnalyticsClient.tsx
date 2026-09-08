@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { AdminAnalyticsData } from "@/app/api/admin/analytics/route";
 import { AdminAnalyticsSkeleton } from "./AdminAnalyticsSkeleton";
 import { TEMPLATES } from "@/config/templates.config";
@@ -153,39 +153,50 @@ export function AdminAnalyticsClient() {
   const [days, setDays] = useState<number>(30);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const fetchAnalytics = useCallback(async (daysToFetch: number, showRefresh: boolean = false) => {
-    if (showRefresh) setIsRefreshing(true);
-    else setIsLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(`/api/admin/analytics?days=${daysToFetch}`);
-      if (res.status === 401 || res.status === 403) throw new Error("Unauthorized");
-      if (!res.ok) {
-        let errStr = "Failed to load analytics";
-        try {
-          const errJson = await res.json();
-          errStr = errJson.details || errJson.error || errStr;
-        } catch (e) { /* ignore */ }
-        throw new Error(errStr);
-      }
-      const json: AdminAnalyticsData = await res.json();
-      setData(json);
-    } catch (err: any) {
-      console.error(err);
-      setError(err?.message || "Unable to load analytics.");
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, []);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
-    fetchAnalytics(days, false);
-  }, [days, fetchAnalytics]);
+    let isCancelled = false;
+    async function loadAnalytics() {
+      try {
+        const res = await fetch(`/api/admin/analytics?days=${days}`);
+        if (res.status === 401 || res.status === 403) throw new Error("Unauthorized");
+        if (!res.ok) {
+          let errStr = "Failed to load analytics";
+          try {
+            const errJson = await res.json();
+            errStr = errJson.details || errJson.error || errStr;
+          } catch (e) { /* ignore */ }
+          throw new Error(errStr);
+        }
+        const json: AdminAnalyticsData = await res.json();
+        if (!isCancelled) {
+          setData(json);
+          setError(null);
+        }
+      } catch (err: any) {
+        if (!isCancelled) {
+          console.error(err);
+          setError(err?.message || "Unable to load analytics.");
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoading(false);
+          setIsRefreshing(false);
+        }
+      }
+    }
+
+    loadAnalytics();
+    return () => {
+      isCancelled = true;
+    };
+  }, [days, refreshTrigger]);
 
   const handleRefresh = () => {
     if (isLoading || isRefreshing) return;
-    fetchAnalytics(days, true);
+    setIsRefreshing(true);
+    setRefreshTrigger((prev) => prev + 1);
   };
 
   const templateStats = useMemo(() => {
@@ -209,7 +220,7 @@ export function AdminAnalyticsClient() {
         <h2 className="text-2xl font-bold text-white mb-2">Unable to load analytics.</h2>
         <p className="text-slate-400 max-w-md mb-8 whitespace-pre-wrap">{error}</p>
         <button
-          onClick={() => fetchAnalytics(days, false)}
+          onClick={handleRefresh}
           className="mt-4 px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-indigo-600/25 transition-all"
         >
           Try Again

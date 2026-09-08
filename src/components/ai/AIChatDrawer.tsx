@@ -10,6 +10,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 import { Bot, Send, User, Loader2, Sparkles, HelpCircle } from "lucide-react";
 import toast from "react-hot-toast";
 
+import { generateUUID } from "@/utils/uuid";
+
 interface AIChatDrawerProps {
   isOpen: boolean;
   onClose: () => void;
@@ -22,21 +24,23 @@ const QUICK_PROMPTS = [
   "How do I highlight leadership in my projects?",
 ];
 
+const INITIAL_MESSAGES: AIChatMessage[] = [
+  {
+    id: "welcome",
+    role: "assistant",
+    content:
+      "Hello! I am your **ResumeForge AI Coach**. Ask me anything about your resume, bullet points, skills, ATS score, or career advice!",
+    timestamp: "Just now",
+  },
+];
+
 export function AIChatDrawer({ isOpen, onClose }: AIChatDrawerProps) {
   const currentResume = useResumeStore((s) => s.currentResume);
   const userType = useAuthStore((s) => s.userType);
 
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
-  const [messages, setMessages] = useState<AIChatMessage[]>([
-    {
-      id: "welcome",
-      role: "assistant",
-      content:
-        "Hello! I am your **ResumeForge AI Coach**. Ask me anything about your resume, bullet points, skills, ATS score, or career advice!",
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    },
-  ]);
+  const [messages, setMessages] = useState<AIChatMessage[]>(INITIAL_MESSAGES);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -49,10 +53,10 @@ export function AIChatDrawer({ isOpen, onClose }: AIChatDrawerProps) {
     if (!promptToSend.trim() || isSending || !currentResume) return;
 
     const userMsg: AIChatMessage = {
-      id: String(Date.now()),
+      id: generateUUID(),
       role: "user",
       content: promptToSend.trim(),
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      timestamp: "Just now",
     };
 
     setMessages((prev) => [...prev, userMsg]);
@@ -82,10 +86,10 @@ export function AIChatDrawer({ isOpen, onClose }: AIChatDrawerProps) {
 
       const data = await res.json();
       const assistantMsg: AIChatMessage = {
-        id: String(Date.now() + 1),
+        id: generateUUID(),
         role: "assistant",
         content: data.reply || "I analyzed your request.",
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        timestamp: "Just now",
       };
 
       setMessages((prev) => [...prev, assistantMsg]);

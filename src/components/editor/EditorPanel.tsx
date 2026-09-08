@@ -24,7 +24,11 @@ export function EditorPanel() {
   const currentResume = useResumeStore((s) => s.currentResume);
 
   const sectionOrder = currentResume?.sectionOrder || [];
-  const currentActive: SectionKey = activeSection || sectionOrder[0] || "personalInfo";
+  // Ensure the active form is always an existing, included section
+  const currentActive: SectionKey =
+    activeSection && sectionOrder.includes(activeSection)
+      ? activeSection
+      : sectionOrder[0] || "personalInfo";
 
   const renderActiveForm = () => {
     switch (currentActive) {
