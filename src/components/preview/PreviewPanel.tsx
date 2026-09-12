@@ -42,7 +42,12 @@ export function PreviewPanel() {
 
     const measure = () => {
       if (el.scrollHeight > 0) {
-        setContentHeight(el.scrollHeight);
+        setContentHeight((prev) => {
+          if (Math.abs(el.scrollHeight - prev) > 2) {
+            return el.scrollHeight;
+          }
+          return prev;
+        });
       }
     };
 
@@ -50,7 +55,7 @@ export function PreviewPanel() {
     const observer = new ResizeObserver(measure);
     observer.observe(el);
     return () => observer.disconnect();
-  }, [currentResume?.data, currentResume?.theme, currentResume?.templateId, currentResume?.sectionOrder]);
+  }, []);
 
   const isOverflowing = contentHeight > 1130;
   const overflowPct = isOverflowing

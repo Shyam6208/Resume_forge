@@ -107,19 +107,19 @@ export function ScoreSidebar({ className = "", defaultTab = "score" }: ScoreSide
         {/* Tab contents */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-5">
           <TabsContent value="score" className="mt-0 focus-visible:outline-none">
-            <ResumeScore />
+            {activeTab === "score" && <ResumeScore />}
           </TabsContent>
 
           <TabsContent value="ats" className="mt-0 focus-visible:outline-none">
-            <ATSChecker />
+            {activeTab === "ats" && <ATSChecker />}
           </TabsContent>
 
           <TabsContent value="ai" className="mt-0 focus-visible:outline-none">
-            <AICoachPanel />
+            {activeTab === "ai" && <AICoachPanel />}
           </TabsContent>
 
           <TabsContent value="optimize" className="mt-0 focus-visible:outline-none">
-            <RoleOptimizerPanel />
+            {activeTab === "optimize" && <RoleOptimizerPanel />}
           </TabsContent>
         </div>
       </Tabs>

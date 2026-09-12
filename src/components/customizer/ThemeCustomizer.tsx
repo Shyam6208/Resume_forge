@@ -58,15 +58,15 @@ export function ThemeCustomizer() {
   const isCustomizerOpen = useUIStore((s) => s.isCustomizerOpen);
   const setIsCustomizerOpen = useUIStore((s) => s.setIsCustomizerOpen);
 
-  const currentResume = useResumeStore((s) => s.currentResume);
+  const theme = useResumeStore((s) => s.currentResume?.theme || DEFAULT_THEME);
+  const currentTemplateId = useResumeStore((s) => s.currentResume?.templateId || "minimal-white");
   const updateTheme = useResumeStore((s) => s.updateTheme);
   const updateTemplateId = useResumeStore((s) => s.updateTemplateId);
 
-  const theme = currentResume?.theme || DEFAULT_THEME;
-  const currentTemplateId = currentResume?.templateId || "minimal-white";
   const [allTemplates, setAllTemplates] = useState<TemplateConfig[]>(TEMPLATES);
 
   useEffect(() => {
+    if (!isCustomizerOpen) return;
     fetch("/api/templates")
       .then((res) => res.json())
       .then((data) => {
@@ -75,11 +75,15 @@ export function ThemeCustomizer() {
         }
       })
       .catch(() => {});
-  }, []);
+  }, [isCustomizerOpen]);
 
   const handleResetTheme = () => {
     updateTheme(DEFAULT_THEME);
   };
+
+  if (!isCustomizerOpen) {
+    return null;
+  }
 
   return (
     <Sheet open={isCustomizerOpen} onOpenChange={setIsCustomizerOpen}>

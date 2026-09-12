@@ -20,13 +20,17 @@ export function ProjectLibrary() {
   const libraryType = useUIStore((s) => s.libraryType);
   const closeLibrary = useUIStore((s) => s.closeLibrary);
 
-  const currentResume = useResumeStore((s) => s.currentResume);
+  const currentProjects = useResumeStore((s) => s.currentResume?.data.projects);
   const updateSection = useResumeStore((s) => s.updateSection);
 
   const isOpen = isLibraryOpen && libraryType === "projects";
 
+  if (!isOpen) {
+    return null;
+  }
+
   const handleUseProject = (proj: (typeof projectsData)[0]) => {
-    const currentProjects = currentResume?.data.projects || [];
+    const list = currentProjects || [];
     const newProject = {
       id: crypto.randomUUID(),
       name: proj.name,
@@ -34,7 +38,7 @@ export function ProjectLibrary() {
       technologies: proj.technologies,
     };
 
-    updateSection("projects", [...currentProjects, newProject]);
+    updateSection("projects", [...list, newProject]);
     toast.success(`Project "${proj.name}" added to your resume!`);
     closeLibrary();
   };

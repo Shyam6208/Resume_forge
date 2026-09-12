@@ -70,6 +70,10 @@ export function SummaryLibrary() {
     closeLibrary();
   };
 
+  if (!isOpen) {
+    return null;
+  }
+
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && closeLibrary()}>
       <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">

@@ -7,9 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Layout, Search, ArrowRight, CheckCircle2, Loader2, Sparkles } from "lucide-react";
-import { PreviewRenderer } from "@/components/preview/PreviewRenderer";
-import { DEFAULT_THEME } from "@/types/resume.types";
-import { normalizeTemplateData } from "@/lib/templates/normalize-template-data";
 
 export default function TemplatesPage() {
   const [templates, setTemplates] = useState<TemplateConfig[]>(BUILTIN_TEMPLATES);
@@ -166,35 +163,31 @@ export default function TemplatesPage() {
                     <img
                       src={tmpl.previewImage}
                       alt={tmpl.name}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                  ) : tmpl.templateConfig ? (
-                    <div className="w-full h-full bg-slate-950 overflow-hidden relative flex items-start justify-center pt-1 pointer-events-none group-hover:scale-105 transition-transform duration-300">
-                      <div
-                        className="origin-top transform scale-[0.20] shrink-0 shadow-lg"
-                        style={{ width: "210mm", minHeight: "297mm" }}
-                      >
-                        <PreviewRenderer
-                          templateId={tmpl.id}
-                          data={normalizeTemplateData(tmpl.templateConfig)}
-                          theme={DEFAULT_THEME}
-                          templateConfig={tmpl.templateConfig}
-                        />
-                      </div>
-                    </div>
                   ) : (
                     <div className="w-full h-full p-4 flex flex-col justify-between group-hover:bg-slate-950/80 transition-colors">
-                      <div className="h-2 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full" />
+                      <div
+                        className="h-2 w-full rounded-full"
+                        style={{
+                          background: tmpl.templateConfig?.styles?.primaryColor
+                            ? `linear-gradient(to right, ${tmpl.templateConfig.styles.primaryColor}, #818cf8)`
+                            : "linear-gradient(to right, #6366f1, #a855f7, #ec4899)",
+                        }}
+                      />
                       <div className="space-y-2 py-2">
                         <div className="h-2.5 w-1/3 bg-slate-700 rounded" />
                         <div className="h-2 w-1/4 bg-indigo-500/40 rounded" />
                         <div className="space-y-1.5 pt-2">
                           <div className="h-2 w-full bg-slate-800 rounded" />
                           <div className="h-2 w-5/6 bg-slate-800 rounded" />
+                          <div className="h-2 w-2/3 bg-slate-800/60 rounded" />
                         </div>
                       </div>
                       <div className="flex items-center justify-between text-[10px] text-slate-500 font-mono">
-                        <span>A4 SINGLE PAGE</span>
+                        <span>A4 ATS OPTIMIZED</span>
                         <span className="text-emerald-400 font-bold flex items-center gap-1">
                           <CheckCircle2 className="w-3 h-3" />
                           <span>ATS {tmpl.atsRating}%</span>

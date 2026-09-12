@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, memo } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import type { Resume, UserType } from "@/types/resume.types";
@@ -45,7 +45,7 @@ interface ResumeCardProps {
   onDuplicate: (newResume: Resume) => void;
 }
 
-export function ResumeCard({
+export const ResumeCard = memo(function ResumeCard({
   resume,
   onUpdate,
   onDelete,
@@ -62,8 +62,11 @@ export function ResumeCard({
 
   const templateInfo = TEMPLATES.find((t) => t.id === resume.templateId) || TEMPLATES[0];
 
-  // Calculate score dynamically
-  const scoreResult = calculateResumeScore(resume.data, (resume.targetJob as UserType) || "developer");
+  // Calculate score dynamically (memoized per resume data and targetJob)
+  const scoreResult = useMemo(
+    () => calculateResumeScore(resume.data, (resume.targetJob as UserType) || "developer"),
+    [resume.data, resume.targetJob]
+  );
   const score = scoreResult.score;
 
   const handleSaveTitle = async () => {
@@ -379,4 +382,4 @@ export function ResumeCard({
       </Dialog>
     </div>
   );
-}
+});

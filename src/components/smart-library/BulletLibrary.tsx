@@ -51,13 +51,18 @@ export function BulletLibrary() {
   const libraryType = useUIStore((s) => s.libraryType);
   const closeLibrary = useUIStore((s) => s.closeLibrary);
 
-  const currentResume = useResumeStore((s) => s.currentResume);
+  const currentExperience = useResumeStore((s) => s.currentResume?.data.experience);
   const updateSection = useResumeStore((s) => s.updateSection);
 
   const [selectedRole, setSelectedRole] = useState<RoleCategory>("software-engineer");
   const [selectedBullets, setSelectedBullets] = useState<string[]>([]);
 
   const isOpen = isLibraryOpen && libraryType === "bullets";
+
+  if (!isOpen) {
+    return null;
+  }
+
   const bullets = BULLET_MAP[selectedRole] || seBullets.responsibilities;
 
   const toggleBullet = (bullet: string) => {
@@ -74,9 +79,9 @@ export function BulletLibrary() {
       return;
     }
 
-    const currentExperience = currentResume?.data.experience || [];
+    const expList = currentExperience || [];
 
-    if (currentExperience.length === 0) {
+    if (expList.length === 0) {
       // Create a default experience entry if none exists
       const newEntry = {
         id: Date.now().toString(),
@@ -89,7 +94,7 @@ export function BulletLibrary() {
       updateSection("experience", [newEntry]);
     } else {
       // Append to the first / latest experience entry
-      const updatedExperience = [...currentExperience];
+      const updatedExperience = [...expList];
       const target = updatedExperience[0];
       const existingBullets = target.responsibilities || [];
 

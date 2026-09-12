@@ -10,9 +10,19 @@ const nextConfig: NextConfig = {
       "@dnd-kit/sortable",
       "@dnd-kit/utilities",
       "framer-motion",
+      "chart.js",
+      "react-chartjs-2",
+      "@base-ui/react",
     ],
   },
+  compiler: {
+    removeConsole:
+      process.env.NODE_ENV === "production"
+        ? { exclude: ["error", "warn"] }
+        : false,
+  },
   images: {
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
         protocol: "https",

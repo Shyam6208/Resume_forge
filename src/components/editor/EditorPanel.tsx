@@ -21,9 +21,7 @@ import type { SectionKey } from "@/types/resume.types";
 
 export function EditorPanel() {
   const activeSection = useUIStore((s) => s.activeSection);
-  const currentResume = useResumeStore((s) => s.currentResume);
-
-  const sectionOrder = currentResume?.sectionOrder || [];
+  const sectionOrder = useResumeStore((s) => s.currentResume?.sectionOrder) || [];
   // Ensure the active form is always an existing, included section
   const currentActive: SectionKey =
     activeSection && sectionOrder.includes(activeSection)
