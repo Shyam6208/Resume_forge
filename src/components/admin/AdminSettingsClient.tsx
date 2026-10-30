@@ -151,7 +151,7 @@ export function AdminSettingsClient() {
             <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin text-indigo-400" : ""}`} />
             Refresh Status
           </button>
-          <div className="text-xs text-slate-500 flex items-center gap-1.5">
+          <div className="text-xs text-slate-500 flex items-center gap-1.5" suppressHydrationWarning>
             <Clock className="w-3.5 h-3.5" />
             Last checked: {dateStr} {formattedLastUpdated}
           </div>

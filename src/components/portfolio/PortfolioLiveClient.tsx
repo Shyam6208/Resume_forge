@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import type { ResumeData } from "@/types/resume.types";
 import { supabase } from "@/lib/supabase/client";
 import {
@@ -56,6 +56,8 @@ interface PortfolioLiveClientProps {
   };
 }
 
+const emptySubscribe = () => () => {};
+
 export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps) {
   const [resumeData, setResumeData] = useState<ResumeData>(initialResume.data);
   const [title, setTitle] = useState(initialResume.title);
@@ -64,6 +66,7 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
   const [isLivePulse, setIsLivePulse] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
+  const isMounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
 
   const slug = initialResume.slug;
   const qrCodeUrl = `/api/portfolio/qr?slug=${encodeURIComponent(slug)}`;
@@ -470,8 +473,10 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
               Real-time Portfolio powered by <span className="text-indigo-400 font-semibold">ResumeForge</span>
             </span>
           </div>
-          <p className="text-[11px] text-slate-600">
-            Last synchronized: {new Date(lastSyncTime).toLocaleTimeString()}
+          <p className="text-[11px] text-slate-600" suppressHydrationWarning>
+            {isMounted && lastSyncTime
+              ? `Last synchronized: ${new Date(lastSyncTime).toLocaleTimeString()}`
+              : "Real-time sync active"}
           </p>
         </footer>
       </main>

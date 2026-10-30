@@ -14,11 +14,12 @@ import { TestimonialsSection } from "./TestimonialsSection";
 import { FAQSection } from "./FAQSection";
 import { CTASection } from "./CTASection";
 import { FooterSection } from "./FooterSection";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { ArrowRight, Sparkles, Menu, X } from "lucide-react";
 
 export function LandingPageClient() {
   const { isAuthenticated, loading } = useAuth();
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -27,68 +28,64 @@ export function LandingPageClient() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white relative">
-      {/* Subtle noise texture overlay */}
-      <div
-        className="pointer-events-none fixed inset-0 z-[1] opacity-[0.03]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-        }}
-      />
-
-      {/* Sticky Glass Navbar */}
-      <header
-        className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-          scrolled
-            ? "h-14 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800/60 shadow-lg shadow-black/20"
-            : "h-16 bg-transparent border-b border-transparent"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto h-full px-4 sm:px-8 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <span className="p-1.5 rounded-lg bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 font-bold text-xs group-hover:bg-indigo-600/30 transition-colors">
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-cyan-500/30 selection:text-cyan-100 relative">
+      {/* ══════════════════════════════════════════════════════════════
+          FLOATING PILL GLASSMORPHIC NAVBAR (UI-Lab Style)
+          ══════════════════════════════════════════════════════════════ */}
+      <header className="fixed top-0 inset-x-0 z-50 px-4 sm:px-6 pt-3 pointer-events-none">
+        <div
+          className={`max-w-5xl mx-auto px-4 sm:px-6 py-2.5 rounded-full transition-all duration-300 pointer-events-auto flex items-center justify-between border ${
+            scrolled
+              ? "bg-card/90 backdrop-blur-xl border-white/[0.12] shadow-2xl shadow-black/50"
+              : "bg-card/60 backdrop-blur-lg border-white/[0.08] shadow-lg shadow-black/20"
+          }`}
+        >
+          {/* Brand Logo */}
+          <Link href="/" className="flex items-center gap-2 group">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-emerald-400 flex items-center justify-center text-slate-950 font-black text-sm shadow-md shadow-cyan-500/20 group-hover:scale-105 transition-transform">
               RF
-            </span>
-            <span className="font-extrabold text-base text-white tracking-tight">
-              ResumeForge
+            </div>
+            <span className="font-extrabold text-base tracking-tight text-foreground">
+              Resume<span className="bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">Forge</span>
             </span>
           </Link>
 
+          {/* Desktop Nav Links */}
           <nav className="hidden md:flex items-center gap-1">
             {[
               { label: "Features", href: "#features" },
               { label: "Templates", href: "/templates" },
-              { label: "Free ATS Checker", href: "/ats-checker" },
+              { label: "ATS Checker", href: "/ats-checker" },
               { label: "How It Works", href: "#how-it-works" },
               { label: "FAQ", href: "#faq" },
             ].map((item) => (
               <Link
                 key={item.label}
                 href={item.href}
-                className="relative px-3 py-2 text-[13px] font-medium text-slate-400 hover:text-white transition-colors group"
+                className="px-3.5 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-white/[0.06] rounded-full transition-all"
               >
                 {item.label}
-                <span className="absolute bottom-0 left-3 right-3 h-px bg-indigo-500 scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
               </Link>
             ))}
           </nav>
 
-          <div className="flex items-center gap-3">
+          {/* CTA & User Menu */}
+          <div className="flex items-center gap-2.5">
             {!loading && isAuthenticated ? (
               <>
                 <Link
                   href="/dashboard"
-                  className="text-[13px] font-medium text-slate-400 hover:text-white px-3 py-1.5 hidden sm:block transition-colors"
+                  className="text-xs font-semibold text-muted-foreground hover:text-foreground px-3 py-1.5 hidden sm:block transition-colors"
                 >
                   Dashboard
                 </Link>
                 <Link href="/onboarding">
                   <Button
                     type="button"
-                    className="h-9 px-5 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-md shadow-indigo-600/20 flex items-center gap-1.5 transition-all"
+                    className="h-8 sm:h-9 px-4 sm:px-5 text-xs bg-gradient-to-r from-cyan-500 to-emerald-400 hover:from-cyan-400 hover:to-emerald-300 text-slate-950 font-extrabold rounded-full shadow-md shadow-cyan-500/20 transition-all flex items-center gap-1.5"
                   >
-                    <span>Continue Building</span>
-                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                    <span>Editor</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </Button>
                 </Link>
                 <UserMenu />
@@ -97,14 +94,14 @@ export function LandingPageClient() {
               <>
                 <Link
                   href="/login"
-                  className="text-[13px] font-medium text-slate-400 hover:text-white px-3 py-1.5 transition-colors"
+                  className="text-xs font-semibold text-muted-foreground hover:text-foreground px-3 py-1.5 transition-colors hidden sm:block"
                 >
                   Sign In
                 </Link>
                 <Link href="/login?redirectTo=/onboarding">
                   <Button
                     type="button"
-                    className="h-9 px-5 text-xs bg-white text-slate-950 hover:bg-slate-100 font-bold rounded-xl shadow-md flex items-center gap-1.5 transition-all"
+                    className="h-8 sm:h-9 px-4 sm:px-5 text-xs bg-gradient-to-r from-cyan-500 via-teal-400 to-emerald-400 hover:from-cyan-400 hover:to-emerald-300 text-slate-950 font-extrabold rounded-full shadow-md shadow-cyan-500/20 transition-all flex items-center gap-1.5"
                   >
                     <span>Start Free</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -112,11 +109,42 @@ export function LandingPageClient() {
                 </Link>
               </>
             )}
+
+            {/* Mobile menu toggle */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground md:hidden"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Dropdown Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden mt-2 p-4 rounded-2xl bg-card border border-white/[0.1] shadow-2xl pointer-events-auto space-y-3">
+            {[
+              { label: "Features", href: "#features" },
+              { label: "Templates", href: "/templates" },
+              { label: "ATS Checker", href: "/ats-checker" },
+              { label: "How It Works", href: "#how-it-works" },
+              { label: "FAQ", href: "#faq" },
+            ].map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-2 text-sm font-semibold text-foreground hover:bg-white/[0.05] rounded-lg"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        )}
       </header>
 
-      {/* Landing Page Sections */}
+      {/* Main Sections */}
       <main className="flex-1 relative z-[2]">
         <HeroSection />
         <StatsSection />

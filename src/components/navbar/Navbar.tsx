@@ -35,16 +35,13 @@ export function Navbar() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <nav className="sticky top-0 z-50 w-full border-b border-white/[0.06] bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="flex items-center justify-center w-8 h-8 bg-indigo-600 rounded-lg group-hover:bg-indigo-500 transition-colors">
-              <FileText className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-lg font-bold tracking-tight text-foreground">
-              ResumeForge
+            <span className="font-black text-lg tracking-tight text-foreground">
+              Resume<span className="text-amber-400">Forge</span>
             </span>
           </Link>
 
@@ -86,7 +83,7 @@ export function Navbar() {
               /* Logged-in: avatar dropdown */
               <DropdownMenu>
                 <DropdownMenuTrigger className="flex items-center gap-2 rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
-                  <Avatar className="w-8 h-8 border border-border">
+                  <Avatar className="w-8 h-8 border border-white/[0.1]">
                     <AvatarImage
                       src={
                         user?.user_metadata?.avatar_url ||
@@ -97,7 +94,7 @@ export function Navbar() {
                       alt="Profile"
                       referrerPolicy="no-referrer"
                     />
-                    <AvatarFallback className="bg-indigo-600 text-white text-xs font-medium">
+                    <AvatarFallback className="bg-amber-500/15 text-amber-400 text-xs font-medium">
                       {getInitials()}
                     </AvatarFallback>
                   </Avatar>
@@ -152,7 +149,7 @@ export function Navbar() {
                 </Link>
                 <Link
                   href="/login"
-                  className="px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors shadow-sm"
+                  className="px-4 py-2 text-sm font-medium bg-amber-500 text-black rounded-lg hover:bg-amber-400 transition-colors shadow-sm"
                 >
                   Get Started Free
                 </Link>
@@ -176,7 +173,7 @@ export function Navbar() {
 
         {/* Mobile menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-border/40 py-4 space-y-2">
+          <div className="md:hidden border-t border-white/[0.06] py-4 space-y-2">
             {!isLoggedIn && !isLoading && (
               <>
                 <Link
@@ -196,7 +193,7 @@ export function Navbar() {
                 <div className="pt-2 space-y-2">
                   <Link
                     href="/login"
-                    className="block w-full text-center px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors"
+                    className="block w-full text-center px-4 py-2 text-sm font-medium bg-amber-500 text-black rounded-lg hover:bg-amber-400 transition-colors"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Get Started Free

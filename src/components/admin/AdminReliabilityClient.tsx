@@ -158,7 +158,7 @@ export function AdminReliabilityClient() {
         
         <div className="flex items-center gap-3">
           {lastChecked && (
-            <span className="text-[11px] text-slate-500 font-medium hidden sm:inline-block">
+            <span className="text-[11px] text-slate-500 font-medium hidden sm:inline-block" suppressHydrationWarning>
               Last checked: {lastChecked.toLocaleTimeString()}
             </span>
           )}

@@ -73,9 +73,9 @@ export function UserMenu() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-2 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 hover:border-slate-700 text-slate-200 transition-all text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500 shadow-xs group"
+        className="flex items-center gap-2 px-2 py-1.5 rounded-full bg-card border border-white/[0.08] hover:border-cyan-500/30 text-foreground/80 transition-all text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-cyan-500/40 shadow-xs group"
       >
-        <div className="w-7 h-7 rounded-full bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 flex items-center justify-center text-[10px] font-bold overflow-hidden shrink-0">
+        <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30 text-cyan-300 flex items-center justify-center text-[10px] font-bold overflow-hidden shrink-0">
           {rawAvatarUrl && !imgError ? (
             <img
               src={rawAvatarUrl}
@@ -87,20 +87,20 @@ export function UserMenu() {
           ) : initials ? (
             <span>{initials}</span>
           ) : (
-            <User className="w-3.5 h-3.5 text-indigo-400" />
+            <User className="w-3.5 h-3.5 text-cyan-400" />
           )}
         </div>
-        <span className="truncate max-w-[120px] hidden sm:inline text-slate-200 font-medium">
+        <span className="truncate max-w-[120px] hidden sm:inline text-foreground/80 font-medium">
           {fullName}
         </span>
-        <ChevronDown className={`w-3.5 h-3.5 text-slate-400 shrink-0 transition-transform duration-150 ${isOpen ? "rotate-180" : ""}`} />
+        <ChevronDown className={`w-3.5 h-3.5 text-muted-foreground shrink-0 transition-transform duration-150 ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl p-2 z-50 text-slate-100 space-y-1 animate-in fade-in slide-in-from-top-2 duration-150">
+        <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-card/95 backdrop-blur-xl border border-white/[0.08] shadow-2xl p-2 z-50 text-foreground space-y-1 animate-in fade-in slide-in-from-top-2 duration-150">
           {/* User Info Header */}
-          <div className="px-3 py-2 border-b border-slate-800/80 mb-1 flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-full bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 flex items-center justify-center text-xs font-bold overflow-hidden shrink-0">
+          <div className="px-3 py-2 border-b border-white/[0.06] mb-1 flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30 text-cyan-300 flex items-center justify-center text-xs font-bold overflow-hidden shrink-0">
               {rawAvatarUrl && !imgError ? (
                 <img
                   src={rawAvatarUrl}
@@ -113,37 +113,37 @@ export function UserMenu() {
               )}
             </div>
             <div className="overflow-hidden">
-              <p className="text-xs font-bold text-white truncate">{fullName}</p>
-              <p className="text-[11px] text-slate-400 truncate">{email}</p>
+              <p className="text-xs font-bold text-foreground truncate">{fullName}</p>
+              <p className="text-[11px] text-muted-foreground truncate">{email}</p>
             </div>
           </div>
 
           <Link
             href="/dashboard"
             onClick={() => setIsOpen(false)}
-            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors"
+            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-foreground/70 hover:text-foreground hover:bg-white/[0.04] transition-colors"
           >
-            <LayoutDashboard className="w-4 h-4 text-indigo-400" />
+            <LayoutDashboard className="w-4 h-4 text-cyan-400" />
             <span>Dashboard</span>
           </Link>
 
           <Link
             href="/profile"
             onClick={() => setIsOpen(false)}
-            className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/80 transition-colors"
+            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-foreground/70 hover:text-foreground hover:bg-white/[0.04] transition-colors"
           >
             <UserCheck className="w-4 h-4 text-emerald-400" />
             <span>Profile & Avatar Settings</span>
           </Link>
 
-          <div className="border-t border-slate-800/80 my-1 pt-1">
+          <div className="border-t border-white/[0.06] my-1 pt-1">
             <button
               type="button"
               onClick={() => {
                 setIsOpen(false);
                 signOut();
               }}
-              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors text-left"
+              className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 transition-colors text-left"
             >
               <LogOut className="w-4 h-4 text-rose-400" />
               <span>Sign Out</span>

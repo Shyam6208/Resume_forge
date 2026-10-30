@@ -1,102 +1,222 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Layout, Edit3, Zap, Globe } from "lucide-react";
+import {
+  Layout,
+  Edit3,
+  Zap,
+  Globe,
+  Check,
+  X,
+  Sparkles,
+  ArrowRight,
+  ShieldCheck,
+  ChevronRight,
+} from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 const STEPS = [
   {
-    number: "01",
-    icon: Layout,
+    step: "01",
     title: "Pick an ATS-tested layout",
-    description:
-      "Choose from Minimalist, Corporate Executive, Developer, or Fresher templates — all tested against top ATS parsers.",
-    color: "bg-indigo-500",
-    ring: "ring-indigo-500/30",
+    desc: "Select from 40+ single-column and multi-section layouts verified against Workday, Greenhouse, and Taleo.",
+    icon: Layout,
+    highlight: "Tested on 10,000+ real job applications",
   },
   {
-    number: "02",
+    step: "02",
+    title: "AI drafts your impact metrics",
+    desc: "Add your roles or import existing PDFs. AI instantly converts weak duties into quantifiable achievements with revenue, latency, or user impact.",
     icon: Edit3,
-    title: "Craft your experience",
-    description:
-      "Add experience, education, projects, and skills. Live preview updates on every keystroke with instant scoring.",
-    color: "bg-violet-500",
-    ring: "ring-violet-500/30",
+    highlight: "Formula: Action Verb + Context + Quantified Result",
   },
   {
-    number: "03",
+    step: "03",
+    title: "1-Click job description tailoring",
+    desc: "Paste the specific job link or text. ResumeForge automatically flags missing technical keywords and updates your bullets in real time.",
     icon: Zap,
-    title: "1-Click AI Auto-Tailor",
-    description:
-      "Paste any Job Description and let AI automatically reframe your bullets, inject missing ATS keywords, and practice live mock questions.",
-    color: "bg-emerald-500",
-    ring: "ring-emerald-500/30",
+    highlight: "Jumps typical match scores from 60% to 95%+",
   },
   {
-    number: "04",
+    step: "04",
+    title: "Export free & practice voice interview",
+    desc: "Download pixel-perfect vector A4 PDF or Word DOCX without paywalls or watermarks. Then launch AI voice mock interviews to rehearse before the call.",
     icon: Globe,
-    title: "Export & share live portfolio",
-    description:
-      "Download watermark-free A4 PDF / Word DOCX, or share your live hosted portfolio link (/r/[slug]) and downloadable QR code.",
-    color: "bg-amber-500",
-    ring: "ring-amber-500/30",
+    highlight: "Zero paywalls, zero watermarks forever",
+  },
+];
+
+const COMPARISON = [
+  {
+    feature: "Watermark-Free PDF Export",
+    resumeforge: "100% Free Forever",
+    others: "Paywalled ($24.99/mo after 1 page)",
+    positive: true,
+  },
+  {
+    feature: "Job Description 1-Click Tailor",
+    resumeforge: "Included (Full Bullet Rewrite)",
+    others: "Not Available or Premium Add-on",
+    positive: true,
+  },
+  {
+    feature: "Deterministic ATS Parser Checks",
+    resumeforge: "Workday, Greenhouse & Taleo Verified",
+    others: "Basic spell check only",
+    positive: true,
+  },
+  {
+    feature: "Live AI Voice Mock Interviews",
+    resumeforge: "Interactive Mic Simulator + Timer",
+    others: "None",
+    positive: true,
+  },
+  {
+    feature: "Hosted Web Portfolio + QR Code",
+    resumeforge: "Live resumeforge.me link included",
+    others: "None",
+    positive: true,
+  },
+  {
+    feature: "Word DOCX & Plain Text Export",
+    resumeforge: "Yes, included",
+    others: "Requires Pro tier",
+    positive: true,
   },
 ];
 
 export function HowItWorksSection() {
+  const [activeStep, setActiveStep] = useState(0);
+
   return (
-    <section id="how-it-works" className="py-24 px-4 sm:px-6">
-      <div className="max-w-3xl mx-auto">
-        <div className="text-center space-y-3 mb-16">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Four steps. Instant career edge.
+    <section id="how-it-works" className="py-28 px-4 sm:px-6 max-w-6xl mx-auto space-y-24">
+      {/* ══════════════════════════════════════════════════════════════
+          HOW IT WORKS PIPELINE
+          ══════════════════════════════════════════════════════════════ */}
+      <div>
+        <div className="text-center space-y-3 mb-16 max-w-2xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold uppercase tracking-wider">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Interactive Workflow</span>
+          </div>
+          <h2 className="text-3xl sm:text-5xl font-black text-foreground tracking-[-0.025em]">
+            From blank page to interview-ready in four steps.
           </h2>
-          <p className="text-sm text-slate-400 max-w-md mx-auto">
-            From blank page to a tailored resume and live web portfolio in minutes.
+          <p className="text-sm sm:text-base text-muted-foreground">
+            No endless tweaking or guessing what recruiters want. Follow the proven blueprint.
           </p>
         </div>
 
-        {/* Vertical timeline */}
-        <div className="relative">
-          {/* Connector line */}
-          <div className="absolute left-6 sm:left-8 top-0 bottom-0 w-px bg-gradient-to-b from-indigo-500/40 via-violet-500/20 to-amber-500/40" />
-
-          <div className="space-y-10">
-            {STEPS.map((step, idx) => {
-              const Icon = step.icon;
-              return (
-                <motion.div
-                  key={step.number}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: idx * 0.1 }}
-                  className="relative flex items-start gap-5 sm:gap-6"
-                >
-                  {/* Number circle on the timeline */}
+        {/* Step Selector Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {STEPS.map((s, idx) => {
+            const Icon = s.icon;
+            const isCurrent = activeStep === idx;
+            return (
+              <div
+                key={s.step}
+                onClick={() => setActiveStep(idx)}
+                className={`p-6 rounded-2xl border transition-all duration-300 cursor-pointer text-left flex flex-col justify-between space-y-5 ${
+                  isCurrent
+                    ? "bg-card border-cyan-500/50 shadow-xl shadow-cyan-500/10 scale-[1.02]"
+                    : "bg-card/50 border-white/[0.06] hover:border-white/[0.15] hover:bg-card"
+                }`}
+              >
+                <div className="flex items-center justify-between">
                   <div
-                    className={`relative z-10 w-12 h-12 sm:w-16 sm:h-16 rounded-full ${step.color} ring-4 ${step.ring} flex items-center justify-center shrink-0 shadow-lg`}
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xs ${
+                      isCurrent
+                        ? "bg-gradient-to-tr from-cyan-500 to-emerald-400 text-slate-950 shadow-md shadow-cyan-500/20"
+                        : "bg-white/[0.05] text-muted-foreground"
+                    }`}
                   >
-                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                    <Icon className="w-5 h-5" />
                   </div>
+                  <span className="font-mono text-xs text-muted-foreground font-bold">{s.step}</span>
+                </div>
 
-                  {/* Content */}
-                  <div className="pt-1 sm:pt-3 space-y-1.5">
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-xs font-mono text-slate-600 tracking-wider">
-                        {step.number}
-                      </span>
-                      <h3 className="text-base sm:text-lg font-bold text-white">
-                        {step.title}
-                      </h3>
+                <div className="space-y-2">
+                  <h3 className="font-bold text-base text-foreground">{s.title}</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{s.desc}</p>
+                </div>
+
+                <div className="pt-2 border-t border-white/[0.05] text-[11px] text-cyan-400 font-medium flex items-center gap-1">
+                  <span>{s.highlight}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ══════════════════════════════════════════════════════════════
+          COMPARISON TABLE: ResumeForge vs Traditional Builders
+          ══════════════════════════════════════════════════════════════ */}
+      <div className="p-7 sm:p-10 rounded-3xl bg-card border border-white/[0.08] space-y-8 relative overflow-hidden shadow-2xl shadow-black/40">
+        <div className="absolute top-0 right-0 w-80 h-80 bg-cyan-500/5 blur-[120px] pointer-events-none" />
+
+        <div className="space-y-2 max-w-xl">
+          <span className="text-xs font-bold uppercase tracking-wider text-cyan-400">Why ResumeForge?</span>
+          <h3 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
+            Stop paying $24/month for basic resume templates.
+          </h3>
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            Most builders trick you into building your resume, then hold your download hostage behind a surprise subscription paywall. We don&apos;t do that.
+          </p>
+        </div>
+
+        {/* Comparison Grid */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs sm:text-sm">
+            <thead>
+              <tr className="border-b border-white/[0.08]">
+                <th className="pb-4 font-bold text-muted-foreground uppercase text-[11px] tracking-wider">Feature</th>
+                <th className="pb-4 font-extrabold text-emerald-400 uppercase text-[11px] tracking-wider w-1/3">
+                  ResumeForge (Free)
+                </th>
+                <th className="pb-4 font-bold text-muted-foreground/60 uppercase text-[11px] tracking-wider w-1/3">
+                  Typical Builders (Resume.io, etc.)
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/[0.05]">
+              {COMPARISON.map((row) => (
+                <tr key={row.feature} className="hover:bg-white/[0.02] transition-colors">
+                  <td className="py-4 font-semibold text-foreground pr-4">{row.feature}</td>
+                  <td className="py-4 font-bold text-emerald-400">
+                    <div className="flex items-center gap-1.5">
+                      <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span>{row.resumeforge}</span>
                     </div>
-                    <p className="text-sm text-slate-400 leading-relaxed max-w-md">
-                      {step.description}
-                    </p>
-                  </div>
-                </motion.div>
-              );
-            })}
+                  </td>
+                  <td className="py-4 text-muted-foreground/80">
+                    <div className="flex items-center gap-1.5">
+                      <X className="w-4 h-4 text-rose-400/80 shrink-0" />
+                      <span>{row.others}</span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/[0.08]">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <span>No credit card required. No trials that secretly bill you.</span>
           </div>
+          <Link href="/onboarding">
+            <Button
+              type="button"
+              className="h-10 px-6 text-xs bg-gradient-to-r from-cyan-500 to-emerald-400 hover:from-cyan-400 hover:to-emerald-300 text-slate-950 font-extrabold rounded-xl shadow-md shadow-cyan-500/20 transition-all flex items-center gap-1.5"
+            >
+              <span>Build Watermark-Free Resume</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Button>
+          </Link>
         </div>
       </div>
     </section>

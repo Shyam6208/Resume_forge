@@ -14,7 +14,7 @@ const inter = Inter({
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#020617",
+  themeColor: "#1a1612",
 };
 
 export const metadata: Metadata = {
@@ -55,17 +55,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={cn("dark", inter.className)}>
-      <body className="bg-slate-950 text-slate-100 antialiased min-h-screen flex flex-col w-full min-w-0">
+      <body className="bg-background text-foreground antialiased min-h-screen flex flex-col w-full min-w-0">
         <TooltipProvider>{children}</TooltipProvider>
         <Toaster
           position="bottom-right"
           toastOptions={{
             duration: 3000,
             style: {
-              borderRadius: "12px",
-              background: "#0f172a",
-              color: "#f8fafc",
-              border: "1px solid #1e293b",
+              borderRadius: "10px",
+              background: "#1e1a16",
+              color: "#f0e6d6",
+              border: "1px solid rgba(255,255,255,0.08)",
             },
           }}
         />

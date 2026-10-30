@@ -471,7 +471,7 @@ export function AdminAnalyticsClient() {
             </div>
             <div className="flex items-center gap-1.5 text-xs text-slate-500 mr-2">
               <Clock className="w-3 h-3" />
-              <span>Last updated: {dateStr} {formattedLastUpdated}</span>
+              <span suppressHydrationWarning>Last updated: {dateStr} {formattedLastUpdated}</span>
             </div>
           </div>
         </div>

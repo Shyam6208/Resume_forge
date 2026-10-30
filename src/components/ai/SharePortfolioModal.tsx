@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo, useSyncExternalStore } from "react";
 import { useResumeStore } from "@/store/resume.store";
 import {
   Dialog,
@@ -50,17 +50,28 @@ export function SharePortfolioModal({ isOpen, onClose }: SharePortfolioModalProp
     setIsPublic(resumeIsPublic);
   }
 
+  const origin = useSyncExternalStore(
+    () => () => {},
+    () => window.location.origin,
+    () => ""
+  );
+
   const slug = currentResume?.slug || currentResume?.id || "";
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : "http://localhost:3000";
-  const portfolioUrl = `${baseUrl}/r/${slug}`;
-  const qrCodeUrl = `/api/portfolio/qr?slug=${encodeURIComponent(slug)}&baseUrl=${encodeURIComponent(baseUrl)}`;
+  const portfolioUrl = origin ? `${origin}/r/${slug}` : `/r/${slug}`;
+  const qrCodeUrl = `/api/portfolio/qr?slug=${encodeURIComponent(slug)}${origin ? `&baseUrl=${encodeURIComponent(origin)}` : ""}`;
 
   const candidateName = currentResume?.data?.personalInfo?.fullName || "Professional";
   const roleTitle = currentResume?.targetJob || currentResume?.data?.personalInfo?.professionalTitle || "Portfolio";
 
+  const getFullPortfolioUrl = () => {
+    if (origin) return `${origin}/r/${slug}`;
+    if (typeof window !== "undefined") return `${window.location.origin}/r/${slug}`;
+    return `/r/${slug}`;
+  };
+
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(portfolioUrl);
+      await navigator.clipboard.writeText(getFullPortfolioUrl());
       setCopied(true);
       toast.success("📋 Portfolio link copied to clipboard!");
       setTimeout(() => setCopied(false), 2500);
@@ -126,17 +137,17 @@ export function SharePortfolioModal({ isOpen, onClose }: SharePortfolioModalProp
 
   // Social Share Handlers
   const shareWhatsApp = () => {
-    const text = encodeURIComponent(`Check out my professional resume & portfolio: ${portfolioUrl}`);
+    const text = encodeURIComponent(`Check out my professional resume & portfolio: ${getFullPortfolioUrl()}`);
     window.open(`https://api.whatsapp.com/send?text=${text}`, "_blank");
   };
 
   const shareLinkedIn = () => {
-    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(portfolioUrl)}`, "_blank");
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(getFullPortfolioUrl())}`, "_blank");
   };
 
   const shareTwitter = () => {
     const text = encodeURIComponent(`Here is my professional portfolio built on ResumeForge:`);
-    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(portfolioUrl)}`, "_blank");
+    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(getFullPortfolioUrl())}`, "_blank");
   };
 
   const shareStats = useMemo(() => {
@@ -259,6 +270,7 @@ export function SharePortfolioModal({ isOpen, onClose }: SharePortfolioModalProp
               <Input
                 value={portfolioUrl}
                 readOnly
+                suppressHydrationWarning
                 className="bg-slate-900 border-slate-700 text-slate-300 text-xs font-mono flex-1"
               />
               <Button
@@ -275,7 +287,7 @@ export function SharePortfolioModal({ isOpen, onClose }: SharePortfolioModalProp
                 {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
               </Button>
               <Button
-                onClick={() => window.open(portfolioUrl, "_blank")}
+                onClick={() => window.open(getFullPortfolioUrl(), "_blank")}
                 size="sm"
                 className="shrink-0 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs flex items-center gap-1"
               >

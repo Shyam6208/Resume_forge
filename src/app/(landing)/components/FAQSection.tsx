@@ -7,6 +7,7 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from "@/components/ui/accordion";
+import { HelpCircle } from "lucide-react";
 
 const FAQS = [
   {
@@ -54,10 +55,14 @@ export function FAQSection() {
   return (
     <section id="faq" className="py-24 px-4 sm:px-6 max-w-5xl mx-auto">
       <div className="text-center space-y-3 mb-14">
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold uppercase tracking-wider">
+          <HelpCircle className="w-3.5 h-3.5" />
+          <span>Knowledge Base</span>
+        </div>
+        <h2 className="text-3xl sm:text-4xl font-black text-foreground tracking-[-0.02em]">
           Frequently Asked Questions
         </h2>
-        <p className="text-sm text-slate-400 max-w-md mx-auto">
+        <p className="text-sm text-muted-foreground max-w-md mx-auto">
           Everything you need to know about ResumeForge and its AI career tools.
         </p>
       </div>
@@ -75,12 +80,12 @@ export function FAQSection() {
               <AccordionItem
                 key={faq.id}
                 value={faq.id}
-                className="bg-slate-900/40 border border-white/[0.05] rounded-2xl px-5 py-1 text-slate-100 hover:border-white/[0.1] transition-colors"
+                className="bg-card/50 border border-white/[0.05] rounded-xl px-5 py-1 text-foreground hover:border-cyan-500/25 transition-colors"
               >
-                <AccordionTrigger className="text-sm font-semibold text-left hover:text-indigo-300 hover:no-underline py-4 text-slate-200">
+                <AccordionTrigger className="text-sm font-semibold text-left hover:text-cyan-400 hover:no-underline py-4 text-foreground/90">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-xs sm:text-sm text-slate-400 leading-relaxed pb-4">
+                <AccordionContent className="text-xs sm:text-sm text-muted-foreground leading-relaxed pb-4">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>

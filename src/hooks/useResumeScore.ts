@@ -4,7 +4,7 @@
 
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useResumeStore } from "@/store/resume.store";
 import { useAuthStore } from "@/store/auth.store";
 import {
@@ -33,33 +33,17 @@ export function useResumeScore(): UseResumeScoreReturn {
 
   // Initialize with current resume data if present
   const [debouncedData, setDebouncedData] = useState(resumeData);
-  const [isCalculating, setIsCalculating] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (!resumeData) {
-      setDebouncedData(undefined);
-      setIsCalculating(false);
-      return;
-    }
-
-    setIsCalculating(true);
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-
-    // 500ms debounce as per GEMINI.md rule 4
-    timerRef.current = setTimeout(() => {
+    // 500ms debounce as per GEMINI.md rule 4 (immediate reset when cleared)
+    const timer = setTimeout(() => {
       setDebouncedData(resumeData);
-      setIsCalculating(false);
-    }, 500);
+    }, resumeData ? 500 : 0);
 
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    };
+    return () => clearTimeout(timer);
   }, [resumeData]);
+
+  const isCalculating = Boolean(resumeData && debouncedData !== resumeData);
 
   const result = useMemo<ScoreResult>(() => {
     if (!debouncedData) return EMPTY_RESULT;

@@ -4,40 +4,46 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ═══════════════════════════════════════════════════════════
+   RESUMEFORGE — Science-Backed Career Design System
+   Deep Midnight Obsidian + Electric Cyan & Mint Emerald
+   (Psychology: Trust, Growth, ATS Validation, High Value)
+   ═══════════════════════════════════════════════════════════ */
+
 @theme {
-  --color-background: hsl(222.2 84% 4.9%);
-  --color-foreground: hsl(210 40% 98%);
-  --color-card: hsl(217.2 32.6% 12%);
-  --color-card-foreground: hsl(210 40% 98%);
-  --color-popover: hsl(217.2 32.6% 12%);
-  --color-popover-foreground: hsl(210 40% 98%);
-  --color-primary: hsl(210 40% 98%);
-  --color-primary-foreground: hsl(222.2 47.4% 11.2%);
-  --color-secondary: hsl(217.2 32.6% 17.5%);
-  --color-secondary-foreground: hsl(210 40% 98%);
-  --color-muted: hsl(217.2 32.6% 17.5%);
-  --color-muted-foreground: hsl(215 20.2% 65.1%);
-  --color-accent: hsl(217.2 32.6% 17.5%);
-  --color-accent-foreground: hsl(210 40% 98%);
-  --color-destructive: hsl(0 62.8% 30.6%);
-  --color-destructive-foreground: hsl(210 40% 98%);
-  --color-border: hsl(217.2 32.6% 17.5%);
-  --color-input: hsl(217.2 32.6% 17.5%);
-  --color-ring: hsl(224.3 76.3% 48%);
-  --color-chart-1: hsl(220 70% 50%);
-  --color-chart-2: hsl(160 60% 45%);
-  --color-chart-3: hsl(30 80% 55%);
-  --color-chart-4: hsl(280 65% 60%);
-  --color-chart-5: hsl(340 75% 55%);
+  --color-background: oklch(0.12 0.015 255);
+  --color-foreground: oklch(0.98 0.005 240);
+  --color-card: oklch(0.16 0.02 250);
+  --color-card-foreground: oklch(0.98 0.005 240);
+  --color-popover: oklch(0.16 0.02 250);
+  --color-popover-foreground: oklch(0.98 0.005 240);
+  --color-primary: oklch(0.98 0.005 240);
+  --color-primary-foreground: oklch(0.12 0.015 255);
+  --color-secondary: oklch(0.20 0.02 250);
+  --color-secondary-foreground: oklch(0.98 0.005 240);
+  --color-muted: oklch(0.20 0.02 250);
+  --color-muted-foreground: oklch(0.68 0.02 245);
+  --color-accent: oklch(0.20 0.02 250);
+  --color-accent-foreground: oklch(0.98 0.005 240);
+  --color-destructive: oklch(0.60 0.22 25);
+  --color-destructive-foreground: oklch(0.98 0.005 240);
+  --color-border: oklch(1 0 0 / 8%);
+  --color-input: oklch(1 0 0 / 12%);
+  --color-ring: oklch(0.75 0.16 195);
+  --color-chart-1: oklch(0.75 0.16 195);
+  --color-chart-2: oklch(0.72 0.18 155);
+  --color-chart-3: oklch(0.70 0.16 260);
+  --color-chart-4: oklch(0.75 0.15 65);
+  --color-chart-5: oklch(0.65 0.18 20);
   --radius: 0.5rem;
-  --color-sidebar-background: hsl(240 5.9% 10%);
-  --color-sidebar-foreground: hsl(240 4.8% 95.9%);
-  --color-sidebar-primary: hsl(224.3 76.3% 48%);
-  --color-sidebar-primary-foreground: hsl(0 0% 100%);
-  --color-sidebar-accent: hsl(240 3.7% 15.9%);
-  --color-sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-  --color-sidebar-border: hsl(240 3.7% 15.9%);
-  --color-sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --color-sidebar-background: oklch(0.11 0.015 255);
+  --color-sidebar-foreground: oklch(0.95 0.01 240);
+  --color-sidebar-primary: oklch(0.75 0.16 195);
+  --color-sidebar-primary-foreground: oklch(0.12 0.015 255);
+  --color-sidebar-accent: oklch(0.18 0.02 250);
+  --color-sidebar-accent-foreground: oklch(0.95 0.01 240);
+  --color-sidebar-border: oklch(1 0 0 / 8%);
+  --color-sidebar-ring: oklch(0.75 0.16 195);
 }
 
 @layer base {
@@ -66,69 +72,55 @@
 }
 
 .dark {
-  --color-background: hsl(222.2 84% 4.9%);
-  --color-foreground: hsl(210 40% 98%);
-  --color-card: hsl(222.2 84% 4.9%);
-  --color-card-foreground: hsl(210 40% 98%);
-  --color-popover: hsl(222.2 84% 4.9%);
-  --color-popover-foreground: hsl(210 40% 98%);
-  --color-primary: hsl(210 40% 98%);
-  --color-primary-foreground: hsl(222.2 47.4% 11.2%);
-  --color-secondary: hsl(217.2 32.6% 17.5%);
-  --color-secondary-foreground: hsl(210 40% 98%);
-  --color-muted: hsl(217.2 32.6% 17.5%);
-  --color-muted-foreground: hsl(215 20.2% 65.1%);
-  --color-accent: hsl(217.2 32.6% 17.5%);
-  --color-accent-foreground: hsl(210 40% 98%);
-  --color-destructive: hsl(0 62.8% 30.6%);
-  --color-destructive-foreground: hsl(210 40% 98%);
-  --color-border: hsl(217.2 32.6% 17.5%);
-  --color-input: hsl(217.2 32.6% 17.5%);
-  --color-ring: hsl(212.7 26.8% 83.9%);
-  --color-chart-1: hsl(220 70% 50%);
-  --color-chart-2: hsl(160 60% 45%);
-  --color-chart-3: hsl(30 80% 55%);
-  --color-chart-4: hsl(280 65% 60%);
-  --color-chart-5: hsl(340 75% 55%);
-  --color-sidebar-background: hsl(240 5.9% 10%);
-  --color-sidebar-foreground: hsl(240 4.8% 95.9%);
-  --color-sidebar-primary: hsl(224.3 76.3% 48%);
-  --color-sidebar-primary-foreground: hsl(0 0% 100%);
-  --color-sidebar-accent: hsl(240 3.7% 15.9%);
-  --color-sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-  --color-sidebar-border: hsl(240 3.7% 15.9%);
-  --color-sidebar-ring: hsl(217.2 91.2% 59.8%);
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --color-background: oklch(0.12 0.015 255);
+  --color-foreground: oklch(0.98 0.005 240);
+  --color-card: oklch(0.16 0.02 250);
+  --color-card-foreground: oklch(0.98 0.005 240);
+  --color-popover: oklch(0.16 0.02 250);
+  --color-popover-foreground: oklch(0.98 0.005 240);
+  --color-primary: oklch(0.98 0.005 240);
+  --color-primary-foreground: oklch(0.12 0.015 255);
+  --color-secondary: oklch(0.20 0.02 250);
+  --color-secondary-foreground: oklch(0.98 0.005 240);
+  --color-muted: oklch(0.20 0.02 250);
+  --color-muted-foreground: oklch(0.68 0.02 245);
+  --color-accent: oklch(0.20 0.02 250);
+  --color-accent-foreground: oklch(0.98 0.005 240);
+  --color-destructive: oklch(0.704 0.191 22.216);
+  --color-border: oklch(1 0 0 / 8%);
+  --color-input: oklch(1 0 0 / 12%);
+  --color-ring: oklch(0.75 0.16 195);
+  --chart-1: oklch(0.75 0.16 195);
+  --chart-2: oklch(0.72 0.18 155);
+  --chart-3: oklch(0.70 0.16 260);
+  --chart-4: oklch(0.75 0.15 65);
+  --chart-5: oklch(0.65 0.18 20);
+  --sidebar: oklch(0.11 0.015 255);
+  --sidebar-foreground: oklch(0.95 0.01 240);
+  --sidebar-primary: oklch(0.75 0.16 195);
+  --sidebar-primary-foreground: oklch(0.12 0.015 255);
+  --sidebar-accent: oklch(0.18 0.02 250);
+  --sidebar-accent-foreground: oklch(0.95 0.01 240);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: oklch(0.75 0.16 195);
+  --background: oklch(0.12 0.015 255);
+  --foreground: oklch(0.98 0.005 240);
+  --card: oklch(0.16 0.02 250);
+  --card-foreground: oklch(0.98 0.005 240);
+  --popover: oklch(0.16 0.02 250);
+  --popover-foreground: oklch(0.98 0.005 240);
+  --primary: oklch(0.98 0.005 240);
+  --primary-foreground: oklch(0.12 0.015 255);
+  --secondary: oklch(0.20 0.02 250);
+  --secondary-foreground: oklch(0.98 0.005 240);
+  --muted: oklch(0.20 0.02 250);
+  --muted-foreground: oklch(0.68 0.02 245);
+  --accent: oklch(0.20 0.02 250);
+  --accent-foreground: oklch(0.98 0.005 240);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.75 0.16 195);
 }
 
 @theme inline {
@@ -175,33 +167,33 @@
 }
 
 :root {
-  --background: oklch(0.12 0.02 260);
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.17 0.02 260);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.17 0.02 260);
-  --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.98 0 0);
-  --primary-foreground: oklch(0.12 0.02 260);
-  --secondary: oklch(0.22 0.02 260);
-  --secondary-foreground: oklch(0.98 0 0);
-  --muted: oklch(0.22 0.02 260);
-  --muted-foreground: oklch(0.70 0.02 260);
-  --accent: oklch(0.22 0.02 260);
-  --accent-foreground: oklch(0.98 0 0);
-  --destructive: oklch(0.55 0.22 25);
-  --border: oklch(0.22 0.02 260);
-  --input: oklch(0.22 0.02 260);
-  --ring: oklch(0.60 0.20 260);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.15 0.02 260);
-  --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(0.60 0.20 260);
-  --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.22 0.02 260);
-  --sidebar-accent-foreground: oklch(0.98 0 0);
-  --sidebar-border: oklch(0.22 0.02 260);
-  --sidebar-ring: oklch(0.60 0.20 260);
+  --background: oklch(0.12 0.015 255);
+  --foreground: oklch(0.98 0.005 240);
+  --card: oklch(0.16 0.02 250);
+  --card-foreground: oklch(0.98 0.005 240);
+  --popover: oklch(0.16 0.02 250);
+  --popover-foreground: oklch(0.98 0.005 240);
+  --primary: oklch(0.98 0.005 240);
+  --primary-foreground: oklch(0.12 0.015 255);
+  --secondary: oklch(0.20 0.02 250);
+  --secondary-foreground: oklch(0.98 0.005 240);
+  --muted: oklch(0.20 0.02 250);
+  --muted-foreground: oklch(0.68 0.02 245);
+  --accent: oklch(0.20 0.02 250);
+  --accent-foreground: oklch(0.98 0.005 240);
+  --destructive: oklch(0.60 0.22 25);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.75 0.16 195);
+  --radius: 0.5rem;
+  --sidebar: oklch(0.11 0.015 255);
+  --sidebar-foreground: oklch(0.95 0.01 240);
+  --sidebar-primary: oklch(0.75 0.16 195);
+  --sidebar-primary-foreground: oklch(0.12 0.015 255);
+  --sidebar-accent: oklch(0.18 0.02 250);
+  --sidebar-accent-foreground: oklch(0.95 0.01 240);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: oklch(0.75 0.16 195);
 }
 
 /* Chrome / Safari / Edge Autofill Override for Dark Theme */
@@ -217,9 +209,9 @@ select:-webkit-autofill,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus,
 select:-webkit-autofill:active {
-  -webkit-text-fill-color: #f8fafc !important;
-  -webkit-box-shadow: 0 0 0px 1000px #090d16 inset !important;
-  box-shadow: 0 0 0px 1000px #090d16 inset !important;
+  -webkit-text-fill-color: #f0e6d6 !important;
+  -webkit-box-shadow: 0 0 0px 1000px #1a1612 inset !important;
+  box-shadow: 0 0 0px 1000px #1a1612 inset !important;
   transition: background-color 5000s ease-in-out 0s;
 }
 
@@ -287,6 +279,62 @@ select:-webkit-autofill:active {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   MODERN UI LAB / SAAS ANIMATIONS
+   ═══════════════════════════════════════════════════════════════ */
+
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes marquee-scroll-reverse {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 32s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+.animate-marquee-reverse {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll-reverse 32s linear infinite;
+}
+
+.animate-marquee-reverse:hover {
+  animation-play-state: paused;
+}
+
+@keyframes equalizer-1 { 0%, 100% { height: 6px; } 50% { height: 26px; } }
+@keyframes equalizer-2 { 0%, 100% { height: 18px; } 50% { height: 34px; } }
+@keyframes equalizer-3 { 0%, 100% { height: 10px; } 50% { height: 28px; } }
+@keyframes equalizer-4 { 0%, 100% { height: 24px; } 50% { height: 12px; } }
+@keyframes equalizer-5 { 0%, 100% { height: 14px; } 50% { height: 32px; } }
+
+.eq-bar-1 { animation: equalizer-1 1.2s ease-in-out infinite; }
+.eq-bar-2 { animation: equalizer-2 0.9s ease-in-out infinite 0.15s; }
+.eq-bar-3 { animation: equalizer-3 1.1s ease-in-out infinite 0.3s; }
+.eq-bar-4 { animation: equalizer-4 1.4s ease-in-out infinite 0.05s; }
+.eq-bar-5 { animation: equalizer-5 0.8s ease-in-out infinite 0.25s; }
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.65; transform: scale(1.06); }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 6s ease-in-out infinite;
+}
+
 
 /* ============================================================
    ResumeForge — Professional High-Fidelity @media print Styles
