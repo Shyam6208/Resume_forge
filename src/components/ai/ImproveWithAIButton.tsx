@@ -79,31 +79,33 @@ export function ImproveWithAIButton({
       operation: mode === "optimize" ? "jd-optimize" : "improve-section",
       sectionKey,
       content: currentData,
-      targetRole: currentResume?.targetJob || currentResume?.title,
       jobDescription: mode === "optimize" ? jobDescription : undefined,
     });
     const cached = getClientCached<SectionImproveResult>(cacheKey);
     if (cached) {
       setImproveResult(cached);
       setShowDiffModal(true);
-      toast.success("AI Improvement loaded from cache!", { duration: 2000 });
+      toast.success("Loaded improvement from cache");
       return;
     }
 
-    inFlightRef.current = true;
     setIsLoading(true);
+    inFlightRef.current = true;
+    const toastId = toast.loading(
+      mode === "optimize" ? "🎯 Optimizing for target job..." : "✨ AI is polishing this section..."
+    );
 
     try {
       const res = await fetch("/api/ai/improve-section", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          mode,
           sectionKey,
-          currentSectionData: currentData,
+          sectionData: currentData,
           userType: userType || "developer",
           targetJob: currentResume?.targetJob || currentResume?.title,
           jobDescription: mode === "optimize" ? jobDescription : undefined,
+          missingKeywords: mode === "optimize" ? jdMatchResult?.missingKeywords : undefined,
         }),
       });
 
@@ -112,35 +114,33 @@ export function ImproveWithAIButton({
         throw new Error(err.error || "Failed to improve section");
       }
 
-      const result: SectionImproveResult = await res.json();
-      setImproveResult(result);
+      const data: SectionImproveResult = await res.json();
+      setImproveResult(data);
+      setClientCached(cacheKey, data);
       setShowDiffModal(true);
-
-      // Cache the result
-      setClientCached(cacheKey, result);
-
-      toast.success(mode === "optimize" ? "JD Optimization Ready!" : "AI Improvement Ready!", { duration: 3000 });
+      toast.dismiss(toastId);
+      toast.success("Section improvements ready for review!");
     } catch (err: unknown) {
       console.error("Improve section error:", err);
-      const msg = err instanceof Error ? err.message : "Failed to improve section";
-      toast.error(msg, { duration: 4000 });
+      toast.dismiss(toastId);
+      toast.error(err instanceof Error ? err.message : "AI improvement failed", { duration: 4000 });
     } finally {
       setIsLoading(false);
       inFlightRef.current = false;
     }
-  }, [currentData, currentResume, sectionKey, userType]);
+  }, [currentData, currentResume, jobDescription, jdMatchResult, mode, sectionKey, userType]);
 
   const handleApplyChanges = () => {
-    if (improveResult?.improvedData) {
-      if (onApply) {
-        onApply(improveResult.improvedData);
-      } else {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        updateSection(sectionKey, improveResult.improvedData as any);
-      }
-      toast.success("AI Improvements applied!");
-      setShowDiffModal(false);
+    if (!improveResult) return;
+
+    if (onApply) {
+      onApply(improveResult.improvedData);
+    } else {
+      updateSection(sectionKey, improveResult.improvedData as never);
     }
+
+    setShowDiffModal(false);
+    toast.success(`Updated ${sectionKey} with AI improvements!`);
   };
 
   return (
@@ -151,15 +151,15 @@ export function ImproveWithAIButton({
         size="sm"
         disabled={isLoading}
         onClick={handleImprove}
-        className={`h-7 px-2.5 text-xs text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 font-semibold flex items-center gap-1.5 ${className}`}
+        className={`h-7 px-2.5 text-xs text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 font-semibold flex items-center gap-1.5 rounded-lg transition-colors ${className}`}
         title={`Improve ${sectionKey} with AI`}
       >
         {isLoading ? (
-          <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-400" />
+          <Loader2 className="w-3.5 h-3.5 animate-spin text-cyan-400" />
         ) : mode === "optimize" ? (
           <Target className="w-3.5 h-3.5 text-rose-400" />
         ) : (
-          <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+          <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
         )}
         <span>
           {isLoading 
@@ -172,10 +172,10 @@ export function ImproveWithAIButton({
 
       {/* Diff & Review Modal */}
       <Dialog open={showDiffModal} onOpenChange={setShowDiffModal}>
-        <DialogContent className="w-[95vw] max-w-2xl bg-slate-900 border-slate-800 text-slate-100 p-6 space-y-4">
+        <DialogContent className="w-[95vw] max-w-2xl bg-[#0B0F17]/95 border-white/[0.08] backdrop-blur-2xl text-slate-100 p-6 space-y-4 shadow-2xl">
           <DialogHeader>
             <DialogTitle className="text-base font-bold text-white flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-amber-400" />
+              <Sparkles className="w-4 h-4 text-cyan-400" />
               <span>Review AI Improvements — {sectionKey.toUpperCase()}</span>
             </DialogTitle>
             <DialogDescription className="text-xs text-slate-400">
@@ -185,8 +185,8 @@ export function ImproveWithAIButton({
 
           {/* Key Changes Summary */}
           {improveResult?.keyChanges && improveResult.keyChanges.length > 0 && (
-            <div className="p-3 rounded-xl bg-indigo-950/40 border border-indigo-500/30 text-xs space-y-1">
-              <span className="font-bold text-indigo-300">Key Enhancements:</span>
+            <div className="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-xs space-y-1">
+              <span className="font-bold text-cyan-300">Key Enhancements:</span>
               <ul className="list-disc list-inside text-slate-300 space-y-0.5">
                 {improveResult.keyChanges.map((change, i) => (
                   <li key={i}>{change}</li>
@@ -197,14 +197,14 @@ export function ImproveWithAIButton({
 
           {/* Before vs After View */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-72 overflow-y-auto p-1">
-            <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-              <span className="text-[10px] font-bold uppercase text-slate-500 block">Original Version</span>
+            <div className="p-3 rounded-xl bg-slate-950/80 border border-white/[0.06] space-y-1">
+              <span className="text-[10px] font-bold uppercase text-slate-400 block tracking-wider">Original Version</span>
               <pre className="text-[11px] text-slate-400 whitespace-pre-wrap font-mono leading-relaxed">
                 {JSON.stringify(currentData, null, 2)}
               </pre>
             </div>
             <div className="p-3 rounded-xl bg-emerald-950/20 border border-emerald-500/30 space-y-1">
-              <span className="text-[10px] font-bold uppercase text-emerald-400 block">AI Improved Version</span>
+              <span className="text-[10px] font-bold uppercase text-emerald-400 block tracking-wider">AI Improved Version</span>
               <pre className="text-[11px] text-emerald-200 whitespace-pre-wrap font-mono leading-relaxed">
                 {JSON.stringify(improveResult?.improvedData, null, 2)}
               </pre>
@@ -217,7 +217,7 @@ export function ImproveWithAIButton({
               variant="outline"
               size="sm"
               onClick={() => setShowDiffModal(false)}
-              className="h-9 text-xs bg-slate-900 border-slate-800 text-slate-400 hover:text-white"
+              className="h-9 text-xs bg-white/[0.05] border-white/[0.08] text-slate-300 hover:text-white rounded-xl"
             >
               Cancel / Reject
             </Button>
@@ -225,7 +225,7 @@ export function ImproveWithAIButton({
               type="button"
               size="sm"
               onClick={handleApplyChanges}
-              className="h-9 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 flex items-center gap-1.5"
+              className="h-9 text-xs bg-gradient-to-r from-cyan-400 to-emerald-400 hover:opacity-90 text-slate-950 font-bold px-4 flex items-center gap-1.5 rounded-xl shadow-md shadow-cyan-500/20 transition-all"
             >
               <Check className="w-4 h-4" />
               <span>Apply AI Improvements</span>

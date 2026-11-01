@@ -86,8 +86,8 @@ export function EditorSidebar() {
   };
 
   return (
-    <div className="w-full bg-slate-900 border-r border-slate-800 flex flex-col h-full text-slate-300">
-      <div className="p-3 border-b border-slate-800">
+    <div className="w-full bg-[#0B0F17] border-r border-white/[0.08] flex flex-col h-full text-slate-300">
+      <div className="p-3.5 border-b border-white/[0.08]">
         <h3 className="text-xs font-bold text-white uppercase tracking-wider">
           Resume Sections
         </h3>
@@ -107,28 +107,28 @@ export function EditorSidebar() {
           return (
             <div
               key={sectionKey}
-              className={`group flex items-center justify-between px-2.5 py-2.5 min-h-[44px] rounded-lg cursor-pointer text-xs transition-colors ${
+              className={`group flex items-center justify-between px-3 py-2.5 min-h-[42px] rounded-xl cursor-pointer text-xs transition-all ${
                 isActive
-                  ? "bg-indigo-600 text-white font-medium shadow-xs"
+                  ? "bg-gradient-to-r from-cyan-500/15 to-emerald-500/10 border border-cyan-500/30 text-cyan-300 font-bold shadow-sm"
                   : isAdded
-                  ? "hover:bg-slate-800 text-slate-300"
-                  : "hover:bg-slate-800/80 text-slate-400"
+                  ? "hover:bg-white/[0.05] text-slate-300 hover:text-white"
+                  : "hover:bg-white/[0.03] text-slate-500 hover:text-slate-400"
               }`}
               onClick={() => handleSectionSelect(sectionKey)}
             >
-              <div className="flex items-center gap-2 min-w-0 flex-1">
-                <IconComponent className="w-4 h-4 shrink-0" />
+              <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                <IconComponent className={`w-4 h-4 shrink-0 ${isActive ? "text-cyan-400" : "text-slate-400"}`} />
                 <span className="truncate">{config.label}</span>
               </div>
 
-              <div className="flex items-center gap-1.5 shrink-0">
+              <div className="flex items-center gap-2 shrink-0">
                 {/* Completion Status Dot */}
                 <div
                   className={`w-2 h-2 rounded-full ${
                     !isAdded
                       ? "bg-slate-700"
                       : isEmpty
-                      ? "bg-slate-500"
+                      ? "bg-slate-600"
                       : "bg-emerald-400"
                   }`}
                   title={
@@ -145,7 +145,7 @@ export function EditorSidebar() {
                   <button
                     type="button"
                     onClick={(e) => handleRemoveSection(e, sectionKey)}
-                    className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-rose-400 transition-opacity p-0.5"
+                    className="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-rose-400 transition-all p-0.5"
                     title="Remove section"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -159,7 +159,7 @@ export function EditorSidebar() {
 
       {/* Add Optional Section Button */}
       {availableToAdd.length > 0 && (
-        <div className="p-2 border-t border-slate-800">
+        <div className="p-3 border-t border-white/[0.08]">
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
@@ -167,21 +167,21 @@ export function EditorSidebar() {
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="w-full h-8 text-xs bg-slate-800/60 border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 flex items-center justify-center gap-1.5"
+                  className="w-full h-8.5 text-xs bg-white/[0.05] border-white/[0.08] text-slate-300 hover:text-white hover:bg-white/[0.1] flex items-center justify-center gap-1.5 rounded-xl font-medium transition-all"
                 />
               }
             >
-              <Plus className="w-3.5 h-3.5 text-indigo-400" />
+              <Plus className="w-3.5 h-3.5 text-cyan-400" />
               <span>Add Optional Section</span>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-52 bg-slate-900 border-slate-800 text-slate-200">
+            <DropdownMenuContent align="start" className="w-52 bg-[#0B0F17]/95 border-white/[0.08] backdrop-blur-2xl text-slate-200 p-1.5 rounded-2xl shadow-2xl">
               {availableToAdd.map((key) => {
                 const config = SECTION_CONFIG[key];
                 return (
                   <DropdownMenuItem
                     key={key}
                     onClick={() => addSection(key)}
-                    className="text-xs cursor-pointer hover:bg-slate-800 focus:bg-slate-800"
+                    className="text-xs cursor-pointer hover:bg-white/[0.06] focus:bg-white/[0.06] rounded-xl px-2.5 py-2 text-slate-200 hover:text-white transition-colors"
                   >
                     + {config.label}
                   </DropdownMenuItem>

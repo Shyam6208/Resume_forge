@@ -108,7 +108,7 @@ export function AdminActivityClient() {
     router.replace(newUrl, { scroll: false });
   }, [pathname, searchParams, router]);
 
-  // Sync state from URL during render (handles Browser Back/Forward)
+  // Sync state from URL during render
   const [prevParams, setPrevParams] = useState(searchParams.toString());
   const currentParamsStr = searchParams.toString();
 
@@ -234,16 +234,15 @@ export function AdminActivityClient() {
   // Render Helpers
   const getEventIcon = (type: string) => {
     if (type === "user_registered") return <UserPlus className="w-4 h-4 text-emerald-400" />;
-    if (type === "resume_created") return <FileText className="w-4 h-4 text-indigo-400" />;
+    if (type === "resume_created") return <FileText className="w-4 h-4 text-cyan-400" />;
     if (type === "resume_updated") return <Edit3 className="w-4 h-4 text-amber-400" />;
     if (type.startsWith("template_")) return <FileCode2 className="w-4 h-4 text-purple-400" />;
-    return <Activity className="w-4 h-4 text-slate-400" />;
+    return <Activity className="w-4 h-4 text-muted-foreground" />;
   };
 
   const getEventLabel = (type: string) => {
     const option = ACTIVITY_TYPES.find(t => t.value === type);
     if (option) return option.label;
-    // Format "some_event_name" -> "Some Event Name"
     return type.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   };
 
@@ -252,7 +251,7 @@ export function AdminActivityClient() {
 
     return (
       <div className="flex items-center justify-between pt-4">
-        <p className="text-[11px] text-slate-500">
+        <p className="text-[11px] text-muted-foreground">
           Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, totalCount)} of {totalCount} events
         </p>
         <div className="flex items-center gap-1">
@@ -260,7 +259,7 @@ export function AdminActivityClient() {
             variant="outline"
             disabled={page === 1}
             onClick={() => handlePageChange(page - 1)}
-            className="w-9 h-9 p-0 bg-slate-900/50 border-slate-800 hover:bg-slate-800 text-slate-300 disabled:opacity-50 disabled:pointer-events-none rounded-xl"
+            className="w-9 h-9 p-0 bg-card border-white/[0.08] hover:bg-white/[0.06] text-foreground disabled:opacity-50 disabled:pointer-events-none rounded-xl"
           >
             <ChevronLeft className="w-4 h-4" />
           </Button>
@@ -268,7 +267,7 @@ export function AdminActivityClient() {
           <div className="hidden sm:flex items-center gap-1">
             {getPageNumbers().map((p, i) => 
               p === "ellipsis" ? (
-                <span key={`ell-${i}`} className="w-9 text-center text-slate-500 text-sm">
+                <span key={`ell-${i}`} className="w-9 text-center text-muted-foreground text-sm">
                   ...
                 </span>
               ) : (
@@ -276,10 +275,10 @@ export function AdminActivityClient() {
                   key={p}
                   variant={page === p ? "default" : "outline"}
                   onClick={() => handlePageChange(p as number)}
-                  className={`w-9 h-9 p-0 font-semibold rounded-xl text-sm ${
+                  className={`w-9 h-9 p-0 font-bold rounded-xl text-sm ${
                     page === p 
-                      ? "bg-indigo-500 hover:bg-indigo-600 text-white border-transparent" 
-                      : "bg-slate-900/50 border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800"
+                      ? "bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 border-transparent shadow-sm" 
+                      : "bg-card border-white/[0.08] text-muted-foreground hover:text-foreground hover:bg-white/[0.06]"
                   }`}
                 >
                   {p}
@@ -292,7 +291,7 @@ export function AdminActivityClient() {
             variant="outline"
             disabled={page === totalPages || totalPages === 0}
             onClick={() => handlePageChange(page + 1)}
-            className="w-9 h-9 p-0 bg-slate-900/50 border-slate-800 hover:bg-slate-800 text-slate-300 disabled:opacity-50 disabled:pointer-events-none rounded-xl"
+            className="w-9 h-9 p-0 bg-card border-white/[0.08] hover:bg-white/[0.06] text-foreground disabled:opacity-50 disabled:pointer-events-none rounded-xl"
           >
             <ChevronRight className="w-4 h-4" />
           </Button>
@@ -304,15 +303,15 @@ export function AdminActivityClient() {
   if (loadingState === "error") {
     return (
       <div className="space-y-6">
-        <div className="rounded-3xl bg-slate-900/90 border border-slate-800 shadow-xl p-12 text-center space-y-4">
-          <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto">
-            <AlertCircle className="w-6 h-6 text-red-400" />
+        <div className="rounded-3xl bg-card/85 backdrop-blur-xl border border-white/[0.08] shadow-xl p-12 text-center space-y-4">
+          <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mx-auto">
+            <AlertCircle className="w-6 h-6 text-rose-400" />
           </div>
           <div className="space-y-1">
-            <p className="text-sm font-bold text-white">Unable to load activity logs.</p>
-            <p className="text-xs text-slate-400">{errorMessage}</p>
+            <p className="text-sm font-bold text-foreground">Unable to load activity logs.</p>
+            <p className="text-xs text-muted-foreground">{errorMessage}</p>
           </div>
-          <Button onClick={handleRefresh} className="h-9 px-4 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl">
+          <Button onClick={handleRefresh} className="h-10 px-5 text-xs bg-gradient-to-r from-cyan-400 to-emerald-400 hover:from-cyan-300 hover:to-emerald-300 text-slate-950 font-bold rounded-xl shadow-lg shadow-cyan-500/20">
             <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
             Try Again
           </Button>
@@ -322,28 +321,28 @@ export function AdminActivityClient() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-7xl">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.08] pb-6">
         <div className="space-y-1">
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight flex items-center gap-2">
             <span>Audit & Activity</span>
             {totalCount > 0 && (
-              <span className="text-xs px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 font-semibold">
+              <span className="text-xs px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-bold">
                 {totalCount} events
               </span>
             )}
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400">
+          <p className="text-xs sm:text-sm text-muted-foreground">
             Monitor secure, chronological system events within a bounded timeframe
           </p>
         </div>
         <Button
           onClick={handleRefresh}
           disabled={isRefreshing}
-          className="h-10 px-4 text-xs bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl border border-slate-700"
+          className="h-10 px-4 text-xs bg-card hover:bg-white/[0.06] text-foreground font-semibold rounded-xl border border-white/[0.08]"
         >
-          <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`} />
+          <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? "animate-spin text-cyan-400" : ""}`} />
           Refresh
         </Button>
       </div>
@@ -352,18 +351,18 @@ export function AdminActivityClient() {
       <div className="flex flex-col sm:flex-row gap-3">
         {/* Search */}
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by user or resource..."
-            className="w-full h-10 pl-10 pr-9 text-xs bg-slate-900 border border-slate-800 rounded-xl text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+            className="w-full h-11 pl-10 pr-9 text-xs bg-card/85 border border-white/[0.08] rounded-xl text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
           />
           {search && (
             <button
               onClick={() => { setSearch(""); setDebouncedSearch(""); setPage(1); }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
             >
               <XCircle className="w-4 h-4" />
             </button>
@@ -374,7 +373,7 @@ export function AdminActivityClient() {
         <select
           value={typeFilter}
           onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
-          className="h-10 px-3 text-xs bg-slate-900 border border-slate-800 rounded-xl text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+          className="h-11 px-3 text-xs bg-card/85 border border-white/[0.08] rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-cyan-500/40 font-medium"
         >
           {ACTIVITY_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
         </select>
@@ -382,7 +381,7 @@ export function AdminActivityClient() {
         <select
           value={daysFilter}
           onChange={(e) => { setDaysFilter(e.target.value); setPage(1); }}
-          className="h-10 px-3 text-xs bg-slate-900 border border-slate-800 rounded-xl text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+          className="h-11 px-3 text-xs bg-card/85 border border-white/[0.08] rounded-xl text-foreground focus:outline-none focus:ring-2 focus:ring-cyan-500/40 font-medium"
         >
           {DATE_RANGES.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
         </select>
@@ -391,16 +390,16 @@ export function AdminActivityClient() {
       {/* Main Content */}
       <div className={loadingState === "loading" && events.length === 0 ? "opacity-50 pointer-events-none" : ""}>
         {events.length === 0 && loadingState === "loaded" ? (
-          <div className="rounded-3xl bg-slate-900/90 border border-slate-800 shadow-xl p-12 text-center space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mx-auto">
-              <Activity className="w-6 h-6 text-indigo-400" />
+          <div className="rounded-3xl bg-card/85 backdrop-blur-xl border border-white/[0.08] shadow-xl p-12 text-center space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mx-auto">
+              <Activity className="w-6 h-6 text-cyan-400" />
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-bold text-white">No activity found</p>
-              <p className="text-xs text-slate-400">There are no events matching your filters in the selected time range.</p>
+              <p className="text-sm font-bold text-foreground">No activity found</p>
+              <p className="text-xs text-muted-foreground">There are no events matching your filters in the selected time range.</p>
             </div>
             {hasFilters && (
-              <Button onClick={handleClearFilters} variant="outline" className="h-9 px-4 text-xs bg-slate-900 border-slate-800 text-slate-200 font-semibold rounded-xl">
+              <Button onClick={handleClearFilters} variant="outline" className="h-10 px-4 text-xs bg-card border-white/[0.08] text-foreground font-semibold rounded-xl">
                 Clear Filters
               </Button>
             )}
@@ -408,9 +407,9 @@ export function AdminActivityClient() {
         ) : (
           <div className="space-y-4">
             {/* Desktop Table view */}
-            <div className="hidden md:block rounded-3xl bg-slate-900/90 border border-slate-800 shadow-xl overflow-hidden">
-              <table className="w-full text-left text-xs text-slate-300">
-                <thead className="bg-slate-950 border-b border-slate-800 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+            <div className="hidden md:block rounded-3xl bg-card/85 backdrop-blur-xl border border-white/[0.08] shadow-xl overflow-hidden">
+              <table className="w-full text-left text-xs text-muted-foreground">
+                <thead className="bg-background/80 border-b border-white/[0.08] text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                   <tr>
                     <th className="p-4 w-48">Action</th>
                     <th className="p-4 w-64">User</th>
@@ -418,36 +417,36 @@ export function AdminActivityClient() {
                     <th className="p-4 w-48 text-right">Timestamp</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/80">
+                <tbody className="divide-y divide-white/[0.06]">
                   {events.map(event => (
-                    <tr key={event.id} className="hover:bg-slate-800/40 transition-colors">
+                    <tr key={event.id} className="hover:bg-white/[0.02] transition-colors">
                       <td className="p-4">
                         <div className="flex items-center gap-2">
                           {getEventIcon(event.type)}
-                          <span className="font-semibold text-slate-200">{getEventLabel(event.type)}</span>
+                          <span className="font-semibold text-foreground">{getEventLabel(event.type)}</span>
                         </div>
                       </td>
                       <td className="p-4">
                         <div className="min-w-0">
-                          <p className="font-medium text-slate-200 truncate">{event.user?.name || "Unknown user"}</p>
-                          <p className="text-[10px] text-slate-500 truncate">{event.user?.email || "Unknown email"}</p>
+                          <p className="font-medium text-foreground truncate">{event.user?.name || "Unknown user"}</p>
+                          <p className="text-[10px] text-muted-foreground truncate">{event.user?.email || "Unknown email"}</p>
                         </div>
                       </td>
                       <td className="p-4">
                         {event.resource ? (
                           <div className="flex items-center gap-2">
                             {event.type.startsWith("template") ? (
-                              <FileCode2 className="w-3.5 h-3.5 text-slate-500" />
+                              <FileCode2 className="w-3.5 h-3.5 text-cyan-400" />
                             ) : (
-                              <FileText className="w-3.5 h-3.5 text-slate-500" />
+                              <FileText className="w-3.5 h-3.5 text-cyan-400" />
                             )}
-                            <span className="font-medium text-slate-300 truncate">{event.resource.title}</span>
+                            <span className="font-medium text-foreground truncate">{event.resource.title}</span>
                           </div>
                         ) : (
-                          <span className="text-slate-600 italic">No resource linked</span>
+                          <span className="text-muted-foreground/60 italic">No resource linked</span>
                         )}
                       </td>
-                      <td className="p-4 text-right text-[11px] text-slate-400">
+                      <td className="p-4 text-right text-[11px] text-muted-foreground">
                         {new Date(event.timestamp).toLocaleString(undefined, { 
                           month: 'short', day: 'numeric', year: 'numeric', 
                           hour: 'numeric', minute: '2-digit' 
@@ -462,26 +461,26 @@ export function AdminActivityClient() {
             {/* Mobile Cards */}
             <div className="md:hidden space-y-3">
               {events.map(event => (
-                <div key={event.id} className="rounded-2xl bg-slate-900/90 border border-slate-800 p-4 space-y-3">
+                <div key={event.id} className="rounded-2xl bg-card/85 backdrop-blur-xl border border-white/[0.08] p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       {getEventIcon(event.type)}
-                      <span className="text-xs font-bold text-slate-200">{getEventLabel(event.type)}</span>
+                      <span className="text-xs font-bold text-foreground">{getEventLabel(event.type)}</span>
                     </div>
-                    <span className="text-[10px] text-slate-500">
+                    <span className="text-[10px] text-muted-foreground">
                       {new Date(event.timestamp).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                     </span>
                   </div>
                   
-                  <div className="bg-slate-950 rounded-xl p-3 space-y-2 text-xs">
+                  <div className="bg-background/60 rounded-xl p-3 space-y-2 text-xs border border-white/[0.04]">
                     <div>
-                      <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-0.5">User</p>
-                      <p className="text-slate-300 truncate">{event.user?.name || "Unknown user"} <span className="text-slate-500">({event.user?.email})</span></p>
+                      <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-wider mb-0.5">User</p>
+                      <p className="text-foreground truncate">{event.user?.name || "Unknown user"} <span className="text-muted-foreground">({event.user?.email})</span></p>
                     </div>
                     {event.resource && (
                       <div>
-                        <p className="text-slate-500 text-[10px] uppercase font-bold tracking-wider mb-0.5">Resource</p>
-                        <p className="text-slate-300 font-medium truncate">{event.resource.title}</p>
+                        <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-wider mb-0.5">Resource</p>
+                        <p className="text-foreground font-medium truncate">{event.resource.title}</p>
                       </div>
                     )}
                   </div>

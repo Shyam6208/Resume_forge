@@ -61,8 +61,11 @@ export function Navbar() {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <span className="font-black text-lg tracking-tight text-foreground">
-              Resume<span className="text-amber-400">Forge</span>
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-emerald-400 flex items-center justify-center text-slate-950 font-black text-xs shadow-md shadow-cyan-500/20 group-hover:scale-105 transition-transform">
+              RF
+            </div>
+            <span className="font-extrabold text-base tracking-tight text-foreground">
+              Resume<span className="bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">Forge</span>
             </span>
           </Link>
 
@@ -190,7 +193,7 @@ export function Navbar() {
                 </Link>
                 <Link
                   href="/login"
-                  className="px-4 py-2 text-sm font-medium bg-amber-500 text-black rounded-lg hover:bg-amber-400 transition-colors shadow-sm"
+                  className="px-4 py-2 text-sm font-extrabold bg-gradient-to-r from-cyan-500 to-emerald-400 hover:from-cyan-400 hover:to-emerald-300 text-slate-950 rounded-xl transition-all shadow-md shadow-cyan-500/20"
                 >
                   Get Started Free
                 </Link>
@@ -234,7 +237,7 @@ export function Navbar() {
                 <div className="pt-2 space-y-2">
                   <Link
                     href="/login"
-                    className="block w-full text-center px-4 py-2 text-sm font-medium bg-amber-500 text-black rounded-lg hover:bg-amber-400 transition-colors"
+                    className="block w-full text-center px-4 py-2.5 text-sm font-extrabold bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 rounded-xl transition-all shadow-md shadow-cyan-500/20"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Get Started Free

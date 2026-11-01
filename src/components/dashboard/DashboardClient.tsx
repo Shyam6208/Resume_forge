@@ -333,48 +333,48 @@ export function DashboardClient({
                 <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuLabel className="text-xs text-muted-foreground">Filter By</DropdownMenuLabel>
                   <DropdownMenuSeparator className="bg-slate-800" />
-                  <DropdownMenuItem onClick={() => setFilterBy("all")} className="text-xs hover:bg-slate-800 cursor-pointer">
+                  <DropdownMenuItem onClick={() => setFilterBy("all")} className="text-xs hover:bg-white/[0.06] cursor-pointer">
                     All Resumes
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setFilterBy("high-score")} className="text-xs hover:bg-slate-800 cursor-pointer">
+                  <DropdownMenuItem onClick={() => setFilterBy("high-score")} className="text-xs hover:bg-white/[0.06] cursor-pointer">
                     High ATS Score (&ge;80)
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setFilterBy("recent")} className="text-xs hover:bg-slate-800 cursor-pointer">
+                  <DropdownMenuItem onClick={() => setFilterBy("recent")} className="text-xs hover:bg-white/[0.06] cursor-pointer">
                     Recently Updated
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
 
               <DropdownMenu>
-                <DropdownMenuTrigger className="h-10 px-4 inline-flex items-center justify-center border bg-card border-white/[0.08] text-foreground/80 hover:bg-white/[0.06] hover:text-foreground rounded-lg text-xs gap-2 shrink-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/40">
+                <DropdownMenuTrigger className="h-10 px-4 inline-flex items-center justify-center border bg-card border-white/[0.08] text-foreground/80 hover:bg-white/[0.06] hover:text-foreground rounded-lg text-xs gap-2 shrink-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/40 cursor-pointer">
                   <ArrowUpDown className="w-4 h-4" />
                   <span className="hidden sm:inline">Sort</span>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuContent align="end" className="w-48 bg-card border-white/[0.08] text-foreground shadow-2xl">
                   <DropdownMenuLabel className="text-xs text-muted-foreground">Sort By</DropdownMenuLabel>
-                  <DropdownMenuSeparator className="bg-slate-800" />
-                  <DropdownMenuItem onClick={() => setSortBy("updated")} className="text-xs hover:bg-slate-800 cursor-pointer flex items-center justify-between">
+                  <DropdownMenuSeparator className="bg-white/[0.06]" />
+                  <DropdownMenuItem onClick={() => setSortBy("updated")} className="text-xs hover:bg-white/[0.06] cursor-pointer flex items-center justify-between">
                     Recently Updated
                     {sortBy === "updated" && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>}
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setSortBy("created")} className="text-xs hover:bg-slate-800 cursor-pointer flex items-center justify-between">
+                  <DropdownMenuItem onClick={() => setSortBy("created")} className="text-xs hover:bg-white/[0.06] cursor-pointer flex items-center justify-between">
                     Recently Created
                     {sortBy === "created" && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>}
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setSortBy("score-high")} className="text-xs hover:bg-slate-800 cursor-pointer flex items-center justify-between">
+                  <DropdownMenuItem onClick={() => setSortBy("score-high")} className="text-xs hover:bg-white/[0.06] cursor-pointer flex items-center justify-between">
                     Highest ATS Score
                     {sortBy === "score-high" && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>}
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setSortBy("score-low")} className="text-xs hover:bg-slate-800 cursor-pointer flex items-center justify-between">
+                  <DropdownMenuItem onClick={() => setSortBy("score-low")} className="text-xs hover:bg-white/[0.06] cursor-pointer flex items-center justify-between">
                     Lowest ATS Score
                     {sortBy === "score-low" && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>}
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator className="bg-slate-800" />
-                  <DropdownMenuItem onClick={() => setSortBy("name-asc")} className="text-xs hover:bg-slate-800 cursor-pointer flex items-center justify-between">
+                  <DropdownMenuSeparator className="bg-white/[0.06]" />
+                  <DropdownMenuItem onClick={() => setSortBy("name-asc")} className="text-xs hover:bg-white/[0.06] cursor-pointer flex items-center justify-between">
                     Name A-Z
                     {sortBy === "name-asc" && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>}
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setSortBy("name-desc")} className="text-xs hover:bg-slate-800 cursor-pointer flex items-center justify-between">
+                  <DropdownMenuItem onClick={() => setSortBy("name-desc")} className="text-xs hover:bg-white/[0.06] cursor-pointer flex items-center justify-between">
                     Name Z-A
                     {sortBy === "name-desc" && <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>}
                   </DropdownMenuItem>

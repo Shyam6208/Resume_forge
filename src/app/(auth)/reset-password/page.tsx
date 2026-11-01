@@ -77,21 +77,21 @@ export default function ResetPasswordPage() {
         initial={{ opacity: 0, scale: 0.96, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="bg-slate-900/70 backdrop-blur-2xl border border-white/[0.08] rounded-2xl p-7 sm:p-9 shadow-2xl shadow-black/40 space-y-7"
+        className="bg-card/85 backdrop-blur-2xl border border-white/[0.08] rounded-2xl p-7 sm:p-9 shadow-2xl shadow-black/50 space-y-7"
       >
         {/* Header */}
         <motion.div variants={itemVariants} className="text-center space-y-3">
           <Link
             href="/"
-            className="inline-flex items-center justify-center w-12 h-12 bg-white/[0.05] rounded-xl border border-white/[0.08] text-indigo-400 font-bold text-sm hover:bg-white/[0.08] transition-colors"
+            className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-tr from-cyan-500/20 to-emerald-500/20 rounded-2xl border border-cyan-500/30 text-cyan-300 font-black text-sm hover:scale-105 transition-transform shadow-lg shadow-cyan-500/10 mx-auto"
           >
             RF
           </Link>
           <div>
-            <h1 className="text-xl font-bold text-white tracking-tight">
+            <h1 className="text-2xl font-black text-foreground tracking-tight">
               Reset your password
             </h1>
-            <p className="text-slate-500 text-xs mt-1">
+            <p className="text-muted-foreground text-xs mt-1">
               Enter your new password below to secure your account
             </p>
           </div>
@@ -102,7 +102,7 @@ export default function ResetPasswordPage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4 }}
-            className="text-center py-8 px-4 bg-emerald-500/[0.06] border border-emerald-500/15 rounded-xl space-y-3"
+            className="text-center py-8 px-4 bg-emerald-500/[0.08] border border-emerald-500/20 rounded-xl space-y-3"
           >
             <motion.div
               initial={{ scale: 0 }}
@@ -112,13 +112,13 @@ export default function ResetPasswordPage() {
               <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
             </motion.div>
             <h3 className="text-base font-bold text-emerald-300">Password Updated!</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-xs text-muted-foreground leading-relaxed">
               Your password has been reset successfully. Redirecting you to your dashboard...
             </p>
             <div className="pt-2">
               <Link
                 href="/dashboard"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
               >
                 <span>Go to Dashboard</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -129,11 +129,11 @@ export default function ResetPasswordPage() {
           <form onSubmit={handleResetPassword} className="space-y-4">
             {/* New Password */}
             <motion.div variants={itemVariants} className="space-y-1.5">
-              <label className="text-xs font-medium text-slate-400">New Password</label>
+              <label className="text-xs font-semibold text-muted-foreground">New Password</label>
               <div className="relative">
                 <Lock
                   className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors duration-200 ${
-                    focusedField === "password" ? "text-indigo-400" : "text-slate-600"
+                    focusedField === "password" ? "text-cyan-400" : "text-muted-foreground"
                   }`}
                 />
                 <input
@@ -143,13 +143,13 @@ export default function ResetPasswordPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   onFocus={() => setFocusedField("password")}
                   onBlur={() => setFocusedField(null)}
-                  className="w-full h-11 pl-10 pr-10 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/30 transition-all duration-200"
+                  className="w-full h-11 pl-10 pr-10 bg-background/50 border border-white/[0.08] rounded-xl text-foreground text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/40 transition-all duration-200"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-600 hover:text-slate-300 transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -158,11 +158,11 @@ export default function ResetPasswordPage() {
 
             {/* Confirm Password */}
             <motion.div variants={itemVariants} className="space-y-1.5">
-              <label className="text-xs font-medium text-slate-400">Confirm New Password</label>
+              <label className="text-xs font-semibold text-muted-foreground">Confirm New Password</label>
               <div className="relative">
                 <Lock
                   className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors duration-200 ${
-                    focusedField === "confirm" ? "text-indigo-400" : "text-slate-600"
+                    focusedField === "confirm" ? "text-cyan-400" : "text-muted-foreground"
                   }`}
                 />
                 <input
@@ -172,22 +172,22 @@ export default function ResetPasswordPage() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   onFocus={() => setFocusedField("confirm")}
                   onBlur={() => setFocusedField(null)}
-                  className="w-full h-11 pl-10 pr-4 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/30 transition-all duration-200"
+                  className="w-full h-11 pl-10 pr-4 bg-background/50 border border-white/[0.08] rounded-xl text-foreground text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/40 transition-all duration-200"
                   required
                 />
               </div>
             </motion.div>
 
             {/* Submit */}
-            <motion.div variants={itemVariants} className="pt-1">
+            <motion.div variants={itemVariants} className="pt-2">
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-11 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/30 active:scale-[0.98]"
+                className="w-full h-11 flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-400 to-emerald-400 hover:from-cyan-300 hover:to-emerald-300 text-slate-950 font-bold text-sm rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30 active:scale-[0.98]"
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
                     <span>Updating password...</span>
                   </>
                 ) : (

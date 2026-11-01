@@ -15,7 +15,7 @@ const RoleOptimizerPanel = dynamic(
   {
     loading: () => (
       <div className="p-8 text-center space-y-2">
-        <Loader2 className="w-6 h-6 text-indigo-400 animate-spin mx-auto" />
+        <Loader2 className="w-6 h-6 text-cyan-400 animate-spin mx-auto" />
         <p className="text-xs text-slate-400">Loading Optimizer...</p>
       </div>
     ),
@@ -40,10 +40,10 @@ export function ScoreSidebar({ className = "", defaultTab = "score" }: ScoreSide
           variant="outline"
           size="sm"
           onClick={() => setIsCollapsed(false)}
-          className="h-10 bg-slate-900 border border-slate-800 text-slate-200 hover:bg-slate-800 hover:text-white shadow-lg flex items-center gap-2 px-3 rounded-l-xl border-r-0"
+          className="h-10 bg-slate-900/90 border border-white/[0.08] text-slate-200 hover:bg-slate-800 hover:text-white shadow-lg flex items-center gap-2 px-3 rounded-l-xl border-r-0 backdrop-blur-md"
           title="Expand Analytics & AI Coach Panel"
         >
-          <PanelRightOpen className="w-4 h-4 text-indigo-400" />
+          <PanelRightOpen className="w-4 h-4 text-cyan-400" />
           <span className="text-xs font-semibold hidden lg:inline">Score & AI Coach</span>
         </Button>
       </div>
@@ -52,7 +52,7 @@ export function ScoreSidebar({ className = "", defaultTab = "score" }: ScoreSide
 
   return (
     <aside
-      className={`w-full max-w-sm h-full bg-slate-900 border-l border-slate-800 flex flex-col overflow-hidden text-slate-100 ${className}`}
+      className={`w-full max-w-sm h-full bg-[#0B0F17] border-l border-white/[0.08] flex flex-col overflow-hidden text-slate-100 ${className}`}
     >
       <Tabs
         value={activeTab}
@@ -60,34 +60,34 @@ export function ScoreSidebar({ className = "", defaultTab = "score" }: ScoreSide
         className="flex-1 flex flex-col h-full overflow-hidden"
       >
         {/* Header & Tabs bar */}
-        <div className="p-3 border-b border-slate-800 bg-slate-950/60 flex items-center justify-between gap-2 shrink-0">
-          <TabsList className="grid grid-cols-4 flex-1 h-9 bg-slate-900 border border-slate-800 p-1 rounded-lg">
+        <div className="p-3 border-b border-white/[0.08] bg-slate-950/60 flex items-center justify-between gap-2 shrink-0">
+          <TabsList className="grid grid-cols-4 flex-1 h-9 bg-slate-900/80 border border-white/[0.08] p-1 rounded-xl">
             <TabsTrigger
               value="score"
-              className="text-[10px] sm:text-[11px] font-semibold py-1 px-1 data-[state=active]:bg-indigo-600 data-[state=active]:text-white transition-all flex items-center justify-center gap-1"
+              className="text-[10px] sm:text-[11px] font-semibold py-1 px-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-400 data-[state=active]:to-emerald-400 data-[state=active]:text-slate-950 data-[state=active]:font-bold data-[state=active]:shadow-sm rounded-lg transition-all flex items-center justify-center gap-1"
             >
               <BarChart3 className="w-3 h-3 shrink-0" />
               <span className="truncate">Score</span>
             </TabsTrigger>
             <TabsTrigger
               value="ats"
-              className="text-[10px] sm:text-[11px] font-semibold py-1 px-1 data-[state=active]:bg-indigo-600 data-[state=active]:text-white transition-all flex items-center justify-center gap-1"
+              className="text-[10px] sm:text-[11px] font-semibold py-1 px-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-400 data-[state=active]:to-emerald-400 data-[state=active]:text-slate-950 data-[state=active]:font-bold data-[state=active]:shadow-sm rounded-lg transition-all flex items-center justify-center gap-1"
             >
               <Target className="w-3 h-3 shrink-0" />
               <span className="truncate">ATS</span>
             </TabsTrigger>
             <TabsTrigger
               value="ai"
-              className="text-[10px] sm:text-[11px] font-semibold py-1 px-1 data-[state=active]:bg-indigo-600 data-[state=active]:text-white transition-all flex items-center justify-center gap-1"
+              className="text-[10px] sm:text-[11px] font-semibold py-1 px-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-400 data-[state=active]:to-emerald-400 data-[state=active]:text-slate-950 data-[state=active]:font-bold data-[state=active]:shadow-sm rounded-lg transition-all flex items-center justify-center gap-1"
             >
-              <Bot className="w-3 h-3 text-amber-400 shrink-0" />
+              <Bot className="w-3 h-3 shrink-0" />
               <span className="truncate">Coach</span>
             </TabsTrigger>
             <TabsTrigger
               value="optimize"
-              className="text-[10px] sm:text-[11px] font-semibold py-1 px-1 data-[state=active]:bg-indigo-600 data-[state=active]:text-white transition-all flex items-center justify-center gap-1"
+              className="text-[10px] sm:text-[11px] font-semibold py-1 px-1 data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-400 data-[state=active]:to-emerald-400 data-[state=active]:text-slate-950 data-[state=active]:font-bold data-[state=active]:shadow-sm rounded-lg transition-all flex items-center justify-center gap-1"
             >
-              <Crosshair className="w-3 h-3 text-cyan-400 shrink-0" />
+              <Crosshair className="w-3 h-3 shrink-0" />
               <span className="truncate">Optimize</span>
             </TabsTrigger>
           </TabsList>
@@ -97,7 +97,7 @@ export function ScoreSidebar({ className = "", defaultTab = "score" }: ScoreSide
             variant="ghost"
             size="icon"
             onClick={() => setIsCollapsed(true)}
-            className="w-8 h-8 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg shrink-0"
+            className="w-8 h-8 text-slate-400 hover:text-white hover:bg-white/[0.05] rounded-lg shrink-0 transition-colors"
             title="Collapse Sidebar"
           >
             <PanelRightClose className="w-4 h-4" />
@@ -126,4 +126,3 @@ export function ScoreSidebar({ className = "", defaultTab = "score" }: ScoreSide
     </aside>
   );
 }
-

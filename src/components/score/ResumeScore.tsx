@@ -22,39 +22,39 @@ const LEVEL_CONFIG: Record<
     bgClass: "bg-emerald-500/15",
     borderClass: "border-emerald-500/30",
     textClass: "text-emerald-400",
-    colorHex: "#22c55e",
+    colorHex: "#10b981",
     icon: "🌟",
   },
   "interview-ready": {
     label: "Interview Ready",
-    bgClass: "bg-blue-500/15",
-    borderClass: "border-blue-500/30",
-    textClass: "text-blue-400",
-    colorHex: "#3b82f6",
+    bgClass: "bg-cyan-500/15",
+    borderClass: "border-cyan-500/30",
+    textClass: "text-cyan-400",
+    colorHex: "#06b6d4",
     icon: "🚀",
   },
   "job-ready": {
     label: "Job Ready",
-    bgClass: "bg-yellow-500/15",
-    borderClass: "border-amber-500/30",
-    textClass: "text-amber-400",
-    colorHex: "#eab308",
+    bgClass: "bg-teal-500/15",
+    borderClass: "border-teal-500/30",
+    textClass: "text-teal-400",
+    colorHex: "#14b8a6",
     icon: "👍",
   },
   developing: {
     label: "Developing",
-    bgClass: "bg-orange-500/15",
-    borderClass: "border-orange-500/30",
-    textClass: "text-orange-400",
-    colorHex: "#f97316",
+    bgClass: "bg-amber-500/15",
+    borderClass: "border-amber-500/30",
+    textClass: "text-amber-400",
+    colorHex: "#f59e0b",
     icon: "📈",
   },
   beginner: {
     label: "Beginner",
-    bgClass: "bg-red-500/15",
+    bgClass: "bg-rose-500/15",
     borderClass: "border-rose-500/30",
     textClass: "text-rose-400",
-    colorHex: "#ef4444",
+    colorHex: "#f43f5e",
     icon: "🌱",
   },
 };
@@ -144,25 +144,25 @@ export function ResumeScore() {
         whileHover={{ scale: 1.01, x: 2 }}
         whileTap={{ scale: 0.98 }}
         onClick={() => handleSuggestionClick(item.section)}
-        className="w-full text-left p-2.5 rounded-lg bg-slate-950/70 border border-slate-800/80 hover:border-slate-700 hover:bg-slate-900 transition-all flex items-start justify-between gap-3 group"
+        className="w-full text-left p-3 rounded-xl bg-slate-900/60 border border-white/[0.08] hover:border-cyan-500/30 hover:bg-slate-850/80 transition-all flex items-start justify-between gap-3 group"
       >
-        <div className="flex items-start gap-2 min-w-0">
+        <div className="flex items-start gap-2.5 min-w-0">
           <span className="text-sm shrink-0 mt-0.5">{iconEmoji}</span>
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-semibold text-slate-200 capitalize">
+              <span className="text-[11px] font-bold text-white capitalize">
                 {sectionLabel}
               </span>
-              <span className={`px-1.5 py-0.2 rounded text-[9px] font-bold ${badgeBg}`}>
+              <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${badgeBg}`}>
                 +{item.points} pts
               </span>
             </div>
-            <p className="text-xs text-slate-400 group-hover:text-slate-300 leading-relaxed">
+            <p className="text-xs text-slate-400 group-hover:text-slate-200 leading-relaxed">
               {item.message}
             </p>
           </div>
         </div>
-        <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-300 shrink-0 mt-1 transition-colors" />
+        <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-cyan-400 shrink-0 mt-1 transition-colors" />
       </motion.button>
     );
   };
@@ -170,7 +170,7 @@ export function ResumeScore() {
   return (
     <div className="space-y-6 text-slate-100">
       {/* Circle Doughnut Chart + Center Score */}
-      <div className="relative flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 shadow-inner">
+      <div className="relative flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-b from-slate-900/80 to-slate-950/90 border border-white/[0.08] shadow-inner">
         <div className="relative w-44 h-44 flex items-center justify-center">
           <Doughnut data={chartData} options={chartOptions} />
 
@@ -184,15 +184,15 @@ export function ResumeScore() {
               className="text-4xl font-extrabold tracking-tight text-white flex items-baseline gap-0.5"
             >
               <AnimatedScoreNumber value={score} />
-              <span className="text-sm font-semibold text-slate-500">/100</span>
+              <span className="text-sm font-semibold text-slate-400">/100</span>
             </motion.div>
 
-            <span className="text-[11px] font-medium text-slate-400 mt-0.5 flex items-center gap-1">
+            <span className="text-[11px] font-medium text-slate-400 mt-0.5 flex items-center gap-1.5">
               {isCalculating ? (
                 <span className="animate-pulse text-amber-400">Calculating...</span>
               ) : (
                 <>
-                  <Sparkles className="w-3 h-3 text-indigo-400" />
+                  <Sparkles className="w-3 h-3 text-cyan-400" />
                   <span>Resume Score</span>
                 </>
               )}
@@ -205,7 +205,7 @@ export function ResumeScore() {
           key={level}
           initial={{ y: 5, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className={`mt-4 px-3.5 py-1.5 rounded-full border text-xs font-semibold flex items-center gap-1.5 ${levelInfo.bgClass} ${levelInfo.borderClass} ${levelInfo.textClass}`}
+          className={`mt-4 px-4 py-1.5 rounded-full border text-xs font-bold flex items-center gap-1.5 ${levelInfo.bgClass} ${levelInfo.borderClass} ${levelInfo.textClass}`}
         >
           <span>{levelInfo.icon}</span>
           <span>{levelInfo.label}</span>
@@ -216,16 +216,16 @@ export function ResumeScore() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
             <span>Score Suggestions</span>
           </h3>
-          <span className="text-[11px] font-semibold text-slate-500">
+          <span className="text-[11px] font-semibold text-slate-400">
             {suggestions.length} action {suggestions.length === 1 ? "item" : "items"}
           </span>
         </div>
 
         {suggestions.length === 0 ? (
-          <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center space-y-1">
+          <div className="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center space-y-1.5">
             <CheckCircle2 className="w-6 h-6 text-emerald-400 mx-auto" />
             <p className="text-xs font-bold text-emerald-300">Your resume is fully optimized!</p>
             <p className="text-[11px] text-slate-400">No pending suggestions found.</p>
@@ -237,7 +237,7 @@ export function ResumeScore() {
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-rose-400">
                   <AlertCircle className="w-3.5 h-3.5" />
-                  <span>🔴 Critical ({criticalSuggestions.length})</span>
+                  <span>Critical ({criticalSuggestions.length})</span>
                 </div>
                 <div className="space-y-1.5">
                   {criticalSuggestions.map((item, idx) =>
@@ -252,7 +252,7 @@ export function ResumeScore() {
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-amber-400">
                   <AlertTriangle className="w-3.5 h-3.5" />
-                  <span>🟡 Important ({importantSuggestions.length})</span>
+                  <span>Important ({importantSuggestions.length})</span>
                 </div>
                 <div className="space-y-1.5">
                   {importantSuggestions.map((item, idx) =>
@@ -267,7 +267,7 @@ export function ResumeScore() {
               <div className="space-y-2">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-400">
                   <Lightbulb className="w-3.5 h-3.5" />
-                  <span>🟢 Tips ({tipSuggestions.length})</span>
+                  <span>Tips ({tipSuggestions.length})</span>
                 </div>
                 <div className="space-y-1.5">
                   {tipSuggestions.map((item, idx) =>

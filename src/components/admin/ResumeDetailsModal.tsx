@@ -193,44 +193,44 @@ export function ResumeDetailsModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg bg-slate-950 border-slate-800 text-slate-100 max-h-[85vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-lg bg-[#0B0F17]/95 border-white/[0.08] backdrop-blur-2xl text-slate-100 max-h-[85vh] overflow-y-auto shadow-2xl shadow-cyan-950/20">
         <DialogHeader>
-          <DialogTitle className="text-white text-lg font-extrabold">
+          <DialogTitle className="text-white text-lg font-bold tracking-tight">
             Resume Details
           </DialogTitle>
           <DialogDescription className="text-slate-400 text-xs">
-            Detailed view of this resume record.
+            Detailed view of this resume record and structure.
           </DialogDescription>
         </DialogHeader>
 
         {loading && (
           <div className="py-12 flex flex-col items-center gap-3 text-slate-400">
-            <Loader2 className="w-6 h-6 animate-spin text-indigo-400" />
+            <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
             <p className="text-xs">Loading resume details…</p>
           </div>
         )}
 
         {error && (
           <div className="py-8 flex flex-col items-center gap-3 text-center">
-            <AlertCircle className="w-6 h-6 text-red-400" />
-            <p className="text-xs text-red-300">{error}</p>
+            <AlertCircle className="w-6 h-6 text-rose-400" />
+            <p className="text-xs text-rose-300">{error}</p>
           </div>
         )}
 
         {resume && !loading && !error && (
           <div className="space-y-5 pt-2">
             {/* Resume title + owner */}
-            <div className="space-y-2">
+            <div className="space-y-2 p-3.5 rounded-2xl bg-gradient-to-br from-cyan-500/10 via-slate-900/40 to-emerald-500/5 border border-cyan-500/20">
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center shrink-0">
-                  <FileText className="w-5 h-5 text-purple-400" />
+                <div className="w-10 h-10 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center shrink-0">
+                  <FileText className="w-5 h-5 text-cyan-400" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-base font-extrabold text-white truncate">
+                  <p className="text-base font-bold text-white truncate">
                     {resume.title}
                   </p>
-                  <p className="text-[11px] text-slate-400">
-                    by {resume.owner_name} ({resume.owner_email})
+                  <p className="text-xs text-slate-400">
+                    by <span className="text-slate-200">{resume.owner_name}</span> ({resume.owner_email})
                   </p>
                 </div>
               </div>
@@ -238,16 +238,16 @@ export function ResumeDetailsModal({
 
             {/* ATS Score */}
             {atsScore && (
-              <div className={`flex items-center justify-between px-3 py-2.5 rounded-xl border ${scoreBg} ${scoreBorder}`}>
-                <span className="text-xs font-semibold text-slate-300">ATS Score</span>
-                <span className={`text-sm font-extrabold ${scoreColor}`}>
+              <div className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl border ${scoreBg} ${scoreBorder}`}>
+                <span className="text-xs font-semibold text-slate-300">ATS Match Readiness</span>
+                <span className={`text-sm font-bold ${scoreColor}`}>
                   {atsScore.score} / 100
                 </span>
               </div>
             )}
 
             {/* Details grid */}
-            <div className="grid gap-3">
+            <div className="grid gap-2.5">
               <DetailRow icon={User} label="Owner" value={`${resume.owner_name}`} />
               <DetailRow
                 icon={Briefcase}
@@ -263,12 +263,12 @@ export function ResumeDetailsModal({
                 value={String(resume.download_count)}
               />
               {/* ── Visibility Toggle ────────────────────── */}
-              <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-slate-900/80 border border-slate-800/60">
-                <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center shrink-0">
+              <div className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-slate-900/60 border border-white/[0.06]">
+                <div className="w-8 h-8 rounded-lg bg-white/[0.05] border border-white/[0.06] flex items-center justify-center shrink-0">
                   <Globe className="w-4 h-4 text-slate-400" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+                  <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
                     Visibility
                   </p>
                   <p className="text-xs font-semibold text-slate-200">
@@ -282,7 +282,7 @@ export function ResumeDetailsModal({
                     setPendingVisibility(!resume.is_public);
                     setShowConfirm(true);
                   }}
-                  className={`h-7 px-3 text-[11px] font-bold rounded-lg border transition-colors flex items-center gap-1.5 ${
+                  className={`h-7 px-3 text-[11px] font-bold rounded-lg border transition-all flex items-center gap-1.5 ${
                     resume.is_public
                       ? "text-amber-300 bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20"
                       : "text-emerald-300 bg-emerald-500/10 border-emerald-500/30 hover:bg-emerald-500/20"
@@ -307,7 +307,7 @@ export function ResumeDetailsModal({
 
             {/* Section Summary */}
             {sectionSummary.length > 0 && (
-              <div className="space-y-2">
+              <div className="space-y-2 pt-1">
                 <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-1">
                   Resume Sections
                 </p>
@@ -315,7 +315,7 @@ export function ResumeDetailsModal({
                   {sectionSummary.map((section) => (
                     <div
                       key={section.label}
-                      className="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-900/80 border border-slate-800/60"
+                      className="flex items-center justify-between px-3.5 py-2 rounded-xl bg-slate-900/60 border border-white/[0.06] hover:border-white/[0.12] transition-colors"
                     >
                       <div className="flex items-center gap-2">
                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
@@ -336,14 +336,14 @@ export function ResumeDetailsModal({
 
         {/* ── Visibility Confirmation Dialog ─────────────── */}
         {showConfirm && pendingVisibility !== null && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm">
-            <div className="bg-slate-950 border border-slate-700 rounded-2xl p-6 max-w-sm mx-4 space-y-4 shadow-2xl">
+          <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-md">
+            <div className="bg-[#0B0F17]/95 border border-white/[0.1] rounded-2xl p-6 max-w-sm mx-4 space-y-4 shadow-2xl">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0">
                   <ShieldAlert className="w-5 h-5 text-amber-400" />
                 </div>
                 <div>
-                  <p className="text-sm font-extrabold text-white">
+                  <p className="text-sm font-bold text-white">
                     Confirm Visibility Change
                   </p>
                   <p className="text-[11px] text-slate-400">
@@ -370,7 +370,7 @@ export function ResumeDetailsModal({
                     setShowConfirm(false);
                     setPendingVisibility(null);
                   }}
-                  className="flex-1 h-9 text-xs font-semibold bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800 rounded-xl"
+                  className="flex-1 h-9 text-xs font-semibold bg-white/[0.05] border-white/[0.1] text-slate-300 hover:bg-white/[0.1] rounded-xl"
                 >
                   Cancel
                 </Button>
@@ -409,8 +409,8 @@ export function ResumeDetailsModal({
                   }}
                   className={`flex-1 h-9 text-xs font-bold rounded-xl ${
                     pendingVisibility
-                      ? "bg-emerald-600 hover:bg-emerald-500 text-white"
-                      : "bg-amber-600 hover:bg-amber-500 text-white"
+                      ? "bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold shadow-md shadow-emerald-500/20"
+                      : "bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold shadow-md shadow-amber-500/20"
                   }`}
                 >
                   {toggling ? (
@@ -442,12 +442,12 @@ function DetailRow({
   value: string;
 }) {
   return (
-    <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-slate-900/80 border border-slate-800/60">
-      <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center shrink-0">
+    <div className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-slate-900/60 border border-white/[0.06]">
+      <div className="w-8 h-8 rounded-lg bg-white/[0.05] border border-white/[0.06] flex items-center justify-center shrink-0">
         <Icon className="w-4 h-4 text-slate-400" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
           {label}
         </p>
         <p className="text-xs font-semibold text-slate-200 truncate">{value}</p>

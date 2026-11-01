@@ -23,12 +23,12 @@ import {
   FileText,
   DollarSign,
   Layers,
-  ListFilter,
   CheckCircle2,
   Sparkles,
   ChevronRight,
   Clock,
   TrendingUp,
+  X,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -159,7 +159,6 @@ export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
     const linkedResume = resumes.find((r) => r.id === formResumeId);
 
     if (editingApp) {
-      // Update
       const updated = applications.map((a) =>
         a.id === editingApp.id
           ? {
@@ -181,7 +180,6 @@ export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
       saveApplications(updated);
       toast.success("Application updated!");
     } else {
-      // Create
       const newApp: JobApplication = {
         id: `app-${Date.now()}`,
         jobTitle: formJobTitle.trim(),
@@ -247,65 +245,65 @@ export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
   return (
     <div className="space-y-6">
       {/* Metrics Banner */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-white/[0.06] flex items-center gap-3">
-          <div className="p-2.5 rounded-lg bg-indigo-500/10 text-indigo-400">
-            <Layers className="w-4 h-4" />
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+        <div className="p-4 rounded-2xl bg-card/70 backdrop-blur-xl border border-white/[0.08] shadow-sm flex items-center gap-3.5">
+          <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+            <Layers className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-xl font-bold text-white">{stats.total}</div>
-            <div className="text-[11px] text-slate-400">Total Tracked</div>
+            <div className="text-2xl font-black text-foreground tracking-tight">{stats.total}</div>
+            <div className="text-xs font-medium text-muted-foreground">Total Tracked</div>
           </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-white/[0.06] flex items-center gap-3">
-          <div className="p-2.5 rounded-lg bg-amber-500/10 text-amber-400">
-            <Clock className="w-4 h-4" />
+        <div className="p-4 rounded-2xl bg-card/70 backdrop-blur-xl border border-white/[0.08] shadow-sm flex items-center gap-3.5">
+          <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <Clock className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-xl font-bold text-white">{stats.interviewing}</div>
-            <div className="text-[11px] text-slate-400">Interviews</div>
+            <div className="text-2xl font-black text-foreground tracking-tight">{stats.interviewing}</div>
+            <div className="text-xs font-medium text-muted-foreground">Interviews</div>
           </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-white/[0.06] flex items-center gap-3">
-          <div className="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400">
-            <CheckCircle2 className="w-4 h-4" />
+        <div className="p-4 rounded-2xl bg-card/70 backdrop-blur-xl border border-white/[0.08] shadow-sm flex items-center gap-3.5">
+          <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <CheckCircle2 className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-xl font-bold text-white">{stats.offers}</div>
-            <div className="text-[11px] text-slate-400">Job Offers</div>
+            <div className="text-2xl font-black text-foreground tracking-tight">{stats.offers}</div>
+            <div className="text-xs font-medium text-muted-foreground">Job Offers</div>
           </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-white/[0.06] flex items-center gap-3">
-          <div className="p-2.5 rounded-lg bg-purple-500/10 text-purple-400">
-            <TrendingUp className="w-4 h-4" />
+        <div className="p-4 rounded-2xl bg-card/70 backdrop-blur-xl border border-white/[0.08] shadow-sm flex items-center gap-3.5">
+          <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
+            <TrendingUp className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-xl font-bold text-white">{stats.successRate}%</div>
-            <div className="text-[11px] text-slate-400">Response Rate</div>
+            <div className="text-2xl font-black text-foreground tracking-tight">{stats.successRate}%</div>
+            <div className="text-xs font-medium text-muted-foreground">Response Rate</div>
           </div>
         </div>
       </div>
 
       {/* Control Bar: Search + Filter + View Mode + Add Button */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
-        <div className="flex items-center gap-2 flex-1 max-w-md">
+        <div className="flex items-center gap-2.5 flex-1 max-w-md">
           <div className="relative flex-1">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2" />
             <Input
               type="text"
               placeholder="Search by role or company..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-10 bg-slate-900/80 border-white/[0.08] text-xs text-white rounded-xl placeholder:text-slate-500"
+              className="pl-9 h-11 bg-card/80 border-white/[0.08] text-xs text-foreground rounded-xl placeholder:text-muted-foreground focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/40"
             />
           </div>
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="h-10 px-3 bg-slate-900/80 border border-white/[0.08] text-xs text-slate-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="h-11 px-3 bg-card/80 border border-white/[0.08] text-xs text-foreground font-medium rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/40 transition-colors"
           >
             <option value="all">All Statuses</option>
             <option value="saved">Saved</option>
@@ -316,14 +314,16 @@ export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
           </select>
         </div>
 
-        <div className="flex items-center gap-2 self-end sm:self-auto">
+        <div className="flex items-center gap-2.5 self-end sm:self-auto">
           {/* View Toggle */}
-          <div className="bg-slate-900 border border-white/[0.08] p-0.5 rounded-xl flex items-center text-xs">
+          <div className="bg-card/80 border border-white/[0.08] p-1 rounded-xl flex items-center text-xs">
             <button
               type="button"
               onClick={() => setViewMode("kanban")}
-              className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
-                viewMode === "kanban" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"
+              className={`px-3.5 py-1.5 rounded-lg font-bold transition-all ${
+                viewMode === "kanban"
+                  ? "bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               Board
@@ -331,8 +331,10 @@ export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
             <button
               type="button"
               onClick={() => setViewMode("list")}
-              className={`px-3 py-1.5 rounded-lg font-medium transition-colors ${
-                viewMode === "list" ? "bg-indigo-600 text-white" : "text-slate-400 hover:text-white"
+              className={`px-3.5 py-1.5 rounded-lg font-bold transition-all ${
+                viewMode === "list"
+                  ? "bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             >
               List
@@ -342,9 +344,9 @@ export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
           <Button
             type="button"
             onClick={() => openAddModal("applied")}
-            className="h-10 px-4 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-md flex items-center gap-1.5"
+            className="h-11 px-4 text-xs bg-gradient-to-r from-cyan-400 to-emerald-400 hover:from-cyan-300 hover:to-emerald-300 text-slate-950 font-bold rounded-xl shadow-lg shadow-cyan-500/20 active:scale-[0.98] flex items-center gap-1.5 border-0"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4 text-slate-950" />
             <span>Track Application</span>
           </Button>
         </div>
@@ -360,15 +362,15 @@ export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
             return (
               <div
                 key={colKey}
-                className="rounded-2xl bg-slate-900/40 border border-white/[0.06] p-3 space-y-3 min-w-[240px]"
+                className="rounded-2xl bg-card/60 backdrop-blur-xl border border-white/[0.08] p-3.5 space-y-3 min-w-[240px]"
               >
                 {/* Column Header */}
                 <div className="flex items-center justify-between px-1">
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-2">
                     <span className={`w-2 h-2 rounded-full ${config.color.replace("text-", "bg-")}`} />
-                    <h3 className="text-xs font-bold text-slate-200">{config.label}</h3>
+                    <h3 className="text-xs font-bold text-foreground">{config.label}</h3>
                   </div>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-white/[0.05] text-slate-400">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-white/[0.06] text-muted-foreground border border-white/[0.04]">
                     {colApps.length}
                   </span>
                 </div>
@@ -383,13 +385,13 @@ export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.9 }}
-                        className={`p-3.5 rounded-xl bg-slate-950/80 border border-white/[0.06] ${config.borderClass} border-l-2 space-y-2.5 group hover:border-white/[0.15] transition-all`}
+                        className={`p-3.5 rounded-xl bg-background/80 border border-white/[0.08] ${config.borderClass} border-l-2 space-y-2.5 group hover:border-cyan-500/40 hover:shadow-lg hover:shadow-cyan-500/5 transition-all`}
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="space-y-0.5 min-w-0">
-                            <h4 className="text-xs font-bold text-white truncate">{app.jobTitle}</h4>
-                            <div className="text-[11px] text-slate-400 flex items-center gap-1">
-                              <Building2 className="w-3 h-3 text-slate-500 shrink-0" />
+                            <h4 className="text-xs font-bold text-foreground truncate">{app.jobTitle}</h4>
+                            <div className="text-[11px] text-muted-foreground flex items-center gap-1">
+                              <Building2 className="w-3 h-3 text-cyan-400/80 shrink-0" />
                               <span className="truncate">{app.company}</span>
                             </div>
                           </div>
@@ -398,7 +400,7 @@ export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
                             <button
                               type="button"
                               onClick={() => openEditModal(app)}
-                              className="p-1 rounded text-slate-400 hover:text-white hover:bg-white/[0.06]"
+                              className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-white/[0.08] transition-colors"
                               title="Edit"
                             >
                               <Edit2 className="w-3 h-3" />
@@ -406,7 +408,7 @@ export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
                             <button
                               type="button"
                               onClick={() => handleDeleteApplication(app.id)}
-                              className="p-1 rounded text-slate-400 hover:text-rose-400 hover:bg-rose-500/10"
+                              className="p-1 rounded text-muted-foreground hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
                               title="Delete"
                             >
                               <Trash2 className="w-3 h-3" />
@@ -415,35 +417,35 @@ export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
                         </div>
 
                         {/* Location / Salary Tags */}
-                        <div className="flex flex-wrap gap-1 text-[10px] text-slate-500">
+                        <div className="flex flex-wrap gap-1.5 text-[10px] text-muted-foreground">
                           {app.location && (
                             <span className="flex items-center gap-0.5">
-                              <MapPin className="w-2.5 h-2.5" />
+                              <MapPin className="w-2.5 h-2.5 text-muted-foreground" />
                               <span className="truncate max-w-[120px]">{app.location}</span>
                             </span>
                           )}
                           {app.salary && (
-                            <span className="text-emerald-400/80 font-mono">{app.salary}</span>
+                            <span className="text-emerald-400 font-mono font-medium">{app.salary}</span>
                           )}
                         </div>
 
                         {/* Notes preview */}
                         {app.notes && (
-                          <p className="text-[11px] text-slate-400 line-clamp-2 italic bg-white/[0.02] p-1.5 rounded-lg border border-white/[0.03]">
+                          <p className="text-[11px] text-muted-foreground/90 line-clamp-2 italic bg-white/[0.02] p-1.5 rounded-lg border border-white/[0.04]">
                             &ldquo;{app.notes}&rdquo;
                           </p>
                         )}
 
                         {/* Quick Status Shift selector */}
-                        <div className="pt-1 flex items-center justify-between border-t border-white/[0.04] text-[10px]">
-                          <span className="text-slate-500 font-mono">{app.appliedDate}</span>
+                        <div className="pt-1.5 flex items-center justify-between border-t border-white/[0.06] text-[10px]">
+                          <span className="text-muted-foreground font-mono">{app.appliedDate}</span>
 
                           <select
                             value={app.status}
                             onChange={(e) =>
                               handleStatusChange(app.id, e.target.value as ApplicationStatus)
                             }
-                            className="bg-slate-900 border border-white/[0.06] rounded px-1.5 py-0.5 text-slate-300 text-[10px] focus:outline-none"
+                            className="bg-card border border-white/[0.08] rounded-md px-1.5 py-0.5 text-foreground text-[10px] focus:outline-none focus:ring-1 focus:ring-cyan-500/50"
                           >
                             <option value="saved">Saved</option>
                             <option value="applied">Applied</option>
@@ -459,10 +461,12 @@ export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
                   {colApps.length === 0 && (
                     <div
                       onClick={() => openAddModal(colKey)}
-                      className="border border-dashed border-white/[0.06] rounded-xl p-4 text-center cursor-pointer hover:border-white/[0.12] hover:bg-white/[0.01] transition-all flex flex-col items-center justify-center gap-1 text-slate-500"
+                      className="border border-dashed border-white/[0.08] rounded-xl p-4 text-center cursor-pointer hover:border-cyan-500/30 hover:bg-cyan-500/[0.02] transition-all flex flex-col items-center justify-center gap-1 text-muted-foreground group"
                     >
-                      <Plus className="w-4 h-4 text-slate-600" />
-                      <span className="text-[11px]">Add {config.label.split("/")[0].trim()}</span>
+                      <Plus className="w-4 h-4 text-muted-foreground group-hover:text-cyan-400 transition-colors" />
+                      <span className="text-[11px] group-hover:text-foreground transition-colors">
+                        Add {config.label.split("/")[0].trim()}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -474,8 +478,8 @@ export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
 
       {/* LIST VIEW */}
       {viewMode === "list" && (
-        <div className="rounded-2xl bg-slate-900/40 border border-white/[0.06] overflow-hidden">
-          <div className="divide-y divide-white/[0.05]">
+        <div className="rounded-2xl bg-card/60 backdrop-blur-xl border border-white/[0.08] overflow-hidden">
+          <div className="divide-y divide-white/[0.06]">
             {filteredApplications.map((app) => {
               const config = APPLICATION_STATUS_CONFIG[app.status];
               return (
@@ -485,31 +489,31 @@ export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
                 >
                   <div className="space-y-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <h4 className="text-sm font-bold text-white">{app.jobTitle}</h4>
+                      <h4 className="text-sm font-bold text-foreground">{app.jobTitle}</h4>
                       <span
                         className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${config.badgeClass}`}
                       >
                         {config.label}
                       </span>
                     </div>
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400">
-                      <span className="flex items-center gap-1 text-slate-300 font-medium">
-                        <Building2 className="w-3.5 h-3.5 text-slate-500" />
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1 text-foreground font-medium">
+                        <Building2 className="w-3.5 h-3.5 text-cyan-400" />
                         {app.company}
                       </span>
                       {app.location && (
                         <span className="flex items-center gap-1">
-                          <MapPin className="w-3.5 h-3.5 text-slate-500" />
+                          <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
                           {app.location}
                         </span>
                       )}
                       {app.salary && (
-                        <span className="text-emerald-400 font-mono">{app.salary}</span>
+                        <span className="text-emerald-400 font-mono font-medium">{app.salary}</span>
                       )}
-                      <span className="text-slate-500">Applied: {app.appliedDate}</span>
+                      <span className="text-muted-foreground">Applied: {app.appliedDate}</span>
                     </div>
                     {app.notes && (
-                      <p className="text-xs text-slate-400 italic pt-1 max-w-2xl">{app.notes}</p>
+                      <p className="text-xs text-muted-foreground italic pt-1 max-w-2xl">{app.notes}</p>
                     )}
                   </div>
 
@@ -519,7 +523,7 @@ export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
                         href={app.jobUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="p-2 rounded-lg bg-white/[0.03] hover:bg-white/[0.08] text-slate-400 hover:text-white transition-colors"
+                        className="p-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-muted-foreground hover:text-foreground transition-colors"
                         title="Open Job Posting"
                       >
                         <ExternalLink className="w-4 h-4" />
@@ -530,7 +534,7 @@ export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
                       variant="outline"
                       size="sm"
                       onClick={() => openEditModal(app)}
-                      className="h-8 text-xs bg-slate-900 border-white/[0.08] text-slate-300 hover:text-white"
+                      className="h-8 text-xs bg-card border-white/[0.08] text-foreground hover:bg-white/[0.06]"
                     >
                       Edit
                     </Button>
@@ -539,7 +543,7 @@ export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleDeleteApplication(app.id)}
-                      className="h-8 w-8 p-0 text-slate-500 hover:text-rose-400"
+                      className="h-8 w-8 p-0 text-muted-foreground hover:text-rose-400"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
@@ -549,7 +553,7 @@ export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
             })}
 
             {filteredApplications.length === 0 && (
-              <div className="text-center py-12 text-slate-500 text-xs">
+              <div className="text-center py-12 text-muted-foreground text-xs">
                 No matching job applications found.
               </div>
             )}
@@ -559,74 +563,76 @@ export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
 
       {/* ADD / EDIT APPLICATION MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-2xl bg-slate-900 border border-white/[0.1] shadow-2xl p-6 space-y-5 text-slate-200 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Briefcase className="w-4 h-4 text-indigo-400" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md">
+          <div className="w-full max-w-lg rounded-2xl bg-card border border-white/[0.1] shadow-2xl p-6 space-y-5 text-foreground max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-3.5">
+              <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+                  <Briefcase className="w-4 h-4" />
+                </div>
                 <span>{editingApp ? "Edit Job Application" : "Track New Application"}</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-white text-xs"
+                className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-white/[0.06] transition-colors"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 
             <form onSubmit={handleSaveApplication} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-slate-300">Job Title *</label>
+                  <label className="text-xs font-semibold text-muted-foreground">Job Title *</label>
                   <Input
                     required
                     placeholder="e.g. Senior Frontend Engineer"
                     value={formJobTitle}
                     onChange={(e) => setFormJobTitle(e.target.value)}
-                    className="h-10 bg-slate-950 border-white/[0.08] text-xs text-white"
+                    className="h-10 bg-background/60 border-white/[0.08] text-xs text-foreground focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/40"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-slate-300">Company Name *</label>
+                  <label className="text-xs font-semibold text-muted-foreground">Company Name *</label>
                   <Input
                     required
                     placeholder="e.g. Google, Stripe"
                     value={formCompany}
                     onChange={(e) => setFormCompany(e.target.value)}
-                    className="h-10 bg-slate-950 border-white/[0.08] text-xs text-white"
+                    className="h-10 bg-background/60 border-white/[0.08] text-xs text-foreground focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/40"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-slate-300">Location</label>
+                  <label className="text-xs font-semibold text-muted-foreground">Location</label>
                   <Input
                     placeholder="e.g. Remote / New York"
                     value={formLocation}
                     onChange={(e) => setFormLocation(e.target.value)}
-                    className="h-10 bg-slate-950 border-white/[0.08] text-xs text-white"
+                    className="h-10 bg-background/60 border-white/[0.08] text-xs text-foreground focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/40"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-slate-300">Salary Range</label>
+                  <label className="text-xs font-semibold text-muted-foreground">Salary Range</label>
                   <Input
                     placeholder="e.g. $140k - $170k"
                     value={formSalary}
                     onChange={(e) => setFormSalary(e.target.value)}
-                    className="h-10 bg-slate-950 border-white/[0.08] text-xs text-white"
+                    className="h-10 bg-background/60 border-white/[0.08] text-xs text-foreground focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/40"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-slate-300">Status</label>
+                  <label className="text-xs font-semibold text-muted-foreground">Status</label>
                   <select
                     value={formStatus}
                     onChange={(e) => setFormStatus(e.target.value as ApplicationStatus)}
-                    className="w-full h-10 px-3 bg-slate-950 border border-white/[0.08] text-xs text-white rounded-xl focus:outline-none"
+                    className="w-full h-10 px-3 bg-background/60 border border-white/[0.08] text-xs text-foreground rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/40"
                   >
                     <option value="saved">Saved / Wishlist</option>
                     <option value="applied">Applied</option>
@@ -636,23 +642,23 @@ export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-slate-300">Applied Date</label>
+                  <label className="text-xs font-semibold text-muted-foreground">Applied Date</label>
                   <Input
                     type="date"
                     value={formAppliedDate}
                     onChange={(e) => setFormAppliedDate(e.target.value)}
-                    className="h-10 bg-slate-950 border-white/[0.08] text-xs text-white"
+                    className="h-10 bg-background/60 border-white/[0.08] text-xs text-foreground focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/40"
                   />
                 </div>
               </div>
 
               {resumes.length > 0 && (
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-slate-300">Linked Resume</label>
+                  <label className="text-xs font-semibold text-muted-foreground">Linked Resume</label>
                   <select
                     value={formResumeId}
                     onChange={(e) => setFormResumeId(e.target.value)}
-                    className="w-full h-10 px-3 bg-slate-950 border border-white/[0.08] text-xs text-white rounded-xl focus:outline-none"
+                    className="w-full h-10 px-3 bg-background/60 border border-white/[0.08] text-xs text-foreground rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/40"
                   >
                     <option value="">-- None / General --</option>
                     {resumes.map((r) => (
@@ -665,41 +671,41 @@ export function JobApplicationsBoard({ resumes }: JobApplicationsBoardProps) {
               )}
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300">Job URL</label>
+                <label className="text-xs font-semibold text-muted-foreground">Job URL</label>
                 <Input
                   type="url"
                   placeholder="https://company.com/job/123"
                   value={formJobUrl}
                   onChange={(e) => setFormJobUrl(e.target.value)}
-                  className="h-10 bg-slate-950 border-white/[0.08] text-xs text-white"
+                  className="h-10 bg-background/60 border-white/[0.08] text-xs text-foreground focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/40"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-300">Notes / Interview Details</label>
+                <label className="text-xs font-semibold text-muted-foreground">Notes / Interview Details</label>
                 <textarea
                   rows={3}
                   placeholder="Recruiter contact, interview rounds, salary requirements, questions asked..."
                   value={formNotes}
                   onChange={(e) => setFormNotes(e.target.value)}
-                  className="w-full p-3 bg-slate-950 border border-white/[0.08] text-xs text-white rounded-xl focus:outline-none resize-none"
+                  className="w-full p-3 bg-background/60 border border-white/[0.08] text-xs text-foreground rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/40 resize-none"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-white/[0.06]">
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-white/[0.08]">
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={() => setIsModalOpen(false)}
-                  className="h-9 px-4 text-xs bg-slate-900 border-white/[0.08] text-slate-300 hover:text-white"
+                  className="h-10 px-4 text-xs bg-card border-white/[0.08] text-foreground hover:bg-white/[0.06]"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   size="sm"
-                  className="h-9 px-5 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl"
+                  className="h-10 px-5 text-xs bg-gradient-to-r from-cyan-400 to-emerald-400 hover:from-cyan-300 hover:to-emerald-300 text-slate-950 font-bold rounded-xl shadow-lg shadow-cyan-500/20"
                 >
                   {editingApp ? "Save Changes" : "Add Application"}
                 </Button>

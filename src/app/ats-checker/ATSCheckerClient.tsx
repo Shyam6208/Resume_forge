@@ -192,7 +192,7 @@ export function ATSCheckerClient() {
     // Extract JD Keywords & Match
     let matchedKeywords: string[] = [];
     let missingKeywords: string[] = [];
-    let keywordScore = 70; // default baseline
+    let keywordScore = 70;
 
     if (jobDescription.trim()) {
       const cleanJD = jobDescription.toLowerCase();
@@ -205,7 +205,6 @@ export function ATSCheckerClient() {
         }
       });
 
-      // Sort by frequency to find top keywords
       const topKeywords = Object.entries(jdWordFreq)
         .sort((a, b) => b[1] - a[1])
         .slice(0, 20)
@@ -229,7 +228,6 @@ export function ATSCheckerClient() {
     const structureCount = [hasSummary, hasExperience, hasEducation, hasSkills, hasContact].filter(Boolean).length;
     const structureScore = Math.round((structureCount / 5) * 100);
 
-    // Compute aggregate overall score
     const overallScore = Math.min(
       98,
       Math.max(
@@ -269,14 +267,14 @@ export function ATSCheckerClient() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-cyan-500 selection:text-slate-950">
       {/* Header */}
-      <header className="sticky top-0 z-40 h-16 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80 px-4 sm:px-8 flex items-center justify-between">
+      <header className="sticky top-0 z-40 h-16 bg-background/85 backdrop-blur-xl border-b border-white/[0.08] px-4 sm:px-8 flex items-center justify-between shadow-sm">
         <Link href="/" className="flex items-center gap-2.5">
-          <span className="p-1.5 rounded-lg bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 font-bold text-xs">
+          <span className="p-1.5 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30 text-cyan-300 font-black text-xs">
             RF
           </span>
-          <span className="font-extrabold text-base text-white tracking-tight">
+          <span className="font-black text-base text-foreground tracking-tight">
             ResumeForge
           </span>
         </Link>
@@ -284,17 +282,17 @@ export function ATSCheckerClient() {
         <div className="flex items-center gap-3">
           <Link
             href="/templates"
-            className="text-xs font-semibold text-slate-300 hover:text-white hidden sm:block px-3 py-1.5"
+            className="text-xs font-semibold text-muted-foreground hover:text-foreground hidden sm:block px-3 py-1.5 transition-colors"
           >
             Templates
           </Link>
           <Link href="/onboarding">
             <Button
               type="button"
-              className="h-9 px-4 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-md flex items-center gap-1.5"
+              className="h-9 px-4 text-xs bg-gradient-to-r from-cyan-400 to-emerald-400 hover:from-cyan-300 hover:to-emerald-300 text-slate-950 font-bold rounded-xl shadow-lg shadow-cyan-500/20 flex items-center gap-1.5 border-0"
             >
               <span>Build Free Resume</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <ArrowRight className="w-3.5 h-3.5 text-slate-950" />
             </Button>
           </Link>
         </div>
@@ -304,15 +302,15 @@ export function ATSCheckerClient() {
       <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-6 lg:p-8 space-y-8">
         {/* Hero Title */}
         <div className="text-center space-y-3 max-w-3xl mx-auto pt-4">
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-medium">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold">
+            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
             <span>AI OCR PDF/Image Scanner & Free ATS Compatibility Analyzer</span>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
+          <h1 className="text-3xl sm:text-5xl font-black text-foreground tracking-tight leading-tight">
             Free ATS Resume Checker
           </h1>
-          <p className="text-sm sm:text-base text-slate-400 max-w-xl mx-auto">
-            Upload your resume as a <strong>PDF, Image, or DOCX</strong>. Our AI verifies and extracts the content to analyze keyword matching against any job description.
+          <p className="text-sm sm:text-base text-muted-foreground max-w-xl mx-auto">
+            Upload your resume as a <strong className="text-foreground">PDF, Image, or DOCX</strong>. Our AI verifies and extracts the content to analyze keyword matching against any job description.
           </p>
         </div>
 
@@ -321,15 +319,15 @@ export function ATSCheckerClient() {
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-white/[0.08] p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6"
+            className="rounded-3xl bg-card/85 backdrop-blur-2xl border border-white/[0.08] p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl shadow-black/40"
           >
             <div className="flex items-center gap-6">
               {/* Circular Score Display */}
-              <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-slate-950 border-4 border-indigo-500/40 flex flex-col items-center justify-center shadow-2xl shrink-0">
-                <span className="text-3xl sm:text-4xl font-extrabold text-white">
+              <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-background border-4 border-cyan-400/40 flex flex-col items-center justify-center shadow-lg shadow-cyan-500/10 shrink-0">
+                <span className="text-3xl sm:text-4xl font-black text-foreground">
                   {analysis.overallScore}
                 </span>
-                <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
+                <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
                   / 100
                 </span>
               </div>
@@ -344,14 +342,14 @@ export function ATSCheckerClient() {
                     {getScoreBadge(analysis.overallScore).label}
                   </span>
                 </div>
-                <h2 className="text-lg sm:text-xl font-bold text-white">
+                <h2 className="text-lg sm:text-xl font-black text-foreground tracking-tight">
                   {analysis.overallScore >= 80
                     ? "Great ATS Optimization!"
                     : analysis.overallScore >= 60
                     ? "Good Foundation — A Few Missing Keywords"
                     : "Action Required to Pass ATS Scanners"}
                 </h2>
-                <p className="text-xs text-slate-400 max-w-md">
+                <p className="text-xs text-muted-foreground max-w-md">
                   {analysis.overallScore >= 80
                     ? "Your resume strongly matches the role requirements and uses strong action metrics."
                     : "Add the highlighted missing keywords and action verbs below to raise your score."}
@@ -363,10 +361,10 @@ export function ATSCheckerClient() {
               <Link href="/onboarding" className="w-full sm:w-auto">
                 <Button
                   type="button"
-                  className="h-11 px-6 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/25 flex items-center justify-center gap-2 w-full"
+                  className="h-11 px-6 text-xs bg-gradient-to-r from-cyan-400 to-emerald-400 hover:from-cyan-300 hover:to-emerald-300 text-slate-950 font-bold rounded-xl shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 w-full border-0 active:scale-[0.98]"
                 >
                   <span>Fix & Build in ResumeForge</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 text-slate-950" />
                 </Button>
               </Link>
             </div>
@@ -379,14 +377,14 @@ export function ATSCheckerClient() {
           <div className="space-y-3">
             {/* Header with Mode Toggle */}
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 bg-slate-900/80 p-1 rounded-xl border border-white/[0.08]">
+              <div className="flex items-center gap-1.5 bg-card/80 p-1 rounded-xl border border-white/[0.08]">
                 <button
                   type="button"
                   onClick={() => setInputMode("upload")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
                     inputMode === "upload"
-                      ? "bg-indigo-600 text-white shadow-sm"
-                      : "text-slate-400 hover:text-white"
+                      ? "bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   <Upload className="w-3.5 h-3.5" />
@@ -395,10 +393,10 @@ export function ATSCheckerClient() {
                 <button
                   type="button"
                   onClick={() => setInputMode("paste")}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
                     inputMode === "paste"
-                      ? "bg-indigo-600 text-white shadow-sm"
-                      : "text-slate-400 hover:text-white"
+                      ? "bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   <Edit3 className="w-3.5 h-3.5" />
@@ -413,7 +411,7 @@ export function ATSCheckerClient() {
                   setUploadedFile(null);
                   setUploadError(null);
                 }}
-                className="text-[11px] text-indigo-400 hover:text-indigo-300 transition-colors"
+                className="text-[11px] font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
               >
                 Load Sample
               </button>
@@ -440,35 +438,35 @@ export function ATSCheckerClient() {
                   onDragLeave={() => setIsDragOver(false)}
                   onDrop={handleDrop}
                   onClick={() => fileInputRef.current?.click()}
-                  className={`cursor-pointer border-2 border-dashed rounded-2xl p-8 text-center transition-all ${
+                  className={`cursor-pointer border-2 border-dashed rounded-3xl p-8 text-center transition-all ${
                     isDragOver
-                      ? "border-indigo-400 bg-indigo-500/10 scale-[1.01]"
-                      : "border-slate-800 hover:border-indigo-500/40 bg-slate-900/40 hover:bg-slate-900/60"
+                      ? "border-cyan-400 bg-cyan-500/10 scale-[1.01]"
+                      : "border-white/[0.08] hover:border-cyan-500/40 bg-card/50 hover:bg-card/75"
                   }`}
                 >
                   {isUploading ? (
                     <div className="flex flex-col items-center gap-3 py-4">
-                      <Loader2 className="w-10 h-10 text-indigo-400 animate-spin" />
+                      <Loader2 className="w-10 h-10 text-cyan-400 animate-spin" />
                       <div className="space-y-1">
-                        <p className="text-sm font-bold text-white">
+                        <p className="text-sm font-bold text-foreground">
                           Scanning & Verifying Resume Document...
                         </p>
-                        <p className="text-xs text-slate-400">
+                        <p className="text-xs text-muted-foreground">
                           Extracting text via AI OCR & verifying resume content structure
                         </p>
                       </div>
                     </div>
                   ) : (
                     <div className="flex flex-col items-center gap-3 py-2">
-                      <div className="p-4 rounded-2xl bg-indigo-600/10 border border-indigo-500/20 text-indigo-400">
+                      <div className="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
                         <FileUp className="w-8 h-8" />
                       </div>
                       <div className="space-y-1">
-                        <p className="text-sm font-bold text-white">
+                        <p className="text-sm font-bold text-foreground">
                           Click to upload or drag & drop your resume
                         </p>
-                        <p className="text-xs text-slate-400">
-                          Supports <strong>PDF, PNG, JPG, WEBP, or Word DOCX</strong> (Max 10 MB)
+                        <p className="text-xs text-muted-foreground">
+                          Supports <strong className="text-foreground">PDF, PNG, JPG, WEBP, or Word DOCX</strong> (Max 10 MB)
                         </p>
                       </div>
                     </div>
@@ -477,7 +475,7 @@ export function ATSCheckerClient() {
 
                 {/* Upload Error Banner */}
                 {uploadError && (
-                  <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-start gap-3">
+                  <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-start gap-3">
                     <XCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
                     <div>
                       <strong className="block font-bold text-rose-200 mb-0.5">
@@ -490,19 +488,19 @@ export function ATSCheckerClient() {
 
                 {/* Verified File Badge */}
                 {uploadedFile && !uploadError && (
-                  <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-slate-300 flex items-center justify-between gap-3">
+                  <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-muted-foreground flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 shrink-0">
+                      <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 shrink-0">
                         <FileCheck className="w-5 h-5" />
                       </div>
                       <div className="min-w-0">
-                        <p className="font-bold text-white truncate text-sm">
+                        <p className="font-bold text-foreground truncate text-sm">
                           {uploadedFile.fileName}
                         </p>
-                        <p className="text-[11px] text-emerald-400">
+                        <p className="text-[11px] text-emerald-400 font-medium">
                           Verified Resume ({uploadedFile.wordCount} words extracted)
                           {uploadedFile.detectedSections && (
-                            <span className="text-slate-400 ml-1">
+                            <span className="text-muted-foreground ml-1">
                               · Sections: {uploadedFile.detectedSections.slice(0, 3).join(", ")}
                             </span>
                           )}
@@ -513,7 +511,7 @@ export function ATSCheckerClient() {
                     <button
                       type="button"
                       onClick={() => setInputMode("paste")}
-                      className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 text-xs font-semibold shrink-0"
+                      className="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-foreground border border-white/10 text-xs font-semibold shrink-0"
                     >
                       View Text
                     </button>
@@ -529,7 +527,7 @@ export function ATSCheckerClient() {
                 value={resumeText}
                 onChange={(e) => setResumeText(e.target.value)}
                 placeholder="Paste your full resume text here..."
-                className="w-full p-4 bg-slate-900/70 border border-white/[0.08] rounded-2xl text-xs sm:text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 font-mono leading-relaxed resize-y"
+                className="w-full p-4 bg-card/70 border border-white/[0.08] rounded-2xl text-xs sm:text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 font-mono leading-relaxed resize-y"
               />
             )}
           </div>
@@ -537,14 +535,14 @@ export function ATSCheckerClient() {
           {/* Right: Job Description */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+              <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
                 <Target className="w-4 h-4 text-emerald-400" />
                 <span>Target Job Description (Optional)</span>
               </label>
               <button
                 type="button"
                 onClick={() => setJobDescription(SAMPLE_JD)}
-                className="text-[11px] text-emerald-400 hover:text-emerald-300 transition-colors"
+                className="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 transition-colors"
               >
                 Load Sample JD
               </button>
@@ -554,22 +552,22 @@ export function ATSCheckerClient() {
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
               placeholder="Paste job posting description from LinkedIn, Indeed, or company career site..."
-              className="w-full p-4 bg-slate-900/70 border border-white/[0.08] rounded-2xl text-xs sm:text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 font-mono leading-relaxed resize-y"
+              className="w-full p-4 bg-card/70 border border-white/[0.08] rounded-2xl text-xs sm:text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 font-mono leading-relaxed resize-y"
             />
           </div>
         </div>
 
         {/* Detailed Breakdown Tabs */}
         {analysis && (
-          <div className="rounded-2xl bg-slate-900/50 border border-white/[0.06] p-6 space-y-6">
-            <div className="flex items-center gap-2 border-b border-white/[0.06] pb-3">
+          <div className="rounded-3xl bg-card/70 backdrop-blur-2xl border border-white/[0.08] p-6 space-y-6 shadow-xl">
+            <div className="flex items-center gap-2 border-b border-white/[0.08] pb-3">
               <button
                 type="button"
                 onClick={() => setActiveTab("overview")}
                 className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                   activeTab === "overview"
-                    ? "bg-indigo-600 text-white"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]"
+                    ? "bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-white/[0.04]"
                 }`}
               >
                 Overview & Metrics
@@ -579,8 +577,8 @@ export function ATSCheckerClient() {
                 onClick={() => setActiveTab("keywords")}
                 className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                   activeTab === "keywords"
-                    ? "bg-indigo-600 text-white"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]"
+                    ? "bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-white/[0.04]"
                 }`}
               >
                 Keywords Analysis ({analysis.matchedKeywords.length} Matched)
@@ -590,8 +588,8 @@ export function ATSCheckerClient() {
                 onClick={() => setActiveTab("structure")}
                 className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                   activeTab === "structure"
-                    ? "bg-indigo-600 text-white"
-                    : "text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]"
+                    ? "bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-white/[0.04]"
                 }`}
               >
                 Structure & Sections
@@ -601,53 +599,53 @@ export function ATSCheckerClient() {
             {/* TAB 1: OVERVIEW */}
             {activeTab === "overview" && (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="p-4 rounded-xl bg-slate-950/60 border border-white/[0.06] space-y-2">
-                  <div className="text-xs font-bold text-slate-400 flex items-center justify-between">
+                <div className="p-4 rounded-2xl bg-background/60 border border-white/[0.08] space-y-2">
+                  <div className="text-xs font-bold text-muted-foreground flex items-center justify-between">
                     <span>Keyword Match</span>
-                    <span className="text-indigo-400 font-mono">{analysis.keywordScore}%</span>
+                    <span className="text-cyan-400 font-mono font-bold">{analysis.keywordScore}%</span>
                   </div>
-                  <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                  <div className="h-2 w-full bg-card rounded-full overflow-hidden border border-white/[0.04]">
                     <div
-                      className="h-full bg-indigo-500 rounded-full"
+                      className="h-full bg-gradient-to-r from-cyan-400 to-emerald-400 rounded-full"
                       style={{ width: `${analysis.keywordScore}%` }}
                     />
                   </div>
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-[11px] text-muted-foreground">
                     {analysis.matchedKeywords.length} of{" "}
                     {analysis.matchedKeywords.length + analysis.missingKeywords.length} target keywords found in resume.
                   </p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-950/60 border border-white/[0.06] space-y-2">
-                  <div className="text-xs font-bold text-slate-400 flex items-center justify-between">
+                <div className="p-4 rounded-2xl bg-background/60 border border-white/[0.08] space-y-2">
+                  <div className="text-xs font-bold text-muted-foreground flex items-center justify-between">
                     <span>Structure & Format</span>
-                    <span className="text-emerald-400 font-mono">{analysis.structureScore}%</span>
+                    <span className="text-emerald-400 font-mono font-bold">{analysis.structureScore}%</span>
                   </div>
-                  <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                  <div className="h-2 w-full bg-card rounded-full overflow-hidden border border-white/[0.04]">
                     <div
                       className="h-full bg-emerald-500 rounded-full"
                       style={{ width: `${analysis.structureScore}%` }}
                     />
                   </div>
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-[11px] text-muted-foreground">
                     Essential resume sections (Experience, Education, Skills, Contact) detected.
                   </p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-950/60 border border-white/[0.06] space-y-2">
-                  <div className="text-xs font-bold text-slate-400 flex items-center justify-between">
+                <div className="p-4 rounded-2xl bg-background/60 border border-white/[0.08] space-y-2">
+                  <div className="text-xs font-bold text-muted-foreground flex items-center justify-between">
                     <span>Action Verbs & Impact</span>
-                    <span className="text-amber-400 font-mono">
+                    <span className="text-amber-400 font-mono font-bold">
                       {analysis.foundVerbs.length} Verbs
                     </span>
                   </div>
-                  <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                  <div className="h-2 w-full bg-card rounded-full overflow-hidden border border-white/[0.04]">
                     <div
-                      className="h-full bg-amber-500 rounded-full"
+                      className="h-full bg-amber-400 rounded-full"
                       style={{ width: `${Math.min(analysis.foundVerbs.length * 10, 100)}%` }}
                     />
                   </div>
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-[11px] text-muted-foreground">
                     {analysis.metricsCount} quantifiable metrics (% or figures) detected in achievements.
                   </p>
                 </div>
@@ -677,12 +675,12 @@ export function ATSCheckerClient() {
                 )}
 
                 {analysis.missingKeywords.length > 0 && (
-                  <div className="space-y-2 pt-2 border-t border-white/[0.06]">
+                  <div className="space-y-2 pt-2 border-t border-white/[0.08]">
                     <h3 className="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-1.5">
                       <XCircle className="w-3.5 h-3.5" />
                       <span>Missing Job Keywords ({analysis.missingKeywords.length})</span>
                     </h3>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-muted-foreground">
                       Recruiters and ATS scanners look for these exact terms from the job posting:
                     </p>
                     <div className="flex flex-wrap gap-2">
@@ -712,9 +710,9 @@ export function ATSCheckerClient() {
                 ].map((item) => (
                   <div
                     key={item.name}
-                    className="p-3.5 rounded-xl bg-slate-950/60 border border-white/[0.06] flex items-center justify-between"
+                    className="p-3.5 rounded-2xl bg-background/60 border border-white/[0.08] flex items-center justify-between"
                   >
-                    <span className="text-xs font-semibold text-white">{item.name}</span>
+                    <span className="text-xs font-semibold text-foreground">{item.name}</span>
                     {item.present ? (
                       <span className="text-xs text-emerald-400 font-bold flex items-center gap-1">
                         <CheckCircle2 className="w-3.5 h-3.5" /> Found

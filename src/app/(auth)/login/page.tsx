@@ -139,16 +139,16 @@ function LoginFormContent() {
         <motion.div variants={itemVariants} className="text-center space-y-3">
           <Link
             href="/"
-            className="inline-flex items-center justify-center w-12 h-12 bg-white/[0.05] rounded-xl border border-white/[0.08] text-indigo-400 font-bold text-sm hover:bg-white/[0.08] transition-colors"
+            className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-tr from-cyan-500/20 to-emerald-500/20 rounded-2xl border border-cyan-500/30 text-cyan-300 font-black text-sm hover:scale-105 transition-transform shadow-lg shadow-cyan-500/10 mx-auto"
           >
             RF
           </Link>
           <div>
-            <h1 className="text-xl font-bold text-white tracking-tight">
+            <h1 className="text-2xl font-black text-foreground tracking-tight">
               Welcome back
             </h1>
-            <p className="text-slate-500 text-xs mt-1">
-              Sign in to continue building your resume
+            <p className="text-muted-foreground text-xs mt-1">
+              Sign in to continue building your ATS-optimized resume
             </p>
           </div>
         </motion.div>
@@ -202,11 +202,11 @@ function LoginFormContent() {
         <form onSubmit={handleEmailLogin} className="space-y-4">
           {/* Email */}
           <motion.div variants={itemVariants} className="space-y-1.5">
-            <label className="text-xs font-medium text-slate-400">Email</label>
+            <label className="text-xs font-semibold text-foreground/80">Email</label>
             <div className="relative">
               <Mail
                 className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors duration-200 ${
-                  focusedField === "email" ? "text-indigo-400" : "text-slate-600"
+                  focusedField === "email" ? "text-cyan-400" : "text-muted-foreground"
                 }`}
               />
               <input
@@ -216,7 +216,7 @@ function LoginFormContent() {
                 onChange={(e) => setEmail(e.target.value)}
                 onFocus={() => setFocusedField("email")}
                 onBlur={() => setFocusedField(null)}
-                className="w-full h-11 pl-10 pr-4 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/30 transition-all duration-200"
+                className="w-full h-11 pl-10 pr-4 bg-background/80 border border-white/[0.08] rounded-xl text-foreground text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/30 transition-all duration-200"
                 required
               />
             </div>
@@ -225,10 +225,10 @@ function LoginFormContent() {
           {/* Password */}
           <motion.div variants={itemVariants} className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-medium text-slate-400">Password</label>
+              <label className="text-xs font-semibold text-foreground/80">Password</label>
               <Link
                 href="/forgot-password"
-                className="text-[11px] text-slate-500 hover:text-indigo-400 font-medium transition-colors"
+                className="text-[11px] text-muted-foreground hover:text-cyan-400 font-medium transition-colors"
               >
                 Forgot?
               </Link>
@@ -236,7 +236,7 @@ function LoginFormContent() {
             <div className="relative">
               <Lock
                 className={`w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors duration-200 ${
-                  focusedField === "password" ? "text-indigo-400" : "text-slate-600"
+                  focusedField === "password" ? "text-cyan-400" : "text-muted-foreground"
                 }`}
               />
               <input
@@ -246,13 +246,13 @@ function LoginFormContent() {
                 onChange={(e) => setPassword(e.target.value)}
                 onFocus={() => setFocusedField("password")}
                 onBlur={() => setFocusedField(null)}
-                className="w-full h-11 pl-10 pr-10 bg-white/[0.03] border border-white/[0.08] rounded-xl text-white text-sm placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/30 transition-all duration-200"
+                className="w-full h-11 pl-10 pr-10 bg-background/80 border border-white/[0.08] rounded-xl text-foreground text-sm placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/30 transition-all duration-200"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 hover:text-slate-300 p-1 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-1 transition-colors"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -264,13 +264,13 @@ function LoginFormContent() {
             <button
               type="submit"
               disabled={isLoading || isGoogleLoading}
-              className="w-full h-11 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/30 flex items-center justify-center gap-2 active:scale-[0.98]"
+              className="w-full h-11 bg-gradient-to-r from-cyan-500 to-emerald-400 hover:from-cyan-400 hover:to-emerald-300 text-slate-950 font-extrabold text-sm rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-cyan-500/20 hover:shadow-cyan-500/30 flex items-center justify-center gap-2 active:scale-[0.98] cursor-pointer"
             >
               {isLoading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
               ) : (
                 <>
-                  <span>Sign In</span>
+                  <span>Sign In to ResumeForge</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </>
               )}
@@ -283,11 +283,11 @@ function LoginFormContent() {
           variants={itemVariants}
           className="text-center pt-3 border-t border-white/[0.05]"
         >
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted-foreground">
             Don&apos;t have an account?{" "}
             <Link
               href={`/signup${redirectTo !== "/dashboard" ? `?redirectTo=${encodeURIComponent(redirectTo)}` : ""}`}
-              className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors"
+              className="text-cyan-400 hover:text-cyan-300 font-bold transition-colors"
             >
               Create one for free
             </Link>

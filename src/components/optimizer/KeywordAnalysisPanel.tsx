@@ -16,10 +16,10 @@ export function KeywordAnalysisPanel({ keywords }: KeywordAnalysisPanelProps) {
   if (!hasAny) return null;
 
   return (
-    <div className="space-y-3">
-      <h4 className="text-[11px] font-bold text-white flex items-center gap-1.5">
-        <Tag className="w-3.5 h-3.5 text-indigo-400" />
-        Keyword Recommendations
+    <div className="space-y-3.5">
+      <h4 className="text-[11px] font-bold text-foreground flex items-center gap-1.5">
+        <Tag className="w-3.5 h-3.5 text-cyan-400" />
+        <span>Keyword Recommendations</span>
       </h4>
 
       {keywords.highPriority.length > 0 && (
@@ -29,7 +29,7 @@ export function KeywordAnalysisPanel({ keywords }: KeywordAnalysisPanelProps) {
             {keywords.highPriority.map((kw) => (
               <span
                 key={kw}
-                className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-rose-500/10 text-rose-300 border border-rose-500/25"
+                className="px-2.5 py-0.5 rounded-xl text-[10px] font-semibold bg-rose-500/10 text-rose-300 border border-rose-500/25"
               >
                 {kw}
               </span>
@@ -45,7 +45,7 @@ export function KeywordAnalysisPanel({ keywords }: KeywordAnalysisPanelProps) {
             {keywords.mediumPriority.map((kw) => (
               <span
                 key={kw}
-                className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-500/10 text-amber-300 border border-amber-500/25"
+                className="px-2.5 py-0.5 rounded-xl text-[10px] font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/25"
               >
                 {kw}
               </span>
@@ -56,12 +56,12 @@ export function KeywordAnalysisPanel({ keywords }: KeywordAnalysisPanelProps) {
 
       {keywords.lowPriority.length > 0 && (
         <div className="space-y-1.5">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Nice to Have</p>
+          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Nice to Have</p>
           <div className="flex flex-wrap gap-1.5">
             {keywords.lowPriority.map((kw) => (
               <span
                 key={kw}
-                className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-800 text-slate-400 border border-slate-700"
+                className="px-2.5 py-0.5 rounded-xl text-[10px] font-semibold bg-white/[0.04] text-muted-foreground border border-white/[0.08]"
               >
                 {kw}
               </span>

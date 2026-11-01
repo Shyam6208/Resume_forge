@@ -92,120 +92,29 @@ export function AdminUsersClient() {
     else params.delete("search");
     
     const newUrl = `${pathname}${params.toString() ? '?' + params.toString() : ''}`;
-    // We use push but could use replace depending on history preference
     router.replace(newUrl, { scroll: false });
   }, [pathname, searchParams, router]);
 
-  // Sync state from URL during render (handles Browser Back/Forward)
+  // Sync state from URL during render
   const [prevParams, setPrevParams] = useState(searchParams.toString());
-  const currentParamsStr = searchParams.toString();
-
-  if (currentParamsStr !== prevParams) {
-    setPrevParams(currentParamsStr);
+  if (searchParams.toString() !== prevParams) {
+    setPrevParams(searchParams.toString());
     const urlPage = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
     const urlSearch = searchParams.get("search") || "";
-
-    if (urlPage !== page) setPage(urlPage);
-    if (urlSearch !== debouncedSearch) {
-      setDebouncedSearch(urlSearch);
-      setSearch(urlSearch);
-    }
+    setPage(urlPage);
+    setSearch(urlSearch);
+    setDebouncedSearch(urlSearch);
   }
 
-  // ── Debounced search (300ms) ─────────────────────────────────
-  useEffect(() => {
+  // Handle Search Input Debounce (300ms)
+  const handleSearchChange = (val: string) => {
+    setSearch(val);
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      if (search !== debouncedSearch) {
-        setDebouncedSearch(search);
-        setPage(1);
-        updateUrl(1, search);
-      }
+      setPage(1);
+      setDebouncedSearch(val);
+      updateUrl(1, val);
     }, 300);
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [search, debouncedSearch, updateUrl]);
-
-  // ── Fetch users from admin API ───────────────────────────────
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-
-  useEffect(() => {
-    let isCancelled = false;
-    async function loadUsers() {
-      try {
-        const params = new URLSearchParams({
-          page: String(page),
-          pageSize: String(PAGE_SIZE),
-        });
-        if (debouncedSearch) {
-          params.set("search", debouncedSearch);
-        }
-
-        const res = await fetch(`/api/admin/users?${params.toString()}`);
-
-        if (!res.ok) {
-          const body = await res.json().catch(() => ({}));
-          throw new Error(
-            (body as { error?: string }).error || `Request failed (${res.status})`
-          );
-        }
-
-        const data: UsersApiResponse = await res.json();
-        if (!isCancelled) {
-          setUsers(data.users);
-          setTotalCount(data.totalCount);
-          setErrorMessage("");
-          setLoadingState("loaded");
-        }
-      } catch (err) {
-        if (!isCancelled) {
-          console.error("Failed to fetch admin users:", err);
-          setErrorMessage(
-            err instanceof Error ? err.message : "Unable to load users."
-          );
-          setLoadingState("error");
-        }
-      }
-    }
-
-    loadUsers();
-    return () => {
-      isCancelled = true;
-    };
-  }, [page, debouncedSearch, refreshTrigger]);
-
-  const handleRefresh = () => {
-    setRefreshTrigger((prev) => prev + 1);
-  };
-
-  // ── Pagination helpers ───────────────────────────────────────
-  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
-
-  const getPageNumbers = (): (number | "ellipsis")[] => {
-    const pages: (number | "ellipsis")[] = [];
-    if (totalPages <= 7) {
-      for (let i = 1; i <= totalPages; i++) pages.push(i);
-    } else {
-      pages.push(1);
-      if (page > 3) pages.push("ellipsis");
-      for (
-        let i = Math.max(2, page - 1);
-        i <= Math.min(totalPages - 1, page + 1);
-        i++
-      ) {
-        pages.push(i);
-      }
-      if (page < totalPages - 2) pages.push("ellipsis");
-      pages.push(totalPages);
-    }
-    return pages;
-  };
-
-  // ── Action handlers ──────────────────────────────────────────
-  const handleViewDetails = (user: AdminUser) => {
-    setSelectedUser(user);
-    setModalOpen(true);
   };
 
   const handleClearSearch = () => {
@@ -220,100 +129,172 @@ export function AdminUsersClient() {
     updateUrl(newPage, debouncedSearch);
   };
 
-  const handleExportCSV = async () => {
-    if (isExporting) return;
-    setIsExporting(true);
+  // ── Data Fetching ────────────────────────────────────────────
+  const fetchUsers = useCallback(async () => {
+    setLoadingState("loading");
+    setErrorMessage("");
+
     try {
-      const params = new URLSearchParams();
-      if (debouncedSearch) {
-        params.set("search", debouncedSearch);
+      const params = new URLSearchParams({
+        page: String(page),
+        pageSize: String(PAGE_SIZE),
+      });
+      if (debouncedSearch.trim()) {
+        params.set("search", debouncedSearch.trim());
       }
-      const res = await fetch(`/api/admin/users/export?${params.toString()}`);
+
+      const res = await fetch(`/api/admin/users?${params.toString()}`);
+
+      if (res.status === 401 || res.status === 403) {
+        throw new Error("Unauthorized");
+      }
+
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Failed to export users");
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || "Failed to load users");
       }
-      
-      // Download the CSV file
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.style.display = "none";
-      a.href = url;
-      a.download = "users.csv";
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      
-      toast.success("Users exported successfully");
-    } catch (err) {
-      console.error("Export error:", err);
-      toast.error(err instanceof Error ? err.message : "Failed to export users");
+
+      const data: UsersApiResponse = await res.json();
+      setUsers(data.users);
+      setTotalCount(data.totalCount);
+      setLoadingState("loaded");
+    } catch (err: unknown) {
+      console.error("Fetch users error:", err);
+      const msg = err instanceof Error ? err.message : "Unable to load users.";
+      setErrorMessage(msg);
+      setLoadingState("error");
+    }
+  }, [page, debouncedSearch]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
+  // ── Modal Handlers ───────────────────────────────────────────
+  const handleViewDetails = (user: AdminUser) => {
+    setSelectedUser(user);
+    setModalOpen(true);
+  };
+
+  // ── Export CSV Handler ───────────────────────────────────────
+  const handleExportCSV = async () => {
+    setIsExporting(true);
+    const toastId = toast.loading("Preparing CSV export...");
+
+    try {
+      const params = new URLSearchParams({
+        page: "1",
+        pageSize: "1000",
+      });
+      if (debouncedSearch.trim()) {
+        params.set("search", debouncedSearch.trim());
+      }
+
+      const res = await fetch(`/api/admin/users?${params.toString()}`);
+      if (!res.ok) throw new Error("Export failed");
+
+      const data: UsersApiResponse = await res.json();
+
+      const headers = ["ID", "Name", "Email", "Username", "Role", "Resumes", "Created At", "Updated At"];
+      const csvRows = [headers.join(",")];
+
+      for (const u of data.users) {
+        const row = [
+          `"${u.id}"`,
+          `"${(u.name || "").replace(/"/g, '""')}"`,
+          `"${u.email}"`,
+          `"${u.username || ""}"`,
+          u.is_admin ? "Admin" : "User",
+          u.resume_count,
+          `"${u.created_at}"`,
+          `"${u.updated_at}"`,
+        ];
+        csvRows.push(row.join(","));
+      }
+
+      const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `resumeforge_users_${new Date().toISOString().split("T")[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success("Users exported successfully!", { id: toastId });
+    } catch {
+      toast.error("Failed to export users CSV.", { id: toastId });
     } finally {
       setIsExporting(false);
     }
   };
 
-  // ── Render states ────────────────────────────────────────────
+  // ── Render States ────────────────────────────────────────────
 
   if (loadingState === "loading" && users.length === 0) {
     return <UsersSkeleton />;
   }
 
-  if (loadingState === "error") {
+  if (loadingState === "error" && users.length === 0) {
     return (
-      <div className="space-y-6">
-        <PageHeader 
-          count={0} 
-          onExport={handleExportCSV} 
-          isExporting={isExporting} 
-        />
-        <div className="rounded-3xl bg-slate-900/90 border border-slate-800 shadow-xl p-12 text-center space-y-4">
-          <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto">
-            <AlertCircle className="w-6 h-6 text-red-400" />
-          </div>
-          <div className="space-y-1">
-            <p className="text-sm font-bold text-white">
-              Unable to load users.
-            </p>
-            <p className="text-xs text-slate-400">{errorMessage}</p>
-          </div>
-          <Button
-            onClick={handleRefresh}
-            className="h-9 px-4 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl"
-          >
-            <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
-            Try Again
-          </Button>
+      <div className="flex flex-col items-center justify-center p-12 text-center h-[calc(100vh-100px)]">
+        <div className="w-16 h-16 bg-rose-500/10 rounded-2xl flex items-center justify-center mb-6 border border-rose-500/20">
+          <AlertCircle className="w-8 h-8 text-rose-400" />
         </div>
+        <h2 className="text-2xl font-bold text-foreground mb-2">Unable to load users.</h2>
+        <p className="text-muted-foreground max-w-md mb-8 whitespace-pre-wrap">{errorMessage}</p>
+        <button
+          onClick={fetchUsers}
+          className="px-6 py-2.5 bg-gradient-to-r from-cyan-400 to-emerald-400 hover:from-cyan-300 hover:to-emerald-300 text-slate-950 text-sm font-bold rounded-xl shadow-lg shadow-cyan-500/20 transition-all active:scale-[0.98]"
+        >
+          Try Again
+        </button>
       </div>
     );
   }
 
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+
+  const getPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (page > 3) pages.push("ellipsis");
+      const start = Math.max(2, page - 1);
+      const end = Math.min(totalPages - 1, page + 1);
+      for (let i = start; i <= end; i++) pages.push(i);
+      if (page < totalPages - 2) pages.push("ellipsis");
+      pages.push(totalPages);
+    }
+    return pages;
+  };
+
   return (
-    <div className="space-y-6">
-      <PageHeader 
-        count={totalCount} 
-        onExport={handleExportCSV} 
-        isExporting={isExporting} 
+    <div className="space-y-6 max-w-7xl">
+      <PageHeader
+        count={totalCount}
+        onExport={handleExportCSV}
+        isExporting={isExporting}
       />
 
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-            <Search className="w-4 h-4 text-slate-500" />
+            <Search className="w-4 h-4 text-muted-foreground" />
           </div>
           <input
             type="text"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Search by name, email, or username..."
-            className="w-full h-10 pl-10 pr-10 bg-slate-900/50 border border-slate-800 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+            className="w-full h-11 pl-10 pr-10 bg-card/85 border border-white/[0.08] rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:border-cyan-500/40 transition-all"
           />
           {search && (
             <button
               onClick={handleClearSearch}
-              className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-slate-300 transition-colors"
+              className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-muted-foreground hover:text-foreground transition-colors"
             >
               <XCircle className="w-4 h-4" />
             </button>
@@ -323,12 +304,12 @@ export function AdminUsersClient() {
 
       {debouncedSearch && (
         <div className="flex flex-wrap items-center gap-2 px-1">
-          <span className="text-xs font-semibold text-slate-500">Active Filters:</span>
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-xs font-medium text-indigo-300">
-            <span>Search: <strong className="text-white font-semibold">{debouncedSearch}</strong></span>
+          <span className="text-xs font-semibold text-muted-foreground">Active Filters:</span>
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-xs font-medium text-cyan-300">
+            <span>Search: <strong className="text-foreground font-semibold">{debouncedSearch}</strong></span>
             <button 
               onClick={handleClearSearch}
-              className="ml-1 p-0.5 hover:bg-indigo-500/20 rounded-md transition-colors text-indigo-400 hover:text-indigo-300"
+              className="ml-1 p-0.5 hover:bg-cyan-500/20 rounded-md transition-colors text-cyan-400 hover:text-cyan-300"
             >
               <XCircle className="w-3.5 h-3.5" />
             </button>
@@ -336,7 +317,7 @@ export function AdminUsersClient() {
           <Button
             variant="ghost"
             onClick={handleClearSearch}
-            className="h-7 px-3 text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg ml-auto sm:ml-0"
+            className="h-7 px-3 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-white/[0.06] rounded-xl ml-auto sm:ml-0"
           >
             Clear Filters
           </Button>
@@ -348,10 +329,10 @@ export function AdminUsersClient() {
           <EmptyState hasSearch={!!debouncedSearch} onClear={handleClearSearch} />
         ) : (
           <>
-            <div className="hidden md:block rounded-3xl bg-slate-900/90 border border-slate-800 shadow-xl overflow-hidden">
+            <div className="hidden md:block rounded-3xl bg-card/85 backdrop-blur-xl border border-white/[0.08] shadow-xl overflow-hidden">
               <div className="overflow-x-auto w-full">
-                <table className="w-full text-left text-xs text-slate-300">
-                  <thead className="bg-slate-950 border-b border-slate-800 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                <table className="w-full text-left text-xs text-muted-foreground">
+                  <thead className="bg-background/80 border-b border-white/[0.08] text-[11px] font-bold text-muted-foreground uppercase tracking-wider">
                     <tr>
                       <th className="p-4">Name</th>
                       <th className="p-4">Email</th>
@@ -362,7 +343,7 @@ export function AdminUsersClient() {
                       <th className="p-4 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/80">
+                  <tbody className="divide-y divide-white/[0.06]">
                     {users.map((u) => (
                       <UserRow
                         key={u.id}
@@ -387,7 +368,7 @@ export function AdminUsersClient() {
 
             {totalPages > 1 && (
               <div className="flex items-center justify-between pt-4">
-                <p className="text-[11px] text-slate-500">
+                <p className="text-[11px] text-muted-foreground">
                   Showing {(page - 1) * PAGE_SIZE + 1}–
                   {Math.min(page * PAGE_SIZE, totalCount)} of {totalCount} users
                 </p>
@@ -396,7 +377,7 @@ export function AdminUsersClient() {
                     variant="outline"
                     disabled={page === 1}
                     onClick={() => handlePageChange(page - 1)}
-                    className="w-9 h-9 p-0 bg-slate-900/50 border-slate-800 hover:bg-slate-800 text-slate-300 disabled:opacity-50 disabled:pointer-events-none rounded-xl"
+                    className="w-9 h-9 p-0 bg-card border-white/[0.08] hover:bg-white/[0.06] text-foreground disabled:opacity-50 disabled:pointer-events-none rounded-xl"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </Button>
@@ -404,7 +385,7 @@ export function AdminUsersClient() {
                   <div className="hidden sm:flex items-center gap-1">
                     {getPageNumbers().map((p, i) => 
                       p === "ellipsis" ? (
-                        <span key={`ell-${i}`} className="w-9 text-center text-slate-500 text-sm">
+                        <span key={`ell-${i}`} className="w-9 text-center text-muted-foreground text-sm">
                           ...
                         </span>
                       ) : (
@@ -412,10 +393,10 @@ export function AdminUsersClient() {
                           key={p}
                           variant={page === p ? "default" : "outline"}
                           onClick={() => handlePageChange(p as number)}
-                          className={`w-9 h-9 p-0 font-semibold rounded-xl text-sm ${
+                          className={`w-9 h-9 p-0 font-bold rounded-xl text-sm ${
                             page === p 
-                              ? "bg-indigo-500 hover:bg-indigo-600 text-white border-transparent" 
-                              : "bg-slate-900/50 border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800"
+                              ? "bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 border-transparent shadow-sm" 
+                              : "bg-card border-white/[0.08] text-muted-foreground hover:text-foreground hover:bg-white/[0.06]"
                           }`}
                         >
                           {p}
@@ -428,7 +409,7 @@ export function AdminUsersClient() {
                     variant="outline"
                     disabled={page === totalPages || totalPages === 0}
                     onClick={() => handlePageChange(page + 1)}
-                    className="w-9 h-9 p-0 bg-slate-900/50 border-slate-800 hover:bg-slate-800 text-slate-300 disabled:opacity-50 disabled:pointer-events-none rounded-xl"
+                    className="w-9 h-9 p-0 bg-card border-white/[0.08] hover:bg-white/[0.06] text-foreground disabled:opacity-50 disabled:pointer-events-none rounded-xl"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </Button>
@@ -461,18 +442,18 @@ function PageHeader({
   isExporting: boolean;
 }) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.08] pb-6">
       <div className="space-y-1">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
+        <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight flex items-center gap-2">
           <span>Users</span>
           {count > 0 && (
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 font-semibold">
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-bold">
               {count}
             </span>
           )}
         </h1>
-        <p className="text-xs sm:text-sm text-slate-400">
-          Manage registered ResumeForge users
+        <p className="text-xs sm:text-sm text-muted-foreground">
+          Manage registered ResumeForge accounts and permissions
         </p>
       </div>
       <div className="flex items-center gap-3">
@@ -480,12 +461,12 @@ function PageHeader({
           variant="outline"
           onClick={onExport}
           disabled={isExporting || count === 0}
-          className="h-9 px-4 text-xs font-semibold bg-slate-900 border-slate-700 hover:bg-slate-800 text-white rounded-xl"
+          className="h-10 px-4 text-xs font-semibold bg-card border-white/[0.08] hover:bg-white/[0.06] text-foreground rounded-xl"
         >
           {isExporting ? (
-            <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />
+            <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin text-cyan-400" />
           ) : (
-            <Download className="w-3.5 h-3.5 mr-2 text-indigo-400" />
+            <Download className="w-3.5 h-3.5 mr-2 text-cyan-400" />
           )}
           Export CSV
         </Button>
@@ -527,11 +508,11 @@ function UserRow({
     : "—";
 
   return (
-    <tr className="hover:bg-slate-800/40 transition-colors">
+    <tr className="hover:bg-white/[0.02] transition-colors">
       {/* Name + Avatar */}
       <td className="p-4">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center text-[10px] font-bold shrink-0 overflow-hidden">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30 text-cyan-300 flex items-center justify-center text-[10px] font-bold shrink-0 overflow-hidden">
             {user.avatar_url ? (
               <img
                 src={user.avatar_url}
@@ -543,7 +524,7 @@ function UserRow({
             )}
           </div>
           <div className="min-w-0">
-            <p className="font-bold text-white text-xs truncate max-w-[140px]">
+            <p className="font-bold text-foreground text-xs truncate max-w-[140px]">
               {displayName}
             </p>
             {user.is_admin && (
@@ -557,27 +538,27 @@ function UserRow({
       </td>
 
       {/* Email */}
-      <td className="p-4 text-slate-300 font-mono text-[11px] truncate max-w-[180px]">
+      <td className="p-4 text-foreground font-mono text-[11px] truncate max-w-[180px]">
         {user.email || "—"}
       </td>
 
       {/* Resume Count */}
       <td className="p-4 text-center">
-        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-300">
-          <FileText className="w-3 h-3 text-slate-500" />
+        <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-foreground">
+          <FileText className="w-3 h-3 text-cyan-400" />
           {user.resume_count}
         </span>
       </td>
 
       {/* Joined */}
-      <td className="p-4 text-slate-400 text-[11px]">{createdAt}</td>
+      <td className="p-4 text-muted-foreground text-[11px]">{createdAt}</td>
 
       {/* Last Updated */}
-      <td className="p-4 text-slate-400 text-[11px]">{updatedAt}</td>
+      <td className="p-4 text-muted-foreground text-[11px]">{updatedAt}</td>
 
       {/* Status */}
       <td className="p-4">
-        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
+        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
           Active
         </span>
       </td>
@@ -586,27 +567,27 @@ function UserRow({
       <td className="p-4 text-right">
         <DropdownMenu>
           <DropdownMenuTrigger
-            className="h-7 w-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="h-8 w-8 flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-white/[0.06] transition-colors"
             aria-label="User actions"
           >
             <MoreVertical className="w-4 h-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="bg-slate-950 border-slate-800 text-slate-200 min-w-[150px]"
+            className="bg-card/95 backdrop-blur-xl border-white/[0.1] text-foreground min-w-[150px] shadow-2xl"
           >
             <DropdownMenuItem
               onClick={() => onViewDetails(user)}
-              className="text-xs gap-2 cursor-pointer focus:bg-slate-800 focus:text-white"
+              className="text-xs gap-2 cursor-pointer focus:bg-white/[0.06] focus:text-foreground"
             >
-              <Eye className="w-3.5 h-3.5" />
+              <Eye className="w-3.5 h-3.5 text-cyan-400" />
               View Details
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => onViewDetails(user)}
-              className="text-xs gap-2 cursor-pointer focus:bg-slate-800 focus:text-white"
+              className="text-xs gap-2 cursor-pointer focus:bg-white/[0.06] focus:text-foreground"
             >
-              <FileText className="w-3.5 h-3.5" />
+              <FileText className="w-3.5 h-3.5 text-cyan-400" />
               View Resumes
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -640,11 +621,10 @@ function UserCard({
     : "—";
 
   return (
-    <div className="rounded-2xl bg-slate-900/90 border border-slate-800 p-4 space-y-3 shadow-lg">
-      {/* Top row: avatar + name + actions */}
+    <div className="rounded-2xl bg-card/85 backdrop-blur-xl border border-white/[0.08] p-4 space-y-3 shadow-lg">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center text-xs font-bold shrink-0 overflow-hidden">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30 text-cyan-300 flex items-center justify-center text-xs font-bold shrink-0 overflow-hidden">
             {user.avatar_url ? (
               <img
                 src={user.avatar_url}
@@ -656,10 +636,10 @@ function UserCard({
             )}
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-bold text-white truncate">
+            <p className="text-sm font-bold text-foreground truncate">
               {displayName}
             </p>
-            <p className="text-[11px] text-slate-400 font-mono truncate">
+            <p className="text-[11px] text-muted-foreground font-mono truncate">
               {user.email}
             </p>
           </div>
@@ -667,56 +647,54 @@ function UserCard({
 
         <DropdownMenu>
           <DropdownMenuTrigger
-            className="h-8 w-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors shrink-0"
+            className="h-8 w-8 flex items-center justify-center rounded-xl text-muted-foreground hover:text-foreground hover:bg-white/[0.06] transition-colors shrink-0"
             aria-label="User actions"
           >
             <MoreVertical className="w-4 h-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent
             align="end"
-            className="bg-slate-950 border-slate-800 text-slate-200 min-w-[150px]"
+            className="bg-card/95 backdrop-blur-xl border-white/[0.1] text-foreground min-w-[150px] shadow-2xl"
           >
             <DropdownMenuItem
               onClick={() => onViewDetails(user)}
-              className="text-xs gap-2 cursor-pointer focus:bg-slate-800 focus:text-white"
+              className="text-xs gap-2 cursor-pointer focus:bg-white/[0.06] focus:text-foreground"
             >
-              <Eye className="w-3.5 h-3.5" />
+              <Eye className="w-3.5 h-3.5 text-cyan-400" />
               View Details
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => onViewDetails(user)}
-              className="text-xs gap-2 cursor-pointer focus:bg-slate-800 focus:text-white"
+              className="text-xs gap-2 cursor-pointer focus:bg-white/[0.06] focus:text-foreground"
             >
-              <FileText className="w-3.5 h-3.5" />
+              <FileText className="w-3.5 h-3.5 text-cyan-400" />
               View Resumes
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
 
-      {/* Info grid */}
       <div className="grid grid-cols-3 gap-2 text-[11px]">
         <div className="space-y-0.5">
-          <p className="text-slate-500 font-semibold">Resumes</p>
-          <p className="text-white font-bold">{user.resume_count}</p>
+          <p className="text-muted-foreground font-semibold">Resumes</p>
+          <p className="text-foreground font-bold">{user.resume_count}</p>
         </div>
         <div className="space-y-0.5">
-          <p className="text-slate-500 font-semibold">Joined</p>
-          <p className="text-white font-bold">{createdAt}</p>
+          <p className="text-muted-foreground font-semibold">Joined</p>
+          <p className="text-foreground font-bold">{createdAt}</p>
         </div>
         <div className="space-y-0.5">
-          <p className="text-slate-500 font-semibold">Status</p>
-          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 inline-block">
+          <p className="text-muted-foreground font-semibold">Status</p>
+          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 inline-block">
             Active
           </span>
         </div>
       </div>
 
-      {/* View Details button */}
       <button
         type="button"
         onClick={() => onViewDetails(user)}
-        className="w-full h-9 flex items-center justify-center gap-2 text-xs font-semibold text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 rounded-xl hover:bg-indigo-500/20 transition-colors"
+        className="w-full h-10 flex items-center justify-center gap-2 text-xs font-bold text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 rounded-xl hover:bg-cyan-500/20 transition-colors"
       >
         <User className="w-3.5 h-3.5" />
         View Details
@@ -733,15 +711,15 @@ function EmptyState({
   onClear: () => void;
 }) {
   return (
-    <div className="rounded-3xl bg-slate-900/90 border border-slate-800 shadow-xl p-12 text-center space-y-4">
-      <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mx-auto">
-        <Users className="w-6 h-6 text-indigo-400" />
+    <div className="rounded-3xl bg-card/85 backdrop-blur-xl border border-white/[0.08] shadow-xl p-12 text-center space-y-4">
+      <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mx-auto">
+        <Users className="w-6 h-6 text-cyan-400" />
       </div>
       <div className="space-y-1">
-        <p className="text-sm font-bold text-white">
+        <p className="text-sm font-bold text-foreground">
           {hasSearch ? "No users match your search." : "No users found"}
         </p>
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-muted-foreground">
           {hasSearch
             ? "Try adjusting your search terms."
             : "User profiles will appear here once people sign up."}
@@ -751,7 +729,7 @@ function EmptyState({
         <Button
           onClick={onClear}
           variant="outline"
-          className="h-9 px-4 text-xs bg-slate-900 border-slate-800 hover:bg-slate-800 text-slate-200 font-semibold rounded-xl"
+          className="h-10 px-4 text-xs bg-card border-white/[0.08] hover:bg-white/[0.06] text-foreground font-semibold rounded-xl"
         >
           <XCircle className="w-3.5 h-3.5 mr-1.5" />
           Clear Search

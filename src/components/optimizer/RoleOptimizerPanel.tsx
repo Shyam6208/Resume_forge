@@ -51,12 +51,12 @@ export function RoleOptimizerPanel() {
           type="button"
           onClick={optimize}
           disabled={isOptimizing || !selectedRole}
-          className="w-full h-10 text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center gap-2"
+          className="w-full h-10 text-xs font-extrabold bg-gradient-to-r from-cyan-500 to-emerald-400 hover:from-cyan-400 hover:to-emerald-300 text-slate-950 rounded-xl shadow-md shadow-cyan-500/20 transition-all flex items-center justify-center gap-2"
         >
-          <Rocket className="w-4 h-4" />
-          <span>{isOptimizing ? "Analyzing..." : "🚀 Optimize My Resume"}</span>
+          <Rocket className="w-4 h-4 text-slate-950" />
+          <span>{isOptimizing ? "Analyzing..." : "Optimize My Resume"}</span>
         </Button>
-        <p className="text-[10px] text-slate-500 text-center">
+        <p className="text-[10px] text-muted-foreground text-center">
           AI will analyze your resume and suggest improvements for this role.
           Your original resume will be preserved.
         </p>
@@ -67,13 +67,13 @@ export function RoleOptimizerPanel() {
   // State: Optimizing -> Loading Skeleton
   if (viewState === "optimizing" || isOptimizing) {
     return (
-      <div className="py-12 px-4 text-center space-y-4 rounded-xl bg-slate-950/60 border border-slate-800">
-        <Loader2 className="w-8 h-8 text-indigo-400 animate-spin mx-auto" />
+      <div className="py-12 px-4 text-center space-y-4 rounded-2xl bg-card/70 border border-white/[0.08] backdrop-blur-md">
+        <Loader2 className="w-8 h-8 text-cyan-400 animate-spin mx-auto" />
         <div className="space-y-1">
-          <h4 className="text-xs font-bold text-white">
+          <h4 className="text-xs font-bold text-foreground">
             Analyzing Resume for {selectedRoleProfile?.title || selectedRole}...
           </h4>
-          <p className="text-[11px] text-slate-400 max-w-xs mx-auto">
+          <p className="text-[11px] text-muted-foreground max-w-xs mx-auto">
             Comparing resume experience & skills against role requirements without fabricating information.
           </p>
         </div>
@@ -103,22 +103,22 @@ export function RoleOptimizerPanel() {
           onValueChange={(v) => setActiveReviewTab(v as "changes" | "skills" | "keywords")}
           className="w-full"
         >
-          <TabsList className="grid grid-cols-3 h-8 bg-slate-950 border border-slate-800 p-0.5 rounded-lg mb-4">
+          <TabsList className="grid grid-cols-3 h-8 bg-card/80 border border-white/[0.08] p-0.5 rounded-xl mb-4">
             <TabsTrigger
               value="changes"
-              className="text-[10px] font-semibold py-1 data-[state=active]:bg-indigo-600 data-[state=active]:text-white transition-all"
+              className="text-[10px] font-semibold py-1 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-emerald-400 data-[state=active]:text-slate-950 data-[state=active]:font-extrabold transition-all"
             >
               Changes ({pendingCount})
             </TabsTrigger>
             <TabsTrigger
               value="skills"
-              className="text-[10px] font-semibold py-1 data-[state=active]:bg-indigo-600 data-[state=active]:text-white transition-all"
+              className="text-[10px] font-semibold py-1 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-emerald-400 data-[state=active]:text-slate-950 data-[state=active]:font-extrabold transition-all"
             >
               Skills Gap
             </TabsTrigger>
             <TabsTrigger
               value="keywords"
-              className="text-[10px] font-semibold py-1 data-[state=active]:bg-indigo-600 data-[state=active]:text-white transition-all"
+              className="text-[10px] font-semibold py-1 rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-cyan-500 data-[state=active]:to-emerald-400 data-[state=active]:text-slate-950 data-[state=active]:font-extrabold transition-all"
             >
               Keywords
             </TabsTrigger>

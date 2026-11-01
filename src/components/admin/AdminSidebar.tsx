@@ -55,15 +55,15 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col md:flex-row selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row selection:bg-cyan-500 selection:text-white">
       {/* Mobile Header Bar */}
-      <header className="md:hidden sticky top-0 z-40 h-16 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/50 px-4 flex items-center justify-between">
+      <header className="md:hidden sticky top-0 z-40 h-16 bg-background/80 backdrop-blur-xl border-b border-white/[0.08] px-4 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="relative p-2 rounded-xl bg-gradient-to-br from-indigo-600/30 to-violet-600/30 border border-indigo-500/30">
-            <Zap className="w-4 h-4 text-indigo-400" />
+          <div className="relative p-2 rounded-xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30">
+            <Zap className="w-4 h-4 text-cyan-400" />
             <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-emerald-400 rounded-full" style={{ animation: "admin-live-blink 2s ease-in-out infinite" }} />
           </div>
-          <span className="font-extrabold text-base text-white tracking-tight">
+          <span className="font-extrabold text-base text-foreground tracking-tight">
             Admin Panel
           </span>
         </div>
@@ -81,7 +81,7 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
           <button
             type="button"
             onClick={() => setIsMobileOpen(!isMobileOpen)}
-            className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 text-slate-400 hover:text-white rounded-xl bg-slate-900/80 border border-slate-800/50 backdrop-blur-sm transition-all hover:bg-slate-800/80"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 text-muted-foreground hover:text-foreground rounded-xl bg-card/80 border border-white/[0.08] backdrop-blur-sm transition-all hover:bg-white/[0.06]"
             aria-label="Toggle Navigation Drawer"
           >
             {isMobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -96,7 +96,7 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
         {/* Animated gradient orbs behind the sidebar */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div
-            className="absolute w-40 h-40 rounded-full bg-indigo-600/20 blur-3xl"
+            className="absolute w-40 h-40 rounded-full bg-cyan-600/20 blur-3xl"
             style={{
               top: "15%",
               left: "50%",
@@ -104,7 +104,7 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
             }}
           />
           <div
-            className="absolute w-32 h-32 rounded-full bg-violet-600/15 blur-3xl"
+            className="absolute w-32 h-32 rounded-full bg-emerald-600/15 blur-3xl"
             style={{
               bottom: "20%",
               left: "50%",
@@ -122,21 +122,21 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Glass panel */}
-        <div className="relative z-10 flex flex-col h-full p-4 bg-slate-900/60 backdrop-blur-xl border-r border-slate-800/50 justify-between">
+        <div className="relative z-10 flex flex-col h-full p-4 bg-card/60 backdrop-blur-xl border-r border-white/[0.08] justify-between">
           <div className="space-y-6">
             {/* Logo & Admin Badge */}
             <div className="space-y-3">
               <Link href="/admin" className="flex items-center gap-3 group">
-                <div className="relative p-2.5 rounded-xl bg-gradient-to-br from-indigo-600/30 to-violet-600/30 border border-indigo-500/30 group-hover:from-indigo-600/40 group-hover:to-violet-600/40 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-indigo-500/20">
-                  <Zap className="w-5 h-5 text-indigo-400 group-hover:text-indigo-300 transition-colors" />
+                <div className="relative p-2.5 rounded-xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30 group-hover:from-cyan-500/30 group-hover:to-emerald-500/30 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-cyan-500/20">
+                  <Zap className="w-5 h-5 text-cyan-400 group-hover:text-cyan-300 transition-colors" />
                 </div>
                 <div className="flex flex-col">
                   <span
-                    className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent"
+                    className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-foreground via-foreground/80 to-muted-foreground bg-clip-text text-transparent"
                   >
                     ResumeForge
                   </span>
-                  <span className="text-[10px] font-medium text-slate-500 tracking-widest uppercase">
+                  <span className="text-[10px] font-medium text-muted-foreground tracking-widest uppercase">
                     Admin Console
                   </span>
                 </div>
@@ -173,21 +173,21 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
                     {isActive && (
                       <motion.div
                         layoutId="admin-active-nav"
-                        className="absolute inset-0 rounded-xl bg-gradient-to-r from-indigo-600/90 to-violet-600/80 shadow-lg shadow-indigo-600/25"
+                        className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 shadow-lg shadow-cyan-500/25"
                         transition={{ type: "spring", stiffness: 350, damping: 30 }}
                       />
                     )}
 
                     {/* Hover background */}
                     {!isActive && (
-                      <div className="absolute inset-0 rounded-xl bg-slate-800/0 group-hover:bg-slate-800/50 transition-colors duration-200" />
+                      <div className="absolute inset-0 rounded-xl bg-white/0 group-hover:bg-white/[0.06] transition-colors duration-200" />
                     )}
 
                     <div className="relative z-10 flex items-center gap-3 w-full">
                       <div className={`transition-transform duration-200 ${isActive ? "" : "group-hover:scale-110"}`}>
-                        <Icon className={`w-[18px] h-[18px] shrink-0 ${isActive ? "text-white" : "text-slate-400 group-hover:text-slate-200"} transition-colors`} />
+                        <Icon className={`w-[18px] h-[18px] shrink-0 ${isActive ? "text-slate-950" : "text-muted-foreground group-hover:text-foreground"} transition-colors`} />
                       </div>
-                      <span className={`${isActive ? "text-white" : "text-slate-400 group-hover:text-white"} transition-colors`}>
+                      <span className={`${isActive ? "text-slate-950 font-bold" : "text-muted-foreground group-hover:text-foreground"} transition-colors`}>
                         {item.label}
                       </span>
 
@@ -196,7 +196,7 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
                         <motion.div
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
-                          className="ml-auto w-1.5 h-1.5 rounded-full bg-white/80"
+                          className="ml-auto w-1.5 h-1.5 rounded-full bg-slate-950/60"
                         />
                       )}
                     </div>
@@ -208,15 +208,15 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
 
           {/* Bottom Actions — Premium glass card */}
           <div className="space-y-2 pt-4">
-            <div className="h-px bg-gradient-to-r from-transparent via-slate-700/50 to-transparent mb-3" />
+            <div className="h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent mb-3" />
 
             <Link
               href="/dashboard"
-              className="min-h-[44px] flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-[13px] font-medium text-slate-400 hover:text-white transition-all duration-200 group relative overflow-hidden"
+              className="min-h-[44px] flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-[13px] font-medium text-muted-foreground hover:text-foreground transition-all duration-200 group relative overflow-hidden"
             >
-              <div className="absolute inset-0 bg-slate-800/0 group-hover:bg-slate-800/50 transition-colors rounded-xl" />
+              <div className="absolute inset-0 bg-white/0 group-hover:bg-white/[0.06] transition-colors rounded-xl" />
               <div className="relative z-10 flex items-center gap-2.5">
-                <ArrowLeft className="w-4 h-4 text-indigo-400 group-hover:text-indigo-300 transition-all duration-200 group-hover:-translate-x-0.5" />
+                <ArrowLeft className="w-4 h-4 text-cyan-400 group-hover:text-cyan-300 transition-all duration-200 group-hover:-translate-x-0.5" />
                 <span>User Dashboard</span>
               </div>
             </Link>
@@ -247,19 +247,19 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-xl flex flex-col p-4"
+            className="md:hidden fixed inset-0 z-50 bg-background/85 backdrop-blur-xl flex flex-col p-4"
           >
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800/50">
+            <div className="flex items-center justify-between pb-4 border-b border-white/[0.08]">
               <div className="flex items-center gap-2.5">
-                <div className="p-1.5 rounded-lg bg-gradient-to-br from-indigo-600/30 to-violet-600/30 border border-indigo-500/30">
-                  <Sparkles className="w-4 h-4 text-indigo-400" />
+                <div className="p-1.5 rounded-lg bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30">
+                  <Sparkles className="w-4 h-4 text-cyan-400" />
                 </div>
-                <span className="font-extrabold text-base text-white">Admin Navigation</span>
+                <span className="font-extrabold text-base text-foreground">Admin Navigation</span>
               </div>
               <button
                 type="button"
                 onClick={() => setIsMobileOpen(false)}
-                className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -285,8 +285,8 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
                       onClick={() => setIsMobileOpen(false)}
                       className={`min-h-[48px] flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all ${
                         isActive
-                          ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-600/30"
-                          : "text-slate-300 hover:bg-slate-900/80"
+                          ? "bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 font-bold shadow-lg shadow-cyan-500/20"
+                          : "text-muted-foreground hover:bg-white/[0.06]"
                       }`}
                     >
                       <Icon className="w-5 h-5 shrink-0" />
@@ -297,11 +297,11 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
               })}
             </nav>
 
-            <div className="space-y-2 pt-4 border-t border-slate-800/50">
+            <div className="space-y-2 pt-4 border-t border-white/[0.08]">
               <Link
                 href="/dashboard"
                 onClick={() => setIsMobileOpen(false)}
-                className="min-h-[48px] flex items-center justify-center gap-2 w-full py-3 bg-slate-900/80 text-slate-200 font-semibold text-xs rounded-2xl border border-slate-800/50 backdrop-blur-sm"
+                className="min-h-[48px] flex items-center justify-center gap-2 w-full py-3 bg-card/80 text-foreground font-semibold text-xs rounded-2xl border border-white/[0.08] backdrop-blur-sm"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back to User Dashboard</span>

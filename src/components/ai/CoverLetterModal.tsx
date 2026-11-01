@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { FileText, Sparkles, Loader2, Copy, Download, Check } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -81,14 +81,14 @@ export function CoverLetterModal({ isOpen, onClose }: CoverLetterModalProps) {
       if (cached) {
         setCoverLetter(cached);
         setEditableText(cached.coverLetterText);
-        toast.success("Cover Letter loaded from cache!", { duration: 2000 });
+        toast.success("Loaded from cache");
         return;
       }
     }
 
-    inFlightRef.current = true;
     setIsGenerating(true);
-    const toastId = toast.loading(forceRegenerate ? "📄 Regenerating Cover Letter..." : "📄 Generating tailored Cover Letter...");
+    inFlightRef.current = true;
+    const toastId = toast.loading("Generating your AI Cover Letter...");
 
     try {
       const res = await fetch("/api/ai/cover-letter", {
@@ -96,9 +96,9 @@ export function CoverLetterModal({ isOpen, onClose }: CoverLetterModalProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           resumeData: currentResume.data,
-          jobTitle,
-          companyName,
           jobDescription,
+          targetRole: jobTitle.trim(),
+          companyName: companyName.trim(),
         }),
       });
 
@@ -107,15 +107,12 @@ export function CoverLetterModal({ isOpen, onClose }: CoverLetterModalProps) {
         throw new Error(err.error || "Failed to generate cover letter");
       }
 
-      const result: CoverLetterResult = await res.json();
-      setCoverLetter(result);
-      setEditableText(result.coverLetterText);
-
-      // Cache the result
-      setClientCached(cacheKey, result);
-
+      const data = await res.json();
+      setCoverLetter(data);
+      setEditableText(data.coverLetterText);
+      setClientCached(cacheKey, data);
       toast.dismiss(toastId);
-      toast.success("Cover Letter generated!", { duration: 3000 });
+      toast.success("Cover letter ready!");
     } catch (err: unknown) {
       console.error("Cover Letter error:", err);
       toast.dismiss(toastId);
@@ -133,10 +130,12 @@ export function CoverLetterModal({ isOpen, onClose }: CoverLetterModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="w-[95vw] max-w-3xl bg-slate-900 border-slate-800 text-slate-100 p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-3xl bg-[#0B0F17]/95 border-white/[0.08] backdrop-blur-2xl text-slate-100 p-6 space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="text-base font-bold text-white flex items-center gap-2">
-            <FileText className="w-5 h-5 text-indigo-400" />
+          <DialogTitle className="text-base font-bold text-white flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+              <FileText className="w-5 h-5" />
+            </div>
             <span>AI Cover Letter Generator</span>
           </DialogTitle>
           <DialogDescription className="text-xs text-slate-400">
@@ -146,22 +145,22 @@ export function CoverLetterModal({ isOpen, onClose }: CoverLetterModalProps) {
 
         {/* Inputs */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <label className="text-xs font-semibold text-slate-300">Target Job Title *</label>
             <Input
               value={jobTitle}
               onChange={(e) => setJobTitle(e.target.value)}
               placeholder="e.g. Senior Frontend Developer"
-              className="text-xs bg-slate-950 border-slate-800 text-white"
+              className="text-xs bg-slate-900/80 border-white/[0.08] focus:border-cyan-500 text-white rounded-xl"
             />
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             <label className="text-xs font-semibold text-slate-300">Company Name *</label>
             <Input
               value={companyName}
               onChange={(e) => setCompanyName(e.target.value)}
               placeholder="e.g. Acme Corp"
-              className="text-xs bg-slate-950 border-slate-800 text-white"
+              className="text-xs bg-slate-900/80 border-white/[0.08] focus:border-cyan-500 text-white rounded-xl"
             />
           </div>
         </div>
@@ -169,16 +168,16 @@ export function CoverLetterModal({ isOpen, onClose }: CoverLetterModalProps) {
           type="button"
           disabled={isGenerating || !jobTitle.trim() || !companyName.trim()}
           onClick={() => handleGenerate(false)}
-          className="w-full h-10 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-md flex items-center justify-center gap-2"
+          className="w-full h-10 text-xs bg-gradient-to-r from-cyan-400 to-emerald-400 hover:opacity-90 text-slate-950 font-bold rounded-xl shadow-md shadow-cyan-500/20 flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50"
         >
           {isGenerating ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
               <span>Generating Cover Letter...</span>
             </>
           ) : (
             <>
-              <Sparkles className="w-4 h-4 text-amber-300" />
+              <Sparkles className="w-4 h-4 text-slate-950" />
               <span>Generate AI Cover Letter</span>
             </>
           )}
@@ -186,7 +185,7 @@ export function CoverLetterModal({ isOpen, onClose }: CoverLetterModalProps) {
 
         {/* Generated Cover Letter Editor */}
         {coverLetter && (
-          <div className="space-y-3 pt-2 border-t border-slate-800">
+          <div className="space-y-3 pt-2 border-t border-white/[0.08]">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-white">Generated Cover Letter (Editable)</span>
               <div className="flex gap-2">
@@ -196,9 +195,9 @@ export function CoverLetterModal({ isOpen, onClose }: CoverLetterModalProps) {
                   size="sm"
                   disabled={isGenerating}
                   onClick={() => handleGenerate(true)}
-                  className="h-8 text-xs bg-slate-950 border-slate-800 text-slate-200 hover:bg-slate-800 hover:text-white"
+                  className="h-8 text-xs bg-white/[0.05] border-white/[0.08] text-slate-200 hover:bg-white/[0.1] hover:text-white rounded-xl"
                 >
-                  <Sparkles className="w-3.5 h-3.5 mr-1 text-amber-400" />
+                  <Sparkles className="w-3.5 h-3.5 mr-1 text-cyan-400" />
                   <span>Regenerate</span>
                 </Button>
                 <Button
@@ -206,7 +205,7 @@ export function CoverLetterModal({ isOpen, onClose }: CoverLetterModalProps) {
                   variant="outline"
                   size="sm"
                   onClick={handleCopy}
-                  className="h-8 text-xs bg-slate-950 border-slate-800 text-slate-200 hover:bg-slate-800 hover:text-white"
+                  className="h-8 text-xs bg-white/[0.05] border-white/[0.08] text-slate-200 hover:bg-white/[0.1] hover:text-white rounded-xl"
                 >
                   <Copy className="w-3.5 h-3.5 mr-1 text-emerald-400" />
                   <span>Copy Text</span>
@@ -217,7 +216,7 @@ export function CoverLetterModal({ isOpen, onClose }: CoverLetterModalProps) {
             <Textarea
               value={editableText}
               onChange={(e) => setEditableText(e.target.value)}
-              className="min-h-[220px] text-xs bg-slate-950 border-slate-800 text-slate-100 font-mono leading-relaxed p-4 rounded-xl"
+              className="min-h-[220px] text-xs bg-slate-950/80 border-white/[0.08] text-slate-100 font-mono leading-relaxed p-4 rounded-xl focus:border-cyan-500 focus:ring-cyan-500/20"
             />
           </div>
         )}

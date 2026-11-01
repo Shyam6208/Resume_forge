@@ -162,19 +162,11 @@ export function UserDetailsModal({
       })
     : "—";
 
-  const lastUpdated = displayUser.updated_at
-    ? new Date(displayUser.updated_at).toLocaleDateString("en-US", {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      })
-    : "—";
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl bg-slate-950 border-slate-800 text-slate-100 max-h-[85vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-3xl bg-[#0B0F17]/95 border-white/[0.08] backdrop-blur-2xl text-slate-100 max-h-[85vh] overflow-y-auto shadow-2xl shadow-cyan-950/20">
         <DialogHeader>
-          <DialogTitle className="text-white text-lg font-extrabold">
+          <DialogTitle className="text-white text-lg font-bold tracking-tight">
             User Overview
           </DialogTitle>
           <DialogDescription className="text-slate-400 text-xs">
@@ -184,24 +176,24 @@ export function UserDetailsModal({
 
         {loading && !fullUser && (
           <div className="py-12 flex flex-col items-center gap-3 text-slate-400">
-            <Loader2 className="w-6 h-6 animate-spin text-indigo-400" />
+            <Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
             <p className="text-xs">Loading user details...</p>
           </div>
         )}
 
         {error && (
           <div className="py-8 flex flex-col items-center gap-3 text-center">
-            <AlertCircle className="w-6 h-6 text-red-400" />
-            <p className="text-xs text-red-300">{error}</p>
+            <AlertCircle className="w-6 h-6 text-rose-400" />
+            <p className="text-xs text-rose-300">{error}</p>
           </div>
         )}
 
         {(!loading || fullUser) && !error && displayUser && (
-          <div className="space-y-8 pt-2">
+          <div className="space-y-6 pt-2">
             
             {/* ── Profile Header ── */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 rounded-2xl bg-indigo-500/5 border border-indigo-500/10">
-              <div className="w-16 h-16 rounded-2xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 flex items-center justify-center text-xl font-bold shrink-0 overflow-hidden">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-5 rounded-2xl bg-gradient-to-br from-cyan-500/10 via-slate-900/60 to-emerald-500/5 border border-cyan-500/20 shadow-inner">
+              <div className="w-16 h-16 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 flex items-center justify-center text-xl font-bold shrink-0 overflow-hidden shadow-md">
                 {displayUser.avatar_url ? (
                   <img
                     src={displayUser.avatar_url}
@@ -213,38 +205,38 @@ export function UserDetailsModal({
                 )}
               </div>
               <div className="space-y-1.5 min-w-0 flex-1">
-                <p className="text-lg font-extrabold text-white truncate">
+                <p className="text-lg font-bold text-white truncate">
                   {displayName}
                 </p>
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="flex items-center gap-1.5 text-xs text-slate-300 font-mono">
-                    <Mail className="w-3.5 h-3.5 text-slate-500" />
+                    <Mail className="w-3.5 h-3.5 text-slate-400" />
                     {displayUser.email || "—"}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap pt-1">
                   {displayUser.is_admin && (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
-                      <ShieldCheck className="w-3 h-3" />
+                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
+                      <ShieldCheck className="w-3 h-3 text-emerald-400" />
                       Admin
                     </span>
                   )}
                   {displayUser.is_guest ? (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
+                    <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-white/[0.05] text-slate-400 border border-white/[0.1]">
                       Guest
                     </span>
                   ) : (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/30">
+                    <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
                       Active
                     </span>
                   )}
                 </div>
               </div>
-              <div className="flex flex-col gap-2 text-right">
-                <div className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">
+              <div className="flex flex-col gap-1 text-right sm:border-l sm:border-white/[0.08] sm:pl-4">
+                <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
                   Joined
                 </div>
-                <div className="text-xs font-medium text-slate-300">
+                <div className="text-xs font-medium text-slate-200">
                   {createdAt}
                 </div>
               </div>
@@ -254,36 +246,36 @@ export function UserDetailsModal({
             {stats && (
               <div>
                 <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-1">
-                  Statistics
+                  Overview Metrics
                 </h3>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   <StatCard 
                     label="Total Resumes" 
                     value={stats.totalResumes} 
                     icon={FileText} 
-                    color="text-indigo-400"
-                    bg="bg-indigo-500/10 border-indigo-500/20"
+                    color="text-cyan-400"
+                    bg="bg-cyan-500/5 border-cyan-500/20"
                   />
                   <StatCard 
                     label="Public" 
                     value={stats.publicResumes} 
                     icon={Globe} 
                     color="text-emerald-400"
-                    bg="bg-emerald-500/10 border-emerald-500/20"
+                    bg="bg-emerald-500/5 border-emerald-500/20"
                   />
                   <StatCard 
                     label="Private" 
                     value={stats.privateResumes} 
                     icon={Lock} 
                     color="text-amber-400"
-                    bg="bg-amber-500/10 border-amber-500/20"
+                    bg="bg-amber-500/5 border-amber-500/20"
                   />
                   <StatCard 
                     label="Total Downloads" 
                     value={stats.totalDownloads} 
                     icon={Download} 
                     color="text-purple-400"
-                    bg="bg-purple-500/10 border-purple-500/20"
+                    bg="bg-purple-500/5 border-purple-500/20"
                   />
                 </div>
               </div>
@@ -296,16 +288,16 @@ export function UserDetailsModal({
                   User Resumes
                 </h3>
                 {resumes.length > 0 && (
-                  <span className="text-[10px] text-slate-500">
-                    Most recently updated at top
+                  <span className="text-[11px] text-slate-400">
+                    Showing latest entries
                   </span>
                 )}
               </div>
               
               {resumes.length === 0 ? (
-                <div className="p-8 text-center border border-slate-800 border-dashed rounded-2xl bg-slate-900/30">
-                  <FileText className="w-8 h-8 text-slate-600 mx-auto mb-2" />
-                  <p className="text-sm font-semibold text-slate-400">No resumes yet</p>
+                <div className="p-8 text-center border border-dashed border-white/[0.08] rounded-2xl bg-white/[0.02]">
+                  <FileText className="w-8 h-8 text-slate-500 mx-auto mb-2" />
+                  <p className="text-sm font-semibold text-slate-300">No resumes yet</p>
                 </div>
               ) : (
                 <div className="grid gap-3">
@@ -316,20 +308,20 @@ export function UserDetailsModal({
                     return (
                       <div 
                         key={resume.id}
-                        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl border border-slate-800 bg-slate-900/50 hover:bg-slate-800/50 transition-colors relative overflow-hidden"
+                        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl border border-white/[0.08] bg-slate-900/60 hover:bg-slate-850/80 hover:border-cyan-500/30 transition-all relative overflow-hidden"
                       >
                         {isMostRecent && (
-                          <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500" />
+                          <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-cyan-400 to-emerald-400" />
                         )}
                         
-                        <div className="space-y-1 min-w-0 flex-1">
+                        <div className="space-y-1.5 min-w-0 flex-1">
                           <div className="flex items-center gap-2">
-                            <p className="text-sm font-bold text-white truncate">
+                            <p className="text-sm font-semibold text-white truncate">
                               {resume.title}
                             </p>
                             {isMostRecent && (
-                              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-sm bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                                Most Recent
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+                                Latest
                               </span>
                             )}
                           </div>
@@ -337,19 +329,19 @@ export function UserDetailsModal({
                             <Briefcase className="w-3.5 h-3.5 text-slate-500" />
                             {resume.target_job || "No target role"}
                           </p>
-                          <div className="flex items-center gap-3 pt-2 text-[10px] font-semibold">
+                          <div className="flex items-center gap-3 pt-1 text-[11px] font-medium">
                             <span className={`flex items-center gap-1 ${resume.is_public ? "text-emerald-400" : "text-amber-400"}`}>
-                              {resume.is_public ? <Globe className="w-3 h-3" /> : <Lock className="w-3 h-3" />}
+                              {resume.is_public ? <Globe className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
                               {resume.is_public ? "Public" : "Private"}
                             </span>
                             <span className="text-slate-600">•</span>
-                            <span className="flex items-center gap-1 text-slate-400">
-                              <LayoutTemplate className="w-3 h-3 text-slate-500" />
+                            <span className="flex items-center gap-1 text-slate-300">
+                              <LayoutTemplate className="w-3.5 h-3.5 text-slate-500" />
                               {tName}
                             </span>
                             <span className="text-slate-600">•</span>
                             <span className="flex items-center gap-1 text-slate-400">
-                              <Download className="w-3 h-3 text-slate-500" />
+                              <Download className="w-3.5 h-3.5 text-slate-500" />
                               {resume.download_count} DL
                             </span>
                           </div>
@@ -358,7 +350,7 @@ export function UserDetailsModal({
                         <div className="flex items-center gap-3 w-full sm:w-auto mt-2 sm:mt-0">
                           <Link 
                             href={`/admin/resumes/${resume.id}/view`}
-                            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-colors"
+                            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3.5 py-2 text-xs font-semibold text-slate-200 hover:text-white bg-white/[0.05] hover:bg-cyan-500/20 border border-white/[0.1] hover:border-cyan-500/40 rounded-xl transition-all shadow-sm"
                           >
                             <Eye className="w-3.5 h-3.5" />
                             View Resume
@@ -394,10 +386,10 @@ function StatCard({
   bg: string;
 }) {
   return (
-    <div className={`p-4 rounded-xl border ${bg} flex flex-col items-center justify-center text-center gap-2`}>
+    <div className={`p-4 rounded-xl border ${bg} flex flex-col items-center justify-center text-center gap-2 transition-all`}>
       <Icon className={`w-5 h-5 ${color}`} />
       <div>
-        <p className={`text-xl font-black ${color}`}>{value}</p>
+        <p className={`text-xl font-bold ${color}`}>{value}</p>
         <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">{label}</p>
       </div>
     </div>

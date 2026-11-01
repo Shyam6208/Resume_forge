@@ -25,10 +25,10 @@ import toast from "react-hot-toast";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 function getATSColor(percentage: number) {
-  if (percentage >= 80) return { hex: "#22c55e", bg: "bg-emerald-500/10", border: "border-emerald-500/30", text: "text-emerald-400", label: "Excellent Match" };
-  if (percentage >= 60) return { hex: "#eab308", bg: "bg-yellow-500/10", border: "border-yellow-500/30", text: "text-amber-400", label: "Good Match" };
-  if (percentage >= 40) return { hex: "#f97316", bg: "bg-orange-500/10", border: "border-orange-500/30", text: "text-orange-400", label: "Average Match" };
-  return { hex: "#ef4444", bg: "bg-red-500/10", border: "border-rose-500/30", text: "text-rose-400", label: "Low Match" };
+  if (percentage >= 80) return { hex: "#10b981", bg: "bg-emerald-500/10", border: "border-emerald-500/30", text: "text-emerald-400", label: "Excellent Match" };
+  if (percentage >= 60) return { hex: "#06b6d4", bg: "bg-cyan-500/10", border: "border-cyan-500/30", text: "text-cyan-400", label: "Good Match" };
+  if (percentage >= 40) return { hex: "#f59e0b", bg: "bg-amber-500/10", border: "border-amber-500/30", text: "text-amber-400", label: "Average Match" };
+  return { hex: "#f43f5e", bg: "bg-rose-500/10", border: "border-rose-500/30", text: "text-rose-400", label: "Low Match" };
 }
 
 export function ATSChecker() {
@@ -155,10 +155,10 @@ export function ATSChecker() {
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <label className="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-            <Target className="w-3.5 h-3.5 text-indigo-400" />
+            <Target className="w-3.5 h-3.5 text-cyan-400" />
             <span>Target Job Description</span>
           </label>
-          <span className="text-[11px] text-slate-500">
+          <span className="text-[11px] text-slate-400">
             {charCount} / 50+ chars
           </span>
         </div>
@@ -167,19 +167,19 @@ export function ATSChecker() {
           placeholder="Paste job description here..."
           value={jobDescription}
           onChange={(e) => setJobDescription(e.target.value)}
-          className="min-h-[110px] text-xs bg-slate-950/80 border-slate-800 focus:border-indigo-500 focus:ring-indigo-500/20 text-slate-100 placeholder:text-slate-500"
+          className="min-h-[110px] text-xs bg-slate-900/80 border-white/[0.08] focus:border-cyan-500 focus:ring-cyan-500/20 text-slate-100 placeholder:text-slate-500 rounded-xl"
         />
 
-        <p className="text-[11px] text-slate-400 flex items-center gap-1">
-          <Info className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-          <span>We will check your resume against it in real-time</span>
+        <p className="text-[11px] text-slate-400 flex items-center gap-1.5">
+          <Info className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+          <span>Real-time keyword parity against top enterprise ATS parsers</span>
         </p>
       </div>
 
       {/* Analyzing state */}
       {isAnalyzing && (
-        <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 text-center space-y-2">
-          <Loader2 className="w-5 h-5 text-indigo-400 animate-spin mx-auto" />
+        <div className="p-4 rounded-xl bg-slate-900/60 border border-white/[0.08] text-center space-y-2">
+          <Loader2 className="w-5 h-5 text-cyan-400 animate-spin mx-auto" />
           <p className="text-xs font-medium text-slate-400">Analyzing keywords against job description...</p>
         </div>
       )}
@@ -189,10 +189,10 @@ export function ATSChecker() {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="space-y-6 pt-2 border-t border-slate-800/80"
+          className="space-y-6 pt-2 border-t border-white/[0.08]"
         >
           {/* Match Score Doughnut Circle */}
-          <div className="relative flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-950/80 border border-slate-800/80 shadow-inner">
+          <div className="relative flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-b from-slate-900/80 to-slate-950/90 border border-white/[0.08] shadow-inner">
             <div className="relative w-44 h-44 flex items-center justify-center">
               <Doughnut data={chartData} options={chartOptions} />
 
@@ -204,15 +204,15 @@ export function ATSChecker() {
                   className="text-4xl font-extrabold tracking-tight text-white flex items-baseline gap-0.5"
                 >
                   <span>{atsResult.matchPercentage}</span>
-                  <span className="text-sm font-semibold text-slate-500">%</span>
+                  <span className="text-sm font-semibold text-slate-400">%</span>
                 </motion.div>
-                <span className="text-[11px] font-medium text-slate-400 mt-0.5">
+                <span className="text-[11px] font-semibold text-slate-400 mt-0.5 uppercase tracking-wider">
                   ATS Match
                 </span>
               </div>
             </div>
 
-            <div className={`mt-3 px-3 py-1 rounded-full border text-xs font-semibold ${colorInfo.bg} ${colorInfo.border} ${colorInfo.text}`}>
+            <div className={`mt-3 px-3.5 py-1 rounded-full border text-xs font-bold ${colorInfo.bg} ${colorInfo.border} ${colorInfo.text}`}>
               {colorInfo.label} ({atsResult.matchedKeywords.length}/{atsResult.totalJobKeywords} keywords)
             </div>
           </div>
@@ -222,10 +222,10 @@ export function ATSChecker() {
             <Button
               type="button"
               onClick={handleAddMissingSkillsToStore}
-              className="w-full h-9 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+              className="w-full h-9.5 text-xs bg-gradient-to-r from-cyan-400 to-emerald-400 hover:opacity-90 text-slate-950 font-bold rounded-xl shadow-md shadow-cyan-500/20 transition-all flex items-center justify-center gap-2"
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-              <span>💡 Add these missing skills to your Skills section</span>
+              <Sparkles className="w-3.5 h-3.5 text-slate-950" />
+              <span>Add Missing Skills to Skills Section</span>
             </Button>
           )}
 
@@ -234,7 +234,7 @@ export function ATSChecker() {
             <div className="flex items-center justify-between">
               <h4 className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>✅ Matched Keywords ({atsResult.matchedKeywords.length})</span>
+                <span>Matched Keywords ({atsResult.matchedKeywords.length})</span>
               </h4>
             </div>
             {atsResult.matchedKeywords.length === 0 ? (
@@ -258,9 +258,9 @@ export function ATSChecker() {
             <div className="flex items-center justify-between">
               <h4 className="text-xs font-bold text-rose-400 flex items-center gap-1.5">
                 <XCircle className="w-3.5 h-3.5" />
-                <span>❌ Missing Keywords ({atsResult.missingKeywords.length})</span>
+                <span>Missing Keywords ({atsResult.missingKeywords.length})</span>
               </h4>
-              <span className="text-[10px] text-slate-500">Click to highlight section</span>
+              <span className="text-[10px] text-slate-400 font-medium">Click to highlight section</span>
             </div>
             {atsResult.missingKeywords.length === 0 ? (
               <p className="text-xs text-emerald-400 font-medium">Awesome! No missing keywords.</p>
@@ -287,7 +287,7 @@ export function ATSChecker() {
               <div className="flex items-center justify-between">
                 <h4 className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
                   <AlertTriangle className="w-3.5 h-3.5" />
-                  <span>⚠️ Repeated Keywords ({atsResult.repeatedKeywords.length})</span>
+                  <span>Repeated Keywords ({atsResult.repeatedKeywords.length})</span>
                 </h4>
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -312,7 +312,7 @@ export function ATSChecker() {
       )}
 
       {!isEnoughChars && jobDescription.length > 0 && (
-        <div className="p-3 rounded-lg bg-slate-950/40 border border-slate-800/60 text-center">
+        <div className="p-3.5 rounded-xl bg-slate-900/60 border border-white/[0.08] text-center">
           <p className="text-xs text-slate-400">
             Keep typing or paste at least <span className="font-bold text-slate-200">{50 - charCount} more characters</span> to see full ATS analysis.
           </p>

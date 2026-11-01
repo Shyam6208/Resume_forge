@@ -48,6 +48,7 @@ const FONT_OPTIONS = [
 
 const PRESET_PALETTES = [
   { name: "Slate Corporate", primary: "#1e293b", secondary: "#475569", accent: "#3b82f6" },
+  { name: "Cyan Obsidian", primary: "#0B0F17", secondary: "#1E293B", accent: "#06B6D4" },
   { name: "Emerald Navy", primary: "#0f172a", secondary: "#334155", accent: "#10b981" },
   { name: "Indigo Purple", primary: "#1e1b4b", secondary: "#312e81", accent: "#6366f1" },
   { name: "Rose Charcoal", primary: "#18181b", secondary: "#3f3f46", accent: "#f43f5e" },
@@ -89,13 +90,13 @@ export function ThemeCustomizer() {
     <Sheet open={isCustomizerOpen} onOpenChange={setIsCustomizerOpen}>
       <SheetContent
         side="right"
-        className="w-full sm:max-w-md bg-slate-950 text-slate-100 border-l border-slate-800 p-0 flex flex-col h-full"
+        className="w-full sm:max-w-md bg-[#0B0F17] text-slate-100 border-l border-white/[0.08] p-0 flex flex-col h-full shadow-2xl"
       >
         {/* Header */}
-        <SheetHeader className="p-4 border-b border-slate-800 bg-slate-900/60 flex flex-row items-center justify-between space-y-0">
+        <SheetHeader className="p-4 border-b border-white/[0.08] bg-slate-950/60 flex flex-row items-center justify-between space-y-0">
           <div>
             <SheetTitle className="text-sm font-bold text-white flex items-center gap-2">
-              <Palette className="w-4 h-4 text-indigo-400" />
+              <Palette className="w-4 h-4 text-cyan-400" />
               <span>Theme & Layout Customizer</span>
             </SheetTitle>
             <SheetDescription className="text-[11px] text-slate-400">
@@ -107,7 +108,7 @@ export function ThemeCustomizer() {
             variant="outline"
             size="sm"
             onClick={handleResetTheme}
-            className="h-7 text-[10px] bg-slate-900 border-slate-700 text-slate-300 hover:text-white flex items-center gap-1 shrink-0"
+            className="h-7 text-[10px] bg-white/[0.05] border-white/[0.08] text-slate-300 hover:text-white flex items-center gap-1 shrink-0 rounded-lg"
           >
             <RotateCcw className="w-3 h-3" />
             <span>Reset</span>
@@ -118,15 +119,15 @@ export function ThemeCustomizer() {
         <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-6">
           {/* SECTION 1: Colors */}
           <div className="space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 border-b border-slate-800 pb-1.5">
-              <Palette className="w-3.5 h-3.5 text-indigo-400" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 border-b border-white/[0.08] pb-1.5">
+              <Palette className="w-3.5 h-3.5 text-cyan-400" />
               <span>1. Color Scheme</span>
             </h3>
 
             {/* Quick Palettes */}
             <div className="space-y-1.5">
-              <span className="text-[11px] font-medium text-slate-400">Preset Palettes</span>
-              <div className="grid grid-cols-5 gap-1.5">
+              <span className="text-[11px] font-semibold text-slate-400">Preset Palettes</span>
+              <div className="grid grid-cols-6 gap-1.5">
                 {PRESET_PALETTES.map((p) => (
                   <button
                     key={p.name}
@@ -139,7 +140,7 @@ export function ThemeCustomizer() {
                         accentColor: p.accent,
                       })
                     }
-                    className="p-1 rounded-lg border border-slate-800 hover:border-indigo-500 bg-slate-900 flex items-center justify-center gap-0.5 transition-colors"
+                    className="p-1 rounded-lg border border-white/[0.08] hover:border-cyan-500 bg-slate-900/80 flex items-center justify-center gap-0.5 transition-colors"
                   >
                     <span className="w-2.5 h-5 rounded-l" style={{ backgroundColor: p.primary }} />
                     <span className="w-2.5 h-5" style={{ backgroundColor: p.secondary }} />
@@ -164,7 +165,7 @@ export function ThemeCustomizer() {
                   <Input
                     value={theme.primaryColor}
                     onChange={(e) => updateTheme({ primaryColor: e.target.value })}
-                    className="h-7 text-[10px] font-mono bg-slate-900 border-slate-800 uppercase px-1.5"
+                    className="h-7 text-[10px] font-mono bg-slate-900 border-white/[0.08] uppercase px-1.5 rounded-lg"
                   />
                 </div>
               </div>
@@ -182,7 +183,7 @@ export function ThemeCustomizer() {
                   <Input
                     value={theme.secondaryColor}
                     onChange={(e) => updateTheme({ secondaryColor: e.target.value })}
-                    className="h-7 text-[10px] font-mono bg-slate-900 border-slate-800 uppercase px-1.5"
+                    className="h-7 text-[10px] font-mono bg-slate-900 border-white/[0.08] uppercase px-1.5 rounded-lg"
                   />
                 </div>
               </div>
@@ -200,7 +201,7 @@ export function ThemeCustomizer() {
                   <Input
                     value={theme.accentColor}
                     onChange={(e) => updateTheme({ accentColor: e.target.value })}
-                    className="h-7 text-[10px] font-mono bg-slate-900 border-slate-800 uppercase px-1.5"
+                    className="h-7 text-[10px] font-mono bg-slate-900 border-white/[0.08] uppercase px-1.5 rounded-lg"
                   />
                 </div>
               </div>
@@ -209,8 +210,8 @@ export function ThemeCustomizer() {
 
           {/* SECTION 2: Typography */}
           <div className="space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 border-b border-slate-800 pb-1.5">
-              <Type className="w-3.5 h-3.5 text-indigo-400" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 border-b border-white/[0.08] pb-1.5">
+              <Type className="w-3.5 h-3.5 text-cyan-400" />
               <span>2. Typography</span>
             </h3>
 
@@ -223,10 +224,10 @@ export function ThemeCustomizer() {
                   if (val) updateTheme({ fontFamily: val });
                 }}
               >
-                <SelectTrigger className="h-8 text-xs bg-slate-900 border-slate-800 text-white">
+                <SelectTrigger className="h-8 text-xs bg-slate-900 border-white/[0.08] text-white rounded-xl">
                   <SelectValue placeholder="Select font family" />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-900 border-slate-800 text-slate-200">
+                <SelectContent className="bg-[#0B0F17] border-white/[0.08] text-slate-200">
                   {FONT_OPTIONS.map((f) => (
                     <SelectItem key={f.value} value={f.value} className="text-xs">
                       {f.label}
@@ -240,7 +241,7 @@ export function ThemeCustomizer() {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between text-xs">
                 <Label className="text-slate-300">Base Font Size</Label>
-                <span className="text-[11px] font-semibold text-indigo-400">{theme.fontSize}px</span>
+                <span className="text-[11px] font-bold text-cyan-400">{theme.fontSize}px</span>
               </div>
               <Slider
                 value={[theme.fontSize]}
@@ -258,8 +259,8 @@ export function ThemeCustomizer() {
 
           {/* SECTION 3: Spacing */}
           <div className="space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 border-b border-slate-800 pb-1.5">
-              <MoveVertical className="w-3.5 h-3.5 text-indigo-400" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 border-b border-white/[0.08] pb-1.5">
+              <MoveVertical className="w-3.5 h-3.5 text-cyan-400" />
               <span>3. Spacing & Density</span>
             </h3>
 
@@ -267,7 +268,7 @@ export function ThemeCustomizer() {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between text-xs">
                 <Label className="text-slate-300">Line Height</Label>
-                <span className="text-[11px] font-semibold text-indigo-400">{theme.lineHeight}</span>
+                <span className="text-[11px] font-bold text-cyan-400">{theme.lineHeight}</span>
               </div>
               <Slider
                 value={[theme.lineHeight]}
@@ -286,7 +287,7 @@ export function ThemeCustomizer() {
             <div className="space-y-1.5">
               <div className="flex items-center justify-between text-xs">
                 <Label className="text-slate-300">Section Gap</Label>
-                <span className="text-[11px] font-semibold text-indigo-400">{theme.sectionSpacing}px</span>
+                <span className="text-[11px] font-bold text-cyan-400">{theme.sectionSpacing}px</span>
               </div>
               <Slider
                 value={[theme.sectionSpacing]}
@@ -304,8 +305,8 @@ export function ThemeCustomizer() {
 
           {/* SECTION 4: Layout & Toggles */}
           <div className="space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 border-b border-slate-800 pb-1.5">
-              <Layout className="w-3.5 h-3.5 text-indigo-400" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 border-b border-white/[0.08] pb-1.5">
+              <Layout className="w-3.5 h-3.5 text-cyan-400" />
               <span>4. Layout Options</span>
             </h3>
 
@@ -318,10 +319,10 @@ export function ThemeCustomizer() {
                     key={margin}
                     type="button"
                     onClick={() => updateTheme({ pageMargins: margin })}
-                    className={`py-1.5 px-2 rounded-lg border text-xs font-medium capitalize transition-all ${
+                    className={`py-1.5 px-2 rounded-xl border text-xs font-semibold capitalize transition-all ${
                       theme.pageMargins === margin
-                        ? "bg-indigo-600 border-indigo-500 text-white shadow-xs"
-                        : "bg-slate-900 border-slate-800 text-slate-400 hover:text-white"
+                        ? "bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 font-bold shadow-sm"
+                        : "bg-slate-900 border-white/[0.08] text-slate-400 hover:text-white"
                     }`}
                   >
                     {margin}
@@ -331,10 +332,10 @@ export function ThemeCustomizer() {
             </div>
 
             {/* Show Photo Toggle */}
-            <div className="flex items-center justify-between p-2.5 rounded-lg border border-slate-800 bg-slate-900/60">
+            <div className="flex items-center justify-between p-3 rounded-xl border border-white/[0.08] bg-slate-900/60">
               <div className="space-y-0.5">
                 <Label className="text-xs text-white flex items-center gap-1.5">
-                  <ImageIcon className="w-3.5 h-3.5 text-indigo-400" />
+                  <ImageIcon className="w-3.5 h-3.5 text-cyan-400" />
                   <span>Show Profile Photo</span>
                 </Label>
                 <p className="text-[10px] text-slate-400">Display uploaded photo in resume header</p>
@@ -346,10 +347,10 @@ export function ThemeCustomizer() {
             </div>
 
             {/* Show Icons Toggle */}
-            <div className="flex items-center justify-between p-2.5 rounded-lg border border-slate-800 bg-slate-900/60">
+            <div className="flex items-center justify-between p-3 rounded-xl border border-white/[0.08] bg-slate-900/60">
               <div className="space-y-0.5">
                 <Label className="text-xs text-white flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                  <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
                   <span>Show Section Icons</span>
                 </Label>
                 <p className="text-[10px] text-slate-400">Display icons next to section headings</p>
@@ -363,8 +364,8 @@ export function ThemeCustomizer() {
 
           {/* SECTION 5: Template Switcher Grid */}
           <div className="space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 border-b border-slate-800 pb-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5 border-b border-white/[0.08] pb-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
               <span>5. Mini Template Switcher</span>
             </h3>
 
@@ -378,21 +379,21 @@ export function ThemeCustomizer() {
                     onClick={() => updateTemplateId(tmpl.id, tmpl.templateConfig || null)}
                     className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all group relative overflow-hidden ${
                       isSelected
-                        ? "bg-indigo-950/60 border-indigo-500 ring-1 ring-indigo-500 shadow-md"
-                        : "bg-slate-900/80 border-slate-800 hover:border-slate-700 hover:bg-slate-900"
+                        ? "bg-cyan-500/10 border-cyan-500/60 ring-1 ring-cyan-500 shadow-md"
+                        : "bg-slate-900/80 border-white/[0.08] hover:border-cyan-500/30 hover:bg-slate-900"
                     }`}
                   >
                     {isSelected && (
-                      <span className="absolute top-2 right-2 p-0.5 rounded-full bg-indigo-500 text-white">
+                      <span className="absolute top-2 right-2 p-0.5 rounded-full bg-cyan-500 text-slate-950 font-bold">
                         <Check className="w-3 h-3" />
                       </span>
                     )}
 
                     <div className="space-y-1">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-400">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400">
                         {tmpl.category}
                       </span>
-                      <h4 className="text-xs font-semibold text-white group-hover:text-indigo-300 transition-colors">
+                      <h4 className="text-xs font-semibold text-white group-hover:text-cyan-300 transition-colors">
                         {tmpl.name}
                       </h4>
                     </div>

@@ -60,7 +60,7 @@ export function EditorToolbar() {
 
   const { isSaving, lastSaved } = useAutoSave();
   const { saveResume, isSaving: isManualSaving } = useSaveImportedResume();
-  const { score, level } = useResumeScore();
+  const { score } = useResumeScore();
   const { atsResult } = useATSCheck();
 
   const { isExporting: isExportingPDF, exportPDF } = usePDFExport();
@@ -99,10 +99,10 @@ export function EditorToolbar() {
 
   // Score color helper
   const getScoreColorClass = () => {
-    if (score >= 85) return "bg-emerald-500/20 text-emerald-400 border-emerald-500/40";
-    if (score >= 70) return "bg-blue-500/20 text-blue-400 border-blue-500/40";
-    if (score >= 50) return "bg-amber-500/20 text-amber-400 border-amber-500/40";
-    return "bg-rose-500/20 text-rose-400 border-rose-500/40";
+    if (score >= 85) return "bg-emerald-500/10 text-emerald-400 border-emerald-500/30";
+    if (score >= 70) return "bg-cyan-500/10 text-cyan-400 border-cyan-500/30";
+    if (score >= 50) return "bg-amber-500/10 text-amber-400 border-amber-500/30";
+    return "bg-rose-500/10 text-rose-400 border-rose-500/30";
   };
 
   const handlePDFExport = async () => {
@@ -119,7 +119,7 @@ export function EditorToolbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full h-14 bg-slate-950 border-b border-slate-800 px-2 sm:px-4 flex items-center justify-between text-slate-200 min-w-0">
+    <header className="sticky top-0 z-40 w-full h-14 bg-[#0B0F17]/95 backdrop-blur-xl border-b border-white/[0.08] px-2 sm:px-4 flex items-center justify-between text-slate-200 min-w-0 shadow-lg">
       {/* Left: Home Logo + Back + Title + Save Indicator */}
       <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 flex-1">
         <Link
@@ -127,17 +127,17 @@ export function EditorToolbar() {
           className="flex items-center gap-1.5 group shrink-0"
           title="Go to Home Page"
         >
-          <span className="p-1 rounded-lg bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 font-bold text-xs group-hover:bg-indigo-600/30 transition-colors">
+          <span className="p-1 rounded-lg bg-gradient-to-tr from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30 text-cyan-400 font-extrabold text-xs group-hover:bg-cyan-500/30 transition-colors shadow-xs">
             RF
           </span>
-          <span className="font-extrabold text-sm text-white tracking-tight hidden sm:inline">
+          <span className="font-bold text-sm text-white tracking-tight hidden sm:inline">
             ResumeForge
           </span>
         </Link>
 
         <Link
           href="/dashboard"
-          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors shrink-0"
+          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.05] transition-colors shrink-0"
           title="Back to Dashboard"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -152,23 +152,23 @@ export function EditorToolbar() {
               onBlur={handleTitleSubmit}
               onKeyDown={(e) => e.key === "Enter" && handleTitleSubmit()}
               autoFocus
-              className="h-7 text-xs bg-slate-900 border-slate-700 text-white w-full"
+              className="h-7 text-xs bg-slate-900/90 border-cyan-500/40 text-white w-full focus-visible:ring-cyan-500"
             />
           ) : (
             <button
               type="button"
               onClick={() => setIsEditingTitle(true)}
-              className="group flex items-center gap-1 font-semibold text-xs text-white truncate hover:text-indigo-400 transition-colors min-w-0"
+              className="group flex items-center gap-1 font-semibold text-xs text-white truncate hover:text-cyan-400 transition-colors min-w-0"
             >
               <span className="truncate">{currentResume?.title || "My Resume"}</span>
-              <Edit2 className="w-3 h-3 text-slate-500 group-hover:text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+              <Edit2 className="w-3 h-3 text-slate-500 group-hover:text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
             </button>
           )}
         </div>
 
         {/* Auto Save Status or Save Button — Desktop only */}
         {currentResume?.isTemporary ? (
-          <div className="hidden md:flex items-center border-l border-slate-800 pl-3 shrink-0">
+          <div className="hidden md:flex items-center border-l border-white/[0.08] pl-3 shrink-0">
             <Button
               type="button"
               size="sm"
@@ -181,7 +181,7 @@ export function EditorToolbar() {
                   toast.success("Resume saved successfully!");
                 }
               }}
-              className="h-7 text-[11px] px-3 bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
+              className="h-7 text-[11px] px-3 bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 font-bold hover:opacity-90 transition-all rounded-lg shadow-sm"
             >
               {isManualSaving ? (
                 <>
@@ -194,10 +194,10 @@ export function EditorToolbar() {
             </Button>
           </div>
         ) : (
-          <div className="hidden md:flex items-center gap-1.5 text-[11px] text-slate-400 border-l border-slate-800 pl-3 shrink-0">
+          <div className="hidden md:flex items-center gap-1.5 text-[11px] text-slate-400 border-l border-white/[0.08] pl-3 shrink-0">
             {isSaving ? (
               <>
-                <Loader2 className="w-3 h-3 animate-spin text-indigo-400" />
+                <Loader2 className="w-3 h-3 animate-spin text-cyan-400" />
                 <span>Saving...</span>
               </>
             ) : lastSaved ? (
@@ -217,7 +217,7 @@ export function EditorToolbar() {
         {/* Resume Score Badge — Always visible */}
         <Badge
           variant="outline"
-          className={`text-[10px] sm:text-xs px-1.5 sm:px-2.5 py-0.5 border font-semibold flex items-center gap-1 sm:gap-1.5 ${getScoreColorClass()}`}
+          className={`text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 border font-bold flex items-center gap-1 sm:gap-1.5 rounded-full ${getScoreColorClass()}`}
         >
           <Sparkles className="w-3 h-3 hidden sm:block" />
           <span>{score}</span>
@@ -227,7 +227,7 @@ export function EditorToolbar() {
         {atsResult && (
           <Badge
             variant="outline"
-            className="text-xs px-2 py-0.5 border bg-indigo-500/20 text-indigo-300 border-indigo-500/40 hidden lg:flex items-center gap-1"
+            className="text-xs px-2.5 py-0.5 border bg-cyan-500/10 text-cyan-300 border-cyan-500/30 hidden lg:flex items-center gap-1 rounded-full font-semibold"
           >
             <Target className="w-3 h-3" />
             <span>ATS: {atsResult.matchPercentage}%</span>
@@ -242,11 +242,11 @@ export function EditorToolbar() {
           variant="outline"
           size="sm"
           onClick={() => setIsChatOpen(true)}
-          className="h-8 text-xs bg-indigo-950/50 border-indigo-500/40 text-indigo-300 hover:bg-indigo-600 hover:text-white hidden md:flex items-center gap-1"
+          className="h-8 text-xs bg-cyan-500/10 border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 hover:text-white hidden md:flex items-center gap-1.5 rounded-xl transition-all"
           title="Open AI Chat Assistant"
         >
-          <Bot className="w-3.5 h-3.5 text-amber-400" />
-          <span className="hidden lg:inline">AI Chat</span>
+          <Bot className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="hidden lg:inline font-semibold">AI Chat</span>
         </Button>
 
         {/* AI Tools Dropdown — lg+ */}
@@ -257,35 +257,35 @@ export function EditorToolbar() {
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-8 text-xs bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800 hover:text-white hidden xl:flex items-center gap-1"
+                className="h-8 text-xs bg-white/[0.05] border-white/[0.08] text-slate-200 hover:bg-white/[0.1] hover:text-white hidden xl:flex items-center gap-1.5 rounded-xl transition-all"
               />
             }
           >
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span>AI Tools</span>
+            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="font-semibold">AI Tools</span>
           </PopoverTrigger>
-          <PopoverContent align="end" className="w-48 p-2 bg-slate-900 border-slate-800 text-slate-200 space-y-1">
+          <PopoverContent align="end" className="w-52 p-2 bg-[#0B0F17]/95 border-white/[0.08] backdrop-blur-2xl text-slate-200 space-y-1 rounded-2xl shadow-2xl">
             <button
               type="button"
               onClick={() => setIsCoverLetterOpen(true)}
-              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+              className="w-full text-left p-2 rounded-xl text-xs hover:bg-white/[0.06] flex items-center gap-2 text-slate-200 transition-colors"
             >
-              <FileText className="w-4 h-4 text-indigo-400" />
+              <FileText className="w-4 h-4 text-cyan-400" />
               <span>Cover Letter Generator</span>
             </button>
             <button
               type="button"
               onClick={() => setIsInterviewPrepOpen(true)}
-              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+              className="w-full text-left p-2 rounded-xl text-xs hover:bg-white/[0.06] flex items-center gap-2 text-slate-200 transition-colors"
             >
               <HelpCircle className="w-4 h-4 text-emerald-400" />
               <span>Interview Prep</span>
             </button>
-            <div className="h-px bg-slate-800 my-1" />
+            <div className="h-px bg-white/[0.06] my-1" />
             <button
               type="button"
               onClick={() => setIsAutoTailorOpen(true)}
-              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+              className="w-full text-left p-2 rounded-xl text-xs hover:bg-white/[0.06] flex items-center gap-2 text-slate-200 transition-colors"
             >
               <Zap className="w-4 h-4 text-amber-400" />
               <span>Auto-Tailor (JD)</span>
@@ -293,15 +293,15 @@ export function EditorToolbar() {
             <button
               type="button"
               onClick={() => setIsOutreachOpen(true)}
-              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+              className="w-full text-left p-2 rounded-xl text-xs hover:bg-white/[0.06] flex items-center gap-2 text-slate-200 transition-colors"
             >
-              <Send className="w-4 h-4 text-blue-400" />
+              <Send className="w-4 h-4 text-cyan-400" />
               <span>Recruiter Outreach</span>
             </button>
             <button
               type="button"
               onClick={() => setIsSalaryRoadmapOpen(true)}
-              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+              className="w-full text-left p-2 rounded-xl text-xs hover:bg-white/[0.06] flex items-center gap-2 text-slate-200 transition-colors"
             >
               <TrendingUp className="w-4 h-4 text-emerald-400" />
               <span>Salary & Roadmap</span>
@@ -309,9 +309,9 @@ export function EditorToolbar() {
             <button
               type="button"
               onClick={() => setIsSharePortfolioOpen(true)}
-              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+              className="w-full text-left p-2 rounded-xl text-xs hover:bg-white/[0.06] flex items-center gap-2 text-slate-200 transition-colors"
             >
-              <Globe className="w-4 h-4 text-cyan-400" />
+              <Globe className="w-4 h-4 text-teal-400" />
               <span>Share Portfolio</span>
             </button>
           </PopoverContent>
@@ -323,10 +323,10 @@ export function EditorToolbar() {
           variant="outline"
           size="sm"
           onClick={() => setIsCustomizerOpen(true)}
-          className="h-8 text-xs bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800 hover:text-white hidden md:flex items-center gap-1"
+          className="h-8 text-xs bg-white/[0.05] border-white/[0.08] text-slate-200 hover:bg-white/[0.1] hover:text-white hidden md:flex items-center gap-1.5 rounded-xl transition-all"
         >
-          <SlidersHorizontal className="w-3.5 h-3.5 text-indigo-400" />
-          <span className="hidden lg:inline">Customize</span>
+          <SlidersHorizontal className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="hidden lg:inline font-semibold">Customize</span>
         </Button>
 
         {/* Template Switcher — md+ */}
@@ -337,15 +337,15 @@ export function EditorToolbar() {
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-8 text-xs bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800 hover:text-white hidden md:flex items-center gap-1"
+                className="h-8 text-xs bg-white/[0.05] border-white/[0.08] text-slate-200 hover:bg-white/[0.1] hover:text-white hidden md:flex items-center gap-1.5 rounded-xl transition-all"
               />
             }
           >
-            <Palette className="w-3.5 h-3.5 text-indigo-400" />
-            <span className="hidden lg:inline">Templates</span>
+            <Palette className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="hidden lg:inline font-semibold">Templates</span>
           </PopoverTrigger>
-          <PopoverContent align="end" className="w-[min(16rem,calc(100vw-2rem))] p-3 bg-slate-900 border-slate-800 text-slate-200 space-y-2">
-            <h4 className="text-xs font-bold text-white border-b border-slate-800 pb-1.5">
+          <PopoverContent align="end" className="w-[min(16rem,calc(100vw-2rem))] p-3 bg-[#0B0F17]/95 border-white/[0.08] backdrop-blur-2xl text-slate-200 space-y-2 rounded-2xl shadow-2xl">
+            <h4 className="text-xs font-bold text-white border-b border-white/[0.08] pb-1.5">
               Select Resume Template
             </h4>
             <div className="space-y-1 max-h-60 overflow-y-auto">
@@ -354,14 +354,14 @@ export function EditorToolbar() {
                   key={tmpl.id}
                   type="button"
                   onClick={() => updateTemplateId(tmpl.id, tmpl.templateConfig || null)}
-                  className={`w-full text-left p-2 rounded-lg text-xs flex items-center justify-between transition-colors ${
+                  className={`w-full text-left p-2 rounded-xl text-xs flex items-center justify-between transition-all ${
                     currentResume?.templateId === tmpl.id
-                      ? "bg-indigo-600 text-white font-medium"
-                      : "hover:bg-slate-800 text-slate-300"
+                      ? "bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 font-bold shadow-sm"
+                      : "hover:bg-white/[0.06] text-slate-300"
                   }`}
                 >
                   <span>{tmpl.name}</span>
-                  <span className="text-[10px] opacity-70">ATS {tmpl.atsRating}%</span>
+                  <span className="text-[10px] opacity-75">ATS {tmpl.atsRating}%</span>
                 </button>
               ))}
             </div>
@@ -383,11 +383,11 @@ export function EditorToolbar() {
               toast.success("Plain text resume downloaded!");
             }
           }}
-          className="h-8 text-xs bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800 hover:text-white hidden xl:flex items-center gap-1.5"
+          className="h-8 text-xs bg-white/[0.05] border-white/[0.08] text-slate-200 hover:bg-white/[0.1] hover:text-white hidden xl:flex items-center gap-1.5 rounded-xl transition-all"
           title="Download clean plain-text / ASCII version for job portals"
         >
           <FileText className="w-3.5 h-3.5 text-cyan-400" />
-          <span>TXT</span>
+          <span className="font-semibold">TXT</span>
         </Button>
 
         {/* Export DOCX — lg+ */}
@@ -397,14 +397,14 @@ export function EditorToolbar() {
           size="sm"
           disabled={isExportingDOCX || isManualSaving}
           onClick={() => exportDOCX()}
-          className="h-8 text-xs bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800 hover:text-white hidden lg:flex items-center gap-1.5"
+          className="h-8 text-xs bg-white/[0.05] border-white/[0.08] text-slate-200 hover:bg-white/[0.1] hover:text-white hidden lg:flex items-center gap-1.5 rounded-xl transition-all"
         >
           {isExportingDOCX ? (
             <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-400" />
           ) : (
             <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
           )}
-          <span>{isExportingDOCX ? "DOCX..." : "DOCX"}</span>
+          <span className="font-semibold">{isExportingDOCX ? "DOCX..." : "DOCX"}</span>
         </Button>
 
         {/* === MOBILE/TABLET OVERFLOW MENU (below md) === */}
@@ -415,13 +415,13 @@ export function EditorToolbar() {
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-8 w-8 p-0 bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800 hover:text-white md:hidden flex items-center justify-center"
+                className="h-8 w-8 p-0 bg-white/[0.05] border-white/[0.08] text-slate-200 hover:bg-white/[0.1] hover:text-white md:hidden flex items-center justify-center rounded-xl"
               />
             }
           >
             <MoreVertical className="w-4 h-4" />
           </PopoverTrigger>
-          <PopoverContent align="end" className="w-[min(220px,calc(100vw-2rem))] p-2 bg-slate-900 border-slate-800 text-slate-200 space-y-1">
+          <PopoverContent align="end" className="w-[min(220px,calc(100vw-2rem))] p-2 bg-[#0B0F17]/95 border-white/[0.08] backdrop-blur-2xl text-slate-200 space-y-1 rounded-2xl shadow-2xl">
             {/* Save status on mobile */}
             {currentResume?.isTemporary ? (
               <button
@@ -433,7 +433,7 @@ export function EditorToolbar() {
                   if (success) toast.success("Resume saved successfully!");
                 }}
                 disabled={isManualSaving}
-                className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+                className="w-full text-left p-2 rounded-xl text-xs hover:bg-white/[0.06] flex items-center gap-2 text-slate-200"
               >
                 <Save className="w-4 h-4 text-emerald-400 shrink-0" />
                 <span>{isManualSaving ? "Saving..." : "Save to My Resumes"}</span>
@@ -442,7 +442,7 @@ export function EditorToolbar() {
               <div className="flex items-center gap-2 p-2 text-xs text-slate-400">
                 {isSaving ? (
                   <>
-                    <Loader2 className="w-3 h-3 animate-spin text-indigo-400" />
+                    <Loader2 className="w-3 h-3 animate-spin text-cyan-400" />
                     <span>Saving...</span>
                   </>
                 ) : lastSaved ? (
@@ -456,28 +456,28 @@ export function EditorToolbar() {
               </div>
             )}
 
-            <div className="h-px bg-slate-800 my-1" />
+            <div className="h-px bg-white/[0.06] my-1" />
 
             <button
               type="button"
               onClick={() => setIsChatOpen(true)}
-              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+              className="w-full text-left p-2 rounded-xl text-xs hover:bg-white/[0.06] flex items-center gap-2 text-slate-200"
             >
-              <Bot className="w-4 h-4 text-amber-400 shrink-0" />
+              <Bot className="w-4 h-4 text-cyan-400 shrink-0" />
               <span>AI Chat</span>
             </button>
             <button
               type="button"
               onClick={() => setIsCoverLetterOpen(true)}
-              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+              className="w-full text-left p-2 rounded-xl text-xs hover:bg-white/[0.06] flex items-center gap-2 text-slate-200"
             >
-              <FileText className="w-4 h-4 text-indigo-400 shrink-0" />
+              <FileText className="w-4 h-4 text-cyan-400 shrink-0" />
               <span>Cover Letter Generator</span>
             </button>
             <button
               type="button"
               onClick={() => setIsInterviewPrepOpen(true)}
-              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+              className="w-full text-left p-2 rounded-xl text-xs hover:bg-white/[0.06] flex items-center gap-2 text-slate-200"
             >
               <HelpCircle className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>Interview Prep</span>
@@ -485,7 +485,7 @@ export function EditorToolbar() {
             <button
               type="button"
               onClick={() => setIsAutoTailorOpen(true)}
-              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+              className="w-full text-left p-2 rounded-xl text-xs hover:bg-white/[0.06] flex items-center gap-2 text-slate-200"
             >
               <Zap className="w-4 h-4 text-amber-400 shrink-0" />
               <span>Auto-Tailor (JD)</span>
@@ -493,15 +493,15 @@ export function EditorToolbar() {
             <button
               type="button"
               onClick={() => setIsOutreachOpen(true)}
-              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+              className="w-full text-left p-2 rounded-xl text-xs hover:bg-white/[0.06] flex items-center gap-2 text-slate-200"
             >
-              <Send className="w-4 h-4 text-blue-400 shrink-0" />
+              <Send className="w-4 h-4 text-cyan-400 shrink-0" />
               <span>Recruiter Outreach</span>
             </button>
             <button
               type="button"
               onClick={() => setIsSalaryRoadmapOpen(true)}
-              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+              className="w-full text-left p-2 rounded-xl text-xs hover:bg-white/[0.06] flex items-center gap-2 text-slate-200"
             >
               <TrendingUp className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>Salary & Roadmap</span>
@@ -509,24 +509,24 @@ export function EditorToolbar() {
             <button
               type="button"
               onClick={() => setIsSharePortfolioOpen(true)}
-              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+              className="w-full text-left p-2 rounded-xl text-xs hover:bg-white/[0.06] flex items-center gap-2 text-slate-200"
             >
-              <Globe className="w-4 h-4 text-cyan-400 shrink-0" />
+              <Globe className="w-4 h-4 text-teal-400 shrink-0" />
               <span>Share Portfolio</span>
             </button>
 
-            <div className="h-px bg-slate-800 my-1" />
+            <div className="h-px bg-white/[0.06] my-1" />
 
             <button
               type="button"
               onClick={() => setIsCustomizerOpen(true)}
-              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+              className="w-full text-left p-2 rounded-xl text-xs hover:bg-white/[0.06] flex items-center gap-2 text-slate-200"
             >
-              <SlidersHorizontal className="w-4 h-4 text-indigo-400 shrink-0" />
+              <SlidersHorizontal className="w-4 h-4 text-cyan-400 shrink-0" />
               <span>Customize Theme</span>
             </button>
 
-            <div className="h-px bg-slate-800 my-1" />
+            <div className="h-px bg-white/[0.06] my-1" />
 
             <button
               type="button"
@@ -540,7 +540,7 @@ export function EditorToolbar() {
                   toast.success("Plain text resume downloaded!");
                 }
               }}
-              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+              className="w-full text-left p-2 rounded-xl text-xs hover:bg-white/[0.06] flex items-center gap-2 text-slate-200"
             >
               <FileText className="w-4 h-4 text-cyan-400 shrink-0" />
               <span>Download Plain Text (.txt)</span>
@@ -550,7 +550,7 @@ export function EditorToolbar() {
               type="button"
               disabled={isExportingDOCX || isManualSaving}
               onClick={() => exportDOCX()}
-              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200 disabled:opacity-50"
+              className="w-full text-left p-2 rounded-xl text-xs hover:bg-white/[0.06] flex items-center gap-2 text-slate-200 disabled:opacity-50"
             >
               <FileSpreadsheet className="w-4 h-4 text-emerald-400 shrink-0" />
               <span>{isExportingDOCX ? "Exporting DOCX..." : "Download DOCX"}</span>
@@ -562,9 +562,9 @@ export function EditorToolbar() {
                 toast("Opening instant PDF / Print dialog...", { icon: "🖨️", duration: 1500 });
                 setTimeout(() => window.print(), 150);
               }}
-              className="w-full text-left p-2 rounded-lg text-xs hover:bg-slate-800 flex items-center gap-2 text-slate-200"
+              className="w-full text-left p-2 rounded-xl text-xs hover:bg-white/[0.06] flex items-center gap-2 text-slate-200"
             >
-              <Printer className="w-4 h-4 text-indigo-400 shrink-0" />
+              <Printer className="w-4 h-4 text-cyan-400 shrink-0" />
               <span>Quick Print / Instant PDF</span>
             </button>
           </PopoverContent>
@@ -576,10 +576,10 @@ export function EditorToolbar() {
           size="sm"
           disabled={isExportingPDF || isManualSaving}
           onClick={handlePDFExport}
-          className="h-8 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-sm flex items-center gap-1 sm:gap-1.5"
+          className="h-8 text-xs bg-gradient-to-r from-cyan-400 to-emerald-400 hover:opacity-90 text-slate-950 font-bold rounded-xl shadow-md shadow-cyan-500/20 flex items-center gap-1 sm:gap-1.5 transition-all active:scale-95"
         >
           {isExportingPDF || (isManualSaving && currentResume?.isTemporary) ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+            <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-950" />
           ) : (
             <Download className="w-3.5 h-3.5" />
           )}

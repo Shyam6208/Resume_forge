@@ -2,7 +2,7 @@
 
 import { CldUploadWidget, CloudinaryUploadWidgetResults } from "next-cloudinary";
 import { useResumeStore } from "@/store/resume.store";
-import { Camera, Trash2, Upload, User } from "lucide-react";
+import { Camera, Trash2, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 
@@ -75,17 +75,20 @@ export function PhotoUpload({
   };
 
   return (
-    <div className="flex items-center gap-4 p-3 bg-slate-900/90 border border-slate-800/80 rounded-xl">
+    <div className="flex items-center gap-4 p-3.5 bg-card/70 border border-white/[0.08] rounded-2xl shadow-sm backdrop-blur-md">
       {/* Circular Avatar Preview (80x80) */}
-      <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-slate-800 shadow-xs bg-slate-950 shrink-0 flex items-center justify-center">
+      <div className="relative w-20 h-20 rounded-2xl overflow-hidden border border-white/[0.12] shadow-md bg-card shrink-0 flex items-center justify-center group">
         {photoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={photoUrl}
             alt="Profile Preview"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <User className="w-8 h-8 text-slate-500" />
+          <div className="flex flex-col items-center justify-center text-muted-foreground">
+            <User className="w-8 h-8 opacity-60" />
+          </div>
         )}
       </div>
 
@@ -110,7 +113,7 @@ export function PhotoUpload({
                 type="button"
                 size="sm"
                 onClick={() => open()}
-                className="h-8 text-xs bg-slate-900 hover:bg-slate-800 text-white flex items-center gap-1.5"
+                className="h-8 text-xs bg-gradient-to-r from-cyan-500 to-emerald-400 hover:from-cyan-400 hover:to-emerald-300 text-slate-950 font-bold rounded-xl shadow-md shadow-cyan-500/20 flex items-center gap-1.5 transition-all"
               >
                 <Camera className="w-3.5 h-3.5" />
                 <span>{photoUrl ? "Change Photo" : "Upload Photo"}</span>
@@ -124,7 +127,7 @@ export function PhotoUpload({
               variant="outline"
               size="sm"
               onClick={handleRemove}
-              className="h-8 text-xs text-destructive border-destructive/30 hover:bg-destructive/10 flex items-center gap-1"
+              className="h-8 text-xs text-rose-400 border-rose-500/20 bg-rose-500/10 hover:bg-rose-500/20 hover:text-rose-300 rounded-xl flex items-center gap-1 transition-colors"
             >
               <Trash2 className="w-3.5 h-3.5" />
               <span>Remove</span>
@@ -132,8 +135,8 @@ export function PhotoUpload({
           )}
         </div>
 
-        <p className="text-[11px] text-slate-500">
-          JPG, PNG, WEBP • Max file size 2MB
+        <p className="text-[11px] text-muted-foreground">
+          JPG, PNG, WEBP • Recommended square aspect ratio • Max 2MB
         </p>
       </div>
     </div>

@@ -99,7 +99,7 @@ export function ChangePreviewPanel({
       label: "Professional Summary",
       before: result.summary.current || "(empty)",
       after: result.summary.suggested,
-      reason: result.summary.reason,
+      reason: result.summary.reason || "Optimized for role relevance and key accomplishments",
       keyChanges: ["Optimized for target role keywords", "Enhanced professional tone"],
     });
   }
@@ -130,23 +130,23 @@ export function ChangePreviewPanel({
 
   const pendingCount = sections.filter((s) => sectionStatuses[s.key] === "pending").length;
 
-  const getStatusBadge = (status: SectionStatus | undefined) => {
+  const getStatusBadge = (status?: SectionStatus) => {
     switch (status) {
       case "accepted":
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+          <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
             Accepted
           </span>
         );
       case "rejected":
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-rose-500/15 text-rose-400 border border-rose-500/30">
+          <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-rose-500/15 text-rose-300 border border-rose-500/30">
             Rejected
           </span>
         );
       default:
         return (
-          <span className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-500/15 text-amber-400 border border-amber-500/30">
+          <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
             Pending
           </span>
         );
@@ -160,9 +160,9 @@ export function ChangePreviewPanel({
         <button
           type="button"
           onClick={onBack}
-          className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-white transition-colors"
+          className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
         >
-          <ArrowLeft className="w-3 h-3" />
+          <ArrowLeft className="w-3.5 h-3.5" />
           <span>Back</span>
         </button>
 
@@ -173,7 +173,7 @@ export function ChangePreviewPanel({
             size="sm"
             disabled={!canUndo}
             onClick={onUndo}
-            className="h-7 w-7 p-0 text-slate-400 hover:text-white disabled:opacity-30"
+            className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground disabled:opacity-30 rounded-lg"
             title="Undo"
           >
             <Undo2 className="w-3.5 h-3.5" />
@@ -184,7 +184,7 @@ export function ChangePreviewPanel({
             size="sm"
             disabled={!canRedo}
             onClick={onRedo}
-            className="h-7 w-7 p-0 text-slate-400 hover:text-white disabled:opacity-30"
+            className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground disabled:opacity-30 rounded-lg"
             title="Redo"
           >
             <Redo2 className="w-3.5 h-3.5" />
@@ -195,20 +195,20 @@ export function ChangePreviewPanel({
               variant="ghost"
               size="sm"
               onClick={onRestoreOriginal}
-              className="h-7 px-2 text-[10px] text-slate-400 hover:text-rose-400"
+              className="h-7 px-2 text-[10px] text-muted-foreground hover:text-rose-400 rounded-lg"
               title="Restore Original Resume"
             >
               <RotateCcw className="w-3 h-3 mr-1" />
-              Restore
+              <span>Restore</span>
             </Button>
           )}
         </div>
       </div>
 
-      <h3 className="text-xs font-bold text-white">Review Changes</h3>
+      <h3 className="text-xs font-bold text-foreground">Review Changes</h3>
 
       {/* Section Cards */}
-      <div className="space-y-2">
+      <div className="space-y-2.5">
         {sections.map((section) => {
           const status = sectionStatuses[section.key];
           const isExpanded = expandedSections.has(section.key);
@@ -217,42 +217,42 @@ export function ChangePreviewPanel({
           return (
             <div
               key={section.key}
-              className="rounded-xl border border-slate-800 bg-slate-950/60 overflow-hidden"
+              className="rounded-2xl border border-white/[0.08] bg-card/70 overflow-hidden backdrop-blur-md shadow-xs transition-all"
             >
               {/* Section Header */}
               <button
                 type="button"
                 onClick={() => toggleExpanded(section.key)}
-                className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-slate-800/40 transition-colors"
+                className="w-full flex items-center justify-between px-3.5 py-3 hover:bg-white/[0.04] transition-colors"
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-xs font-semibold text-white truncate">{section.label}</span>
+                  <span className="text-xs font-semibold text-foreground truncate">{section.label}</span>
                   {getStatusBadge(status)}
                 </div>
                 {isExpanded ? (
-                  <ChevronUp className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                  <ChevronUp className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                 ) : (
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                  <ChevronDown className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                 )}
               </button>
 
               {/* Expanded Content */}
               {isExpanded && (
-                <div className="px-3 pb-3 space-y-3 border-t border-slate-800/60">
+                <div className="px-3.5 pb-3.5 space-y-3 border-t border-white/[0.06]">
                   {/* Reason */}
-                  <p className="text-[10px] text-slate-400 pt-2">{section.reason}</p>
+                  <p className="text-[11px] text-muted-foreground pt-2.5">{section.reason}</p>
 
                   {/* Before / After */}
                   <div className="space-y-2">
-                    <div className="p-2.5 rounded-lg bg-rose-500/5 border border-rose-500/15">
+                    <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20">
                       <p className="text-[10px] font-bold text-rose-400 mb-1">BEFORE</p>
-                      <p className="text-[11px] text-slate-300 whitespace-pre-wrap leading-relaxed line-clamp-6">
+                      <p className="text-[11px] text-foreground/90 whitespace-pre-wrap leading-relaxed line-clamp-6">
                         {section.before || "(empty)"}
                       </p>
                     </div>
-                    <div className="p-2.5 rounded-lg bg-emerald-500/5 border border-emerald-500/15">
+                    <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
                       <p className="text-[10px] font-bold text-emerald-400 mb-1">AFTER</p>
-                      <p className="text-[11px] text-slate-300 whitespace-pre-wrap leading-relaxed line-clamp-6">
+                      <p className="text-[11px] text-foreground/90 whitespace-pre-wrap leading-relaxed line-clamp-6">
                         {section.after}
                       </p>
                     </div>
@@ -262,8 +262,8 @@ export function ChangePreviewPanel({
                   {section.keyChanges.length > 0 && (
                     <div className="space-y-1">
                       {section.keyChanges.map((change, i) => (
-                        <p key={i} className="text-[10px] text-slate-400 flex items-start gap-1">
-                          <span className="text-indigo-400 shrink-0">•</span>
+                        <p key={i} className="text-[11px] text-muted-foreground flex items-start gap-1.5">
+                          <span className="text-cyan-400 font-bold shrink-0">•</span>
                           <span>{change}</span>
                         </p>
                       ))}
@@ -272,25 +272,25 @@ export function ChangePreviewPanel({
 
                   {/* Accept/Reject Buttons */}
                   {isPending && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 pt-1">
                       <Button
                         type="button"
                         size="sm"
                         onClick={() => onAcceptSection(section.key)}
-                        className="h-7 text-[11px] bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg flex items-center gap-1"
+                        className="h-7 text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-lg flex items-center gap-1 shadow-xs"
                       >
                         <CheckCircle2 className="w-3 h-3" />
-                        Accept
+                        <span>Accept</span>
                       </Button>
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
                         onClick={() => onRejectSection(section.key)}
-                        className="h-7 text-[11px] border-slate-700 text-slate-300 hover:bg-rose-500/10 hover:text-rose-400 hover:border-rose-500/30 rounded-lg flex items-center gap-1"
+                        className="h-7 text-xs border-white/[0.08] text-muted-foreground hover:bg-rose-500/10 hover:text-rose-400 hover:border-rose-500/30 rounded-lg flex items-center gap-1"
                       >
                         <XCircle className="w-3 h-3" />
-                        Reject
+                        <span>Reject</span>
                       </Button>
                     </div>
                   )}
@@ -302,7 +302,7 @@ export function ChangePreviewPanel({
       </div>
 
       {sections.length === 0 && (
-        <p className="text-xs text-slate-500 text-center py-4">No changes to review</p>
+        <p className="text-xs text-muted-foreground text-center py-4">No changes to review</p>
       )}
 
       {/* Apply All */}
@@ -310,7 +310,7 @@ export function ChangePreviewPanel({
         <Button
           type="button"
           onClick={onApplyAll}
-          className="w-full h-9 text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl flex items-center justify-center gap-2"
+          className="w-full h-9 text-xs font-extrabold bg-gradient-to-r from-cyan-500 to-emerald-400 hover:from-cyan-400 hover:to-emerald-300 text-slate-950 rounded-xl flex items-center justify-center gap-2 shadow-md shadow-cyan-500/20"
         >
           <CheckCheck className="w-3.5 h-3.5" />
           <span>Apply All Pending ({pendingCount})</span>

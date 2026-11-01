@@ -136,16 +136,16 @@ export function AutoTailorModal({ isOpen, onClose }: AutoTailorModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-slate-950 border-slate-800 text-slate-200">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-[#0B0F17]/95 border-white/[0.08] backdrop-blur-2xl text-slate-100 shadow-2xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl">
-            <div className="p-1.5 rounded-lg bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/30">
-              <Zap className="w-5 h-5 text-amber-400" />
+          <DialogTitle className="flex items-center gap-2.5 text-xl font-bold tracking-tight text-white">
+            <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400">
+              <Zap className="w-5 h-5" />
             </div>
-            1-Click Auto-Tailor
+            1-Click ATS Auto-Tailor
           </DialogTitle>
-          <DialogDescription className="text-slate-400">
-            Paste a Job Description and let AI optimize your resume with ATS keywords
+          <DialogDescription className="text-slate-400 text-xs">
+            Paste a Job Description and let AI optimize your resume with missing ATS keywords
           </DialogDescription>
         </DialogHeader>
 
@@ -156,24 +156,24 @@ export function AutoTailorModal({ isOpen, onClose }: AutoTailorModalProps) {
               value={jd}
               onChange={(e) => setJd(e.target.value)}
               placeholder="Paste the full Job Description here..."
-              className="min-h-[200px] bg-slate-900 border-slate-700 text-slate-200 placeholder:text-slate-500 text-sm"
+              className="min-h-[200px] bg-slate-900/80 border-white/[0.08] focus:border-cyan-500 focus:ring-cyan-500/20 text-slate-100 placeholder:text-slate-500 text-xs rounded-xl"
             />
             <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-slate-400">
                 {jd.length} characters {jd.length < 30 ? "(min 30)" : "✓"}
               </span>
               <Button
                 onClick={handleGenerate}
                 disabled={isLoading || jd.trim().length < 30}
-                className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-bold px-6"
+                className="bg-gradient-to-r from-cyan-400 to-emerald-400 hover:opacity-90 text-slate-950 font-bold px-6 rounded-xl shadow-md shadow-cyan-500/20 transition-all active:scale-95 disabled:opacity-50"
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Tailoring...
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin text-slate-950" /> Tailoring...
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-4 h-4 mr-2" /> Auto-Tailor Resume
+                    <Sparkles className="w-4 h-4 mr-2 text-slate-950" /> Auto-Tailor Resume
                   </>
                 )}
               </Button>
@@ -185,39 +185,39 @@ export function AutoTailorModal({ isOpen, onClose }: AutoTailorModalProps) {
         {result && (
           <div className="space-y-5 mt-4">
             {/* ATS Score Comparison */}
-            <div className="bg-gradient-to-r from-indigo-950/50 to-purple-950/50 rounded-xl p-5 border border-indigo-500/20">
+            <div className="bg-slate-900/60 rounded-2xl p-5 border border-white/[0.08] shadow-inner">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-bold text-white">ATS Score Impact</h3>
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl font-extrabold text-rose-400">{result.atsScoreBefore}%</span>
-                  <ArrowRight className="w-5 h-5 text-slate-500" />
-                  <span className="text-2xl font-extrabold text-emerald-400">{result.atsScoreAfter}%</span>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">ATS Score Impact</h3>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-xl font-bold text-rose-400">{result.atsScoreBefore}%</span>
+                  <ArrowRight className="w-4 h-4 text-slate-500" />
+                  <span className="text-2xl font-black text-emerald-400">{result.atsScoreAfter}%</span>
                 </div>
               </div>
-              <div className="relative h-3 bg-slate-800 rounded-full overflow-hidden">
+              <div className="relative h-2.5 bg-slate-800 rounded-full overflow-hidden">
                 <div
                   className="absolute inset-y-0 left-0 bg-gradient-to-r from-rose-500 to-amber-500 rounded-full transition-all duration-1000"
                   style={{ width: `${result.atsScoreBefore}%` }}
                 />
                 <div
-                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full transition-all duration-1000 delay-500"
-                  style={{ width: `${result.atsScoreAfter}%`, opacity: 0.8 }}
+                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-cyan-400 to-emerald-400 rounded-full transition-all duration-1000 delay-500"
+                  style={{ width: `${result.atsScoreAfter}%`, opacity: 0.9 }}
                 />
               </div>
-              <p className="text-xs text-indigo-300 mt-2">
+              <p className="text-xs text-cyan-300 mt-2 font-medium">
                 +{result.atsScoreAfter - result.atsScoreBefore} point increase with {result.keywordInjections?.length || 0} keyword optimizations
               </p>
             </div>
 
             {/* Keywords Injected */}
             {result.keywordInjections && result.keywordInjections.length > 0 && (
-              <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                <h3 className="text-xs font-bold text-white mb-2 flex items-center gap-1.5">
+              <div className="bg-slate-900/40 rounded-2xl p-4 border border-white/[0.06]">
+                <h3 className="text-xs font-bold text-slate-300 mb-2 flex items-center gap-1.5">
                   <Target className="w-3.5 h-3.5 text-emerald-400" /> Keywords Injected
                 </h3>
                 <div className="flex flex-wrap gap-1.5">
                   {result.keywordInjections.map((kw, i) => (
-                    <span key={i} className="px-2 py-0.5 text-[11px] bg-emerald-500/10 text-emerald-300 rounded-full border border-emerald-500/20 font-medium">
+                    <span key={i} className="px-2.5 py-0.5 text-[11px] bg-emerald-500/10 text-emerald-300 rounded-full border border-emerald-500/20 font-medium">
                       {kw}
                     </span>
                   ))}
@@ -272,8 +272,8 @@ export function AutoTailorModal({ isOpen, onClose }: AutoTailorModalProps) {
 
             {/* Changes Summary */}
             {result.changesSummary && result.changesSummary.length > 0 && (
-              <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                <h3 className="text-xs font-bold text-white mb-2">Changes Summary</h3>
+              <div className="bg-slate-900/40 rounded-2xl p-4 border border-white/[0.06]">
+                <h3 className="text-xs font-bold text-slate-300 mb-2">Changes Summary</h3>
                 <ul className="space-y-1">
                   {result.changesSummary.map((change, i) => (
                     <li key={i} className="text-xs text-slate-400 flex items-start gap-2">
@@ -289,7 +289,7 @@ export function AutoTailorModal({ isOpen, onClose }: AutoTailorModalProps) {
             <div className="flex gap-3 pt-2">
               <Button
                 onClick={applyAll}
-                className="flex-1 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-black font-bold"
+                className="flex-1 bg-gradient-to-r from-cyan-400 to-emerald-400 hover:opacity-90 text-slate-950 font-bold rounded-xl shadow-md shadow-cyan-500/20 transition-all"
               >
                 <CheckCircle2 className="w-4 h-4 mr-2" /> Apply All Changes
               </Button>
@@ -299,7 +299,7 @@ export function AutoTailorModal({ isOpen, onClose }: AutoTailorModalProps) {
                   setAppliedSections({});
                 }}
                 variant="outline"
-                className="bg-slate-900 border-slate-700 text-slate-300"
+                className="bg-white/[0.05] border-white/[0.08] text-slate-300 hover:text-white rounded-xl"
               >
                 Reset
               </Button>
@@ -342,15 +342,15 @@ function DiffSection({
   };
 
   return (
-    <div className="bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+    <div className="bg-slate-900/60 rounded-2xl border border-white/[0.08] overflow-hidden">
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between p-4 text-left hover:bg-white/5 transition-colors"
+        className="w-full flex items-center justify-between p-4 text-left hover:bg-white/[0.04] transition-colors"
       >
         <span className="text-sm font-semibold text-white">{title}</span>
         <div className="flex items-center gap-2">
           {keywords && keywords.length > 0 && (
-            <span className="text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+            <span className="text-[10px] text-cyan-300 bg-cyan-500/10 border border-cyan-500/20 px-2 py-0.5 rounded-full font-medium">
               +{keywords.length} keywords
             </span>
           )}
@@ -363,13 +363,13 @@ function DiffSection({
           <div className="grid grid-cols-2 gap-3">
             <div>
               <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider">Before</span>
-              <div className="mt-1 p-3 bg-rose-500/5 border border-rose-500/10 rounded-lg text-xs text-slate-400 whitespace-pre-wrap max-h-40 overflow-y-auto">
+              <div className="mt-1 p-3 bg-rose-500/5 border border-rose-500/15 rounded-xl text-xs text-slate-400 whitespace-pre-wrap max-h-40 overflow-y-auto">
                 {original || "—"}
               </div>
             </div>
             <div>
               <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">After</span>
-              <div className="mt-1 p-3 bg-emerald-500/5 border border-emerald-500/10 rounded-lg text-xs text-slate-300 whitespace-pre-wrap max-h-40 overflow-y-auto">
+              <div className="mt-1 p-3 bg-emerald-500/5 border border-emerald-500/15 rounded-xl text-xs text-slate-200 whitespace-pre-wrap max-h-40 overflow-y-auto">
                 {tailored || "—"}
               </div>
             </div>
@@ -379,7 +379,7 @@ function DiffSection({
               onClick={handleCopy}
               className="text-xs text-slate-400 hover:text-white flex items-center gap-1 transition-colors"
             >
-              {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
               {copied ? "Copied!" : "Copy tailored text"}
             </button>
             {onApply && (
@@ -387,10 +387,10 @@ function DiffSection({
                 onClick={onApply}
                 size="sm"
                 disabled={applied}
-                className={`ml-auto text-xs ${applied ? "bg-emerald-900 text-emerald-300" : "bg-emerald-600 hover:bg-emerald-500 text-white"}`}
+                className={`ml-auto text-xs font-semibold rounded-xl ${applied ? "bg-emerald-950/60 text-emerald-300 border border-emerald-500/30" : "bg-emerald-600 hover:bg-emerald-500 text-white"}`}
               >
                 {applied ? (
-                  <><CheckCircle2 className="w-3 h-3 mr-1" /> Applied</>
+                  <><CheckCircle2 className="w-3.5 h-3.5 mr-1 text-emerald-400" /> Applied</>
                 ) : (
                   <>{applyLabel || "Apply"}</>
                 )}

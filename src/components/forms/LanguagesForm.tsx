@@ -72,17 +72,22 @@ export function LanguagesForm() {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between border-b pb-2">
-        <div>
-          <h3 className="text-base font-bold text-white">Languages</h3>
-          <p className="text-xs text-slate-400">Add languages you speak and your proficiency level</p>
+    <div className="space-y-5">
+      <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-emerald-500/20 text-cyan-400 border border-cyan-500/30 shadow-md shadow-cyan-500/10">
+            <Languages className="w-4 h-4 text-cyan-400" />
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-foreground">Languages</h3>
+            <p className="text-xs text-muted-foreground">Add languages you speak and your proficiency level</p>
+          </div>
         </div>
         <Button
           type="button"
           size="sm"
           onClick={() => addEntry()}
-          className="flex items-center gap-1 bg-indigo-600 hover:bg-indigo-500 text-white text-xs"
+          className="bg-gradient-to-r from-cyan-500 to-emerald-400 hover:from-cyan-400 hover:to-emerald-300 text-slate-950 font-extrabold text-xs rounded-xl shadow-md shadow-cyan-500/20 flex items-center gap-1.5 transition-all"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>Add Language</span>
@@ -90,14 +95,31 @@ export function LanguagesForm() {
       </div>
 
       {fields.length === 0 ? (
-        <div className="text-center py-6 border border-dashed border-slate-800 rounded-lg bg-slate-900/40">
-          <Languages className="w-8 h-8 text-slate-500 mx-auto mb-2" />
-          <p className="text-xs text-slate-400 font-medium">No languages added yet</p>
-          <div className="flex justify-center gap-2 mt-2">
-            <Button type="button" variant="outline" size="sm" onClick={() => addEntry("English", "native")} className="text-xs border-slate-700 bg-slate-800 hover:bg-slate-700 text-white">
+        <div className="text-center py-10 border border-dashed border-white/[0.1] rounded-2xl bg-card/40 space-y-3">
+          <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-white/[0.08] text-muted-foreground flex items-center justify-center mx-auto">
+            <Languages className="w-6 h-6 text-muted-foreground" />
+          </div>
+          <div className="space-y-1">
+            <p className="text-xs text-foreground font-semibold">No languages added yet</p>
+            <p className="text-[11px] text-muted-foreground">Select one of the presets or add custom languages.</p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-2 pt-1">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => addEntry("English", "native")}
+              className="text-xs border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.08] text-foreground rounded-xl"
+            >
               + English (Native)
             </Button>
-            <Button type="button" variant="outline" size="sm" onClick={() => addEntry("Spanish", "intermediate")} className="text-xs border-slate-700 bg-slate-800 hover:bg-slate-700 text-white">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => addEntry("Spanish", "intermediate")}
+              className="text-xs border-white/[0.08] bg-white/[0.04] hover:bg-white/[0.08] text-foreground rounded-xl"
+            >
               + Spanish (Intermediate)
             </Button>
           </div>
@@ -109,15 +131,22 @@ export function LanguagesForm() {
             const dots = PROFICIENCY_DOTS[currentLevel] || 3;
 
             return (
-              <div key={field.id} className="p-3 border border-slate-800 rounded-xl bg-slate-900/90 flex items-center justify-between gap-3 shadow-xs">
-                <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
-                  <div className="space-y-1">
-                    <Label className="text-xs">Language Name *</Label>
-                    <Input placeholder="English / French / Spanish" {...register(`entries.${index}.name`)} />
+              <div
+                key={field.id}
+                className="p-4 border border-white/[0.08] hover:border-white/[0.12] rounded-2xl bg-card/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm backdrop-blur-md transition-all"
+              >
+                <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3.5 items-center">
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-foreground">Language Name *</Label>
+                    <Input
+                      placeholder="English / French / Spanish"
+                      {...register(`entries.${index}.name`)}
+                      className="bg-card/80 border-white/[0.08] text-foreground focus-visible:ring-1 focus-visible:ring-cyan-500/50 rounded-xl"
+                    />
                   </div>
 
-                  <div className="space-y-1">
-                    <Label className="text-xs">Proficiency Level *</Label>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs font-semibold text-foreground">Proficiency Level *</Label>
                     <Select
                       value={currentLevel}
                       onValueChange={(val) => {
@@ -126,10 +155,10 @@ export function LanguagesForm() {
                         }
                       }}
                     >
-                      <SelectTrigger className="h-9 text-xs">
+                      <SelectTrigger className="h-9 text-xs bg-card/80 border-white/[0.08] text-foreground focus:ring-1 focus:ring-cyan-500/50 rounded-xl">
                         <SelectValue placeholder="Select level" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-card border-white/[0.08] text-foreground rounded-xl">
                         <SelectItem value="beginner">Beginner (Basic)</SelectItem>
                         <SelectItem value="intermediate">Intermediate (Conversational)</SelectItem>
                         <SelectItem value="advanced">Advanced (Fluent)</SelectItem>
@@ -139,27 +168,32 @@ export function LanguagesForm() {
                   </div>
                 </div>
 
-                {/* Dots preview */}
-                <div className="flex items-center gap-1 shrink-0 pt-4">
-                  {[1, 2, 3, 4, 5].map((d) => (
-                    <div
-                      key={d}
-                      className={`w-2 h-2 rounded-full ${
-                        d <= dots ? "bg-indigo-600" : "bg-slate-200"
-                      }`}
-                    />
-                  ))}
-                </div>
+                {/* Dots preview & Actions */}
+                <div className="flex items-center justify-between sm:justify-end gap-3 pt-1 sm:pt-4">
+                  <div className="flex items-center gap-1 shrink-0" title={`Level: ${dots}/5`}>
+                    {[1, 2, 3, 4, 5].map((d) => (
+                      <div
+                        key={d}
+                        className={`w-2 h-2 rounded-full transition-all ${
+                          d <= dots
+                            ? "bg-gradient-to-r from-cyan-400 to-emerald-400 shadow-xs shadow-cyan-400/50"
+                            : "bg-white/[0.12]"
+                        }`}
+                      />
+                    ))}
+                  </div>
 
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => remove(index)}
-                  className="h-8 w-8 p-0 text-xs text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0 mt-4"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => remove(index)}
+                    className="h-8 w-8 p-0 text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition-colors shrink-0"
+                    title="Remove Language"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
               </div>
             );
           })}

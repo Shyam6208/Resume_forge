@@ -35,7 +35,7 @@ interface InterviewPrepModalProps {
 const getCategoryBadgeClass = (category: string) => {
   switch (category.toLowerCase()) {
     case "technical":
-      return "bg-indigo-500/15 text-indigo-300 border-indigo-500/30";
+      return "bg-cyan-500/15 text-cyan-300 border-cyan-500/30";
     case "behavioral":
       return "bg-purple-500/15 text-purple-300 border-purple-500/30";
     case "resume":
@@ -46,13 +46,13 @@ const getCategoryBadgeClass = (category: string) => {
     case "project deep dive":
       return "bg-cyan-500/15 text-cyan-300 border-cyan-500/30";
     default:
-      return "bg-slate-700/30 text-slate-300 border-slate-600/30";
+      return "bg-white/[0.06] text-muted-foreground border-white/[0.08]";
   }
 };
 
 const getScoreBadge = (score: number) => {
   if (score >= 85) return { label: "Excellent", color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/30" };
-  if (score >= 70) return { label: "Strong", color: "text-indigo-400", bg: "bg-indigo-500/10 border-indigo-500/30" };
+  if (score >= 70) return { label: "Strong", color: "text-cyan-400", bg: "bg-cyan-500/10 border-cyan-500/30" };
   if (score >= 50) return { label: "Developing", color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/30" };
   return { label: "Needs Improvement", color: "text-rose-400", bg: "bg-rose-500/10 border-rose-500/30" };
 };
@@ -486,28 +486,28 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="w-[95vw] max-w-4xl bg-slate-950 border-slate-800 text-slate-100 p-0 overflow-hidden shadow-2xl rounded-3xl max-h-[92vh] flex flex-col">
+      <DialogContent className="w-[95vw] max-w-4xl bg-card/95 border-white/[0.08] text-foreground backdrop-blur-2xl p-0 overflow-hidden shadow-2xl shadow-cyan-950/20 rounded-3xl max-h-[92vh] flex flex-col">
         {/* ═══════════════════════════════════════════════════════════════
             Header with Glowing Gradient Accent
             ═══════════════════════════════════════════════════════════════ */}
-        <div className="relative p-5 sm:p-6 bg-gradient-to-b from-indigo-950/40 via-slate-900/60 to-transparent border-b border-slate-800/80">
+        <div className="relative p-5 sm:p-6 bg-gradient-to-b from-cyan-950/20 via-card to-transparent border-b border-white/[0.08]">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3.5">
-              <div className="relative p-3 rounded-2xl bg-gradient-to-br from-indigo-600/30 to-violet-600/30 border border-indigo-500/30 shadow-lg shadow-indigo-600/20 shrink-0">
-                <Sparkles className="w-6 h-6 text-indigo-400" />
+              <div className="relative p-3 rounded-2xl bg-gradient-to-tr from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30 shadow-lg shadow-cyan-500/20 shrink-0">
+                <Sparkles className="w-6 h-6 text-cyan-400" />
                 <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping" />
                 <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full" />
               </div>
               <DialogHeader className="gap-1 text-left">
-                <DialogTitle className="text-lg sm:text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+                <DialogTitle className="text-lg sm:text-xl font-extrabold text-foreground tracking-tight flex items-center gap-2">
                   <span>AI Interview Mastery Suite</span>
-                  <Badge variant="outline" className="text-[10px] px-2 py-0.5 bg-indigo-500/10 text-indigo-300 border-indigo-500/30 font-bold uppercase tracking-wider">
+                  <Badge variant="outline" className="text-[10px] px-2 py-0.5 bg-cyan-500/10 text-cyan-300 border-cyan-500/30 font-bold uppercase tracking-wider">
                     PRO
                   </Badge>
                 </DialogTitle>
-                <DialogDescription className="text-xs text-slate-400 flex items-center gap-1.5">
+                <DialogDescription className="text-xs text-muted-foreground flex items-center gap-1.5">
                   <span>Target Role:</span>
-                  <span className="font-semibold text-indigo-300 bg-indigo-500/10 px-2 py-0.5 rounded-md border border-indigo-500/20">
+                  <span className="font-semibold text-cyan-300 bg-cyan-500/10 px-2 py-0.5 rounded-md border border-cyan-500/20">
                     {targetJob}
                   </span>
                 </DialogDescription>
@@ -515,14 +515,14 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
             </div>
 
             {/* Mode Switcher Tabs */}
-            <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-900/90 border border-slate-800 self-start sm:self-auto">
+            <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-card/80 border border-white/[0.08] self-start sm:self-auto">
               <button
                 type="button"
                 onClick={() => setActiveTab("bank")}
                 className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
                   activeTab === "bank"
-                    ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-600/30"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? "bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 font-extrabold shadow-md shadow-cyan-500/20"
+                    : "text-muted-foreground hover:text-foreground hover:bg-white/[0.04]"
                 }`}
               >
                 <BookOpen className="w-3.5 h-3.5" />
@@ -534,8 +534,8 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                 onClick={() => setActiveTab("mock")}
                 className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
                   activeTab === "mock"
-                    ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-600/30"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? "bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 font-extrabold shadow-md shadow-cyan-500/20"
+                    : "text-muted-foreground hover:text-foreground hover:bg-white/[0.04]"
                 }`}
               >
                 <Mic className="w-3.5 h-3.5 text-emerald-400" />
@@ -552,8 +552,8 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                 }}
                 className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
                   activeTab === "scorecard"
-                    ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-600/30"
-                    : "text-slate-400 hover:text-slate-200"
+                    ? "bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 font-extrabold shadow-md shadow-cyan-500/20"
+                    : "text-muted-foreground hover:text-foreground hover:bg-white/[0.04]"
                 }`}
               >
                 <Trophy className="w-3.5 h-3.5 text-amber-400" />
@@ -570,13 +570,13 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
           {/* Loading State */}
           {isGenerating && (
             <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
-              <div className="relative p-5 rounded-3xl bg-indigo-600/10 border border-indigo-500/20">
-                <Loader2 className="w-10 h-10 animate-spin text-indigo-400" />
+              <div className="relative p-5 rounded-3xl bg-cyan-500/10 border border-cyan-500/20 shadow-lg shadow-cyan-500/10">
+                <Loader2 className="w-10 h-10 animate-spin text-cyan-400" />
                 <Sparkles className="w-5 h-5 text-amber-300 absolute -top-1 -right-1 animate-bounce" />
               </div>
               <div className="space-y-1 max-w-sm">
-                <h3 className="text-base font-bold text-white">Analyzing Resume & Target Role...</h3>
-                <p className="text-xs text-slate-400">
+                <h3 className="text-base font-bold text-foreground">Analyzing Resume & Target Role...</h3>
+                <p className="text-xs text-muted-foreground">
                   Synthesizing tailored Technical, STAR Behavioral, and Project deep-dive questions based on your experience.
                 </p>
               </div>
@@ -589,7 +589,7 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
           {!isGenerating && activeTab === "bank" && (
             <div className="space-y-5">
               {/* Category Pills & Search Bar */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-900/60 p-2 rounded-2xl border border-slate-800/80">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-card/80 p-2.5 rounded-2xl border border-white/[0.08]">
                 <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
                   {["All", "Technical", "Behavioral", "Resume", "Job-Specific"].map((cat) => (
                     <button
@@ -598,8 +598,8 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                       onClick={() => setActiveCategory(cat)}
                       className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                         activeCategory.toLowerCase() === cat.toLowerCase()
-                          ? "bg-indigo-600 text-white shadow-sm"
-                          : "bg-slate-800/60 text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+                          ? "bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 font-extrabold shadow-md shadow-cyan-500/20"
+                          : "bg-white/[0.04] text-muted-foreground hover:text-foreground hover:bg-white/[0.08]"
                       }`}
                     >
                       {cat}
@@ -609,13 +609,13 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
 
                 <div className="flex items-center gap-2">
                   <div className="relative flex-1 sm:w-48">
-                    <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                    <Search className="w-3.5 h-3.5 text-muted-foreground absolute left-2.5 top-1/2 -translate-y-1/2" />
                     <input
                       type="text"
                       placeholder="Search questions..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-950/80 border border-slate-800 rounded-xl text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500"
+                      className="w-full pl-8 pr-3 py-1.5 text-xs bg-card border border-white/[0.08] rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-hidden focus:border-cyan-500/60"
                     />
                   </div>
                   <Button
@@ -623,9 +623,9 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                     variant="outline"
                     size="sm"
                     onClick={() => handleGenerate(true)}
-                    className="h-8 text-xs bg-slate-950 border-slate-800 text-slate-300 hover:text-white"
+                    className="h-8 text-xs bg-white/[0.04] border-white/[0.08] text-foreground hover:bg-white/[0.08] rounded-xl"
                   >
-                    <RotateCcw className="w-3 h-3 mr-1 text-indigo-400" />
+                    <RotateCcw className="w-3 h-3 mr-1 text-cyan-400" />
                     <span>Regenerate</span>
                   </Button>
                 </div>
@@ -633,9 +633,9 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
 
               {/* Questions List */}
               {filteredQuestions.length === 0 ? (
-                <div className="p-8 rounded-2xl bg-slate-900/40 border border-slate-800 text-center space-y-3">
-                  <HelpCircle className="w-8 h-8 text-slate-500 mx-auto" />
-                  <p className="text-xs text-slate-400">No questions found matching your filter criteria.</p>
+                <div className="p-8 rounded-2xl bg-card/50 border border-white/[0.08] text-center space-y-3">
+                  <HelpCircle className="w-8 h-8 text-muted-foreground mx-auto" />
+                  <p className="text-xs text-muted-foreground">No questions found matching your filter criteria.</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -645,7 +645,7 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.04 }}
-                      className="p-5 rounded-2xl bg-slate-900/70 border border-slate-800/80 space-y-4 hover:border-slate-700 transition-all shadow-md group"
+                      className="p-5 rounded-2xl bg-card/70 border border-white/[0.08] space-y-4 hover:border-cyan-500/30 transition-all shadow-md group"
                     >
                       {/* Top Meta Bar */}
                       <div className="flex items-center justify-between gap-2">
@@ -653,7 +653,7 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                           <span className={`px-2.5 py-0.5 rounded-md text-[11px] font-bold border ${getCategoryBadgeClass(q.category)}`}>
                             {q.category}
                           </span>
-                          <span className="text-[11px] font-mono text-slate-500">Question #{idx + 1}</span>
+                          <span className="text-[11px] font-mono text-muted-foreground">Question #{idx + 1}</span>
                         </div>
 
                         <button
@@ -667,32 +667,32 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                       </div>
 
                       {/* Question Text */}
-                      <h4 className="text-sm sm:text-base font-bold text-white leading-snug">
+                      <h4 className="text-sm sm:text-base font-bold text-foreground leading-snug">
                         {q.question}
                       </h4>
 
                       {/* Why Recruiter Asks This */}
-                      <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800/80 space-y-1">
+                      <div className="p-3 rounded-xl bg-card/90 border border-white/[0.06] space-y-1">
                         <div className="flex items-center gap-1.5 text-amber-400">
                           <Lightbulb className="w-3.5 h-3.5" />
                           <span className="text-[11px] font-bold uppercase tracking-wider">Recruiter Mindset & Intent</span>
                         </div>
-                        <p className="text-xs text-slate-300 leading-relaxed pl-5">
+                        <p className="text-xs text-muted-foreground leading-relaxed pl-5">
                           {q.whyAsked}
                         </p>
                       </div>
 
                       {/* Suggested Answer Framework (STAR) */}
-                      <div className="p-3.5 rounded-xl bg-indigo-950/20 border border-indigo-500/20 space-y-2">
+                      <div className="p-3.5 rounded-xl bg-cyan-950/20 border border-cyan-500/20 space-y-2">
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-1.5 text-indigo-300 font-bold text-xs">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400" />
+                          <div className="flex items-center gap-1.5 text-cyan-300 font-bold text-xs">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400" />
                             <span>STAR Framework & Key Talking Points</span>
                           </div>
                           <button
                             type="button"
                             onClick={() => handleCopyAnswer(q.answerGuide?.join("\n• ") || "", idx)}
-                            className="flex items-center gap-1 text-[10px] font-semibold text-slate-400 hover:text-white bg-slate-900 px-2 py-0.5 rounded-md border border-slate-800 transition-colors"
+                            className="flex items-center gap-1 text-[10px] font-semibold text-muted-foreground hover:text-foreground bg-card px-2 py-0.5 rounded-md border border-white/[0.08] transition-colors"
                           >
                             {copiedIndex === idx ? (
                               <>
@@ -707,7 +707,7 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                             )}
                           </button>
                         </div>
-                        <ul className="text-xs text-slate-200 space-y-1.5 pl-5 list-disc leading-relaxed">
+                        <ul className="text-xs text-foreground/90 space-y-1.5 pl-5 list-disc leading-relaxed">
                           {q.answerGuide?.map((point, pIdx) => (
                             <li key={pIdx}>{point}</li>
                           ))}
@@ -727,32 +727,32 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
             <div className="space-y-6">
               {/* Stepper Progress Bar */}
               <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs font-semibold text-slate-400">
-                  <span className="flex items-center gap-1.5 text-indigo-400">
+                <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground">
+                  <span className="flex items-center gap-1.5 text-cyan-400">
                     <Zap className="w-3.5 h-3.5" />
                     <span>Question {mockIndex + 1} of {prepResult?.questions?.length || 5}</span>
                   </span>
                   <span>{Math.round(((mockIndex + 1) / (prepResult?.questions?.length || 1)) * 100)}% Complete</span>
                 </div>
-                <div className="h-2 w-full bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+                <div className="h-2 w-full bg-card rounded-full overflow-hidden border border-white/[0.08]">
                   <div
-                    className="h-full bg-gradient-to-r from-indigo-500 via-violet-500 to-emerald-500 transition-all duration-500"
+                    className="h-full bg-gradient-to-r from-cyan-500 via-emerald-400 to-emerald-500 transition-all duration-500"
                     style={{ width: `${((mockIndex + 1) / (prepResult?.questions?.length || 1)) * 100}%` }}
                   />
                 </div>
               </div>
 
               {/* Interviewer Persona Card */}
-              <div className="p-5 rounded-2xl bg-gradient-to-br from-slate-900/90 to-indigo-950/30 border border-slate-800 shadow-xl space-y-4">
+              <div className="p-5 rounded-2xl bg-gradient-to-br from-cyan-950/20 via-card to-emerald-950/10 border border-white/[0.08] shadow-xl space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white font-bold text-sm shadow-md">
+                    <div className="relative w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-emerald-400 flex items-center justify-center text-slate-950 font-black text-sm shadow-md shadow-cyan-500/20">
                       AI
-                      <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-slate-900" />
+                      <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-background animate-pulse" />
                     </div>
                     <div>
-                      <h4 className="text-xs font-bold text-white">AI Technical Interviewer</h4>
-                      <p className="text-[10px] text-slate-400">Evaluating for {targetJob}</p>
+                      <h4 className="text-xs font-bold text-foreground">AI Technical Interviewer</h4>
+                      <p className="text-[10px] text-muted-foreground">Evaluating for {targetJob}</p>
                     </div>
                   </div>
 
@@ -761,20 +761,20 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                   </span>
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
-                  <p className="text-xs font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
+                <div className="p-4 rounded-xl bg-card/90 border border-white/[0.06] space-y-2">
+                  <p className="text-xs font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
                     <Volume2 className="w-3.5 h-3.5" />
                     <span>Interviewer Asks:</span>
                   </p>
-                  <h3 className="text-base sm:text-lg font-bold text-white leading-relaxed">
+                  <h3 className="text-base sm:text-lg font-bold text-foreground leading-relaxed">
                     &ldquo;{currentMockQuestion.question}&rdquo;
                   </h3>
                 </div>
               </div>
 
               {/* Interactive Response Console */}
-              <div className="p-5 rounded-2xl bg-slate-900/70 border border-slate-800 space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+              <div className="p-5 rounded-2xl bg-card/70 border border-white/[0.08] space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-3">
                   <div className="flex items-center gap-2">
                     {/* Live Voice Microphone Button */}
                     <button
@@ -782,8 +782,8 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                       onClick={toggleVoiceRecording}
                       className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shadow-md ${
                         isListening
-                          ? "bg-rose-600 text-white animate-pulse shadow-rose-600/30"
-                          : "bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 hover:bg-emerald-600/30"
+                          ? "bg-rose-500 text-white animate-pulse shadow-rose-500/30"
+                          : "bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 hover:bg-emerald-500/20"
                       }`}
                     >
                       {isListening ? (
@@ -801,7 +801,7 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
 
                     {/* Animated Audio Wave when listening */}
                     {isListening && (
-                      <div className="flex items-center gap-1 px-2 py-1 bg-rose-950/50 border border-rose-500/30 rounded-lg">
+                      <div className="flex items-center gap-1 px-2.5 py-1 bg-rose-500/10 border border-rose-500/20 rounded-lg">
                         <span className="w-1 h-3 bg-rose-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
                         <span className="w-1 h-4 bg-rose-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
                         <span className="w-1 h-2 bg-rose-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
@@ -815,16 +815,16 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                     <div className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-mono font-bold border ${
                       timerSeconds < 30 
                         ? "bg-rose-500/10 text-rose-400 border-rose-500/30 animate-pulse" 
-                        : "bg-slate-950 text-slate-300 border-slate-800"
+                        : "bg-card text-muted-foreground border-white/[0.08]"
                     }`}>
-                      <Clock className="w-3.5 h-3.5 text-slate-400" />
+                      <Clock className="w-3.5 h-3.5 text-muted-foreground" />
                       <span>{Math.floor(timerSeconds / 60)}:{String(timerSeconds % 60).padStart(2, "0")}</span>
                     </div>
 
                     <button
                       type="button"
                       onClick={() => setIsTimerRunning(!isTimerRunning)}
-                      className="p-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-400 hover:text-white"
+                      className="p-1.5 rounded-lg bg-card border border-white/[0.08] text-muted-foreground hover:text-foreground"
                       title={isTimerRunning ? "Pause Timer" : "Start Timer"}
                     >
                       {isTimerRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
@@ -836,7 +836,7 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                         setTimerSeconds(120);
                         setIsTimerRunning(false);
                       }}
-                      className="p-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-400 hover:text-white"
+                      className="p-1.5 rounded-lg bg-card border border-white/[0.08] text-muted-foreground hover:text-foreground"
                       title="Reset Timer"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
@@ -845,8 +845,8 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                 </div>
 
                 {/* STAR Method Helper Chips */}
-                <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-400">
-                  <span className="text-[10px] font-bold text-slate-500 mr-1">Insert STAR Scaffold:</span>
+                <div className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+                  <span className="text-[10px] font-bold text-muted-foreground mr-1">Insert STAR Scaffold:</span>
                   {[
                     { label: "+ Situation", snippet: "\n[Situation]: In my previous role at... " },
                     { label: "+ Task", snippet: "\n[Task]: I was responsible for... " },
@@ -857,7 +857,7 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                       key={cIdx}
                       type="button"
                       onClick={() => setUserAnswer((prev) => prev + chip.snippet)}
-                      className="px-2 py-0.5 rounded-md bg-slate-950 hover:bg-slate-800 text-[10px] font-semibold text-indigo-300 border border-slate-800 hover:border-indigo-500/50 transition-colors"
+                      className="px-2.5 py-1 rounded-lg bg-card hover:bg-white/[0.08] text-[10px] font-semibold text-cyan-300 border border-white/[0.08] hover:border-cyan-500/40 transition-colors"
                     >
                       {chip.label}
                     </button>
@@ -870,7 +870,7 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                   value={userAnswer}
                   onChange={(e) => setUserAnswer(e.target.value)}
                   placeholder="Type your response here or click 'Speak Answer' to speak using your microphone..."
-                  className="w-full p-4 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 placeholder:text-slate-500 text-xs sm:text-sm leading-relaxed focus:outline-none focus:border-indigo-500 resize-y"
+                  className="w-full p-4 rounded-xl bg-card border border-white/[0.08] text-foreground placeholder:text-muted-foreground text-xs sm:text-sm leading-relaxed focus:outline-hidden focus:border-cyan-500/60 resize-y"
                 />
 
                 {/* Submit & Navigation Bar */}
@@ -887,7 +887,7 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                         }
                       }}
                       disabled={mockIndex === 0}
-                      className="h-9 text-xs bg-slate-950 border-slate-800 text-slate-400 hover:text-white disabled:opacity-30"
+                      className="h-9 text-xs bg-white/[0.04] border-white/[0.08] text-muted-foreground hover:text-foreground disabled:opacity-30 rounded-xl"
                     >
                       <ArrowLeft className="w-3.5 h-3.5 mr-1" />
                       <span>Previous</span>
@@ -898,7 +898,7 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                       variant="outline"
                       size="sm"
                       onClick={handleNextMockQuestion}
-                      className="h-9 text-xs bg-slate-950 border-slate-800 text-slate-400 hover:text-white"
+                      className="h-9 text-xs bg-white/[0.04] border-white/[0.08] text-muted-foreground hover:text-foreground rounded-xl"
                     >
                       <span>Skip / Next</span>
                       <ArrowRight className="w-3.5 h-3.5 ml-1" />
@@ -909,7 +909,7 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                     type="button"
                     disabled={isEvaluating || !userAnswer.trim()}
                     onClick={handleEvaluateMockAnswer}
-                    className="w-full sm:w-auto h-10 text-xs sm:text-sm bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto h-10 text-xs sm:text-sm bg-gradient-to-r from-cyan-500 to-emerald-400 hover:from-cyan-400 hover:to-emerald-300 text-slate-950 font-extrabold rounded-xl shadow-md shadow-cyan-500/20 flex items-center justify-center gap-2 transition-all"
                   >
                     {isEvaluating ? (
                       <>
@@ -918,7 +918,7 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                       </>
                     ) : (
                       <>
-                        <Sparkles className="w-4 h-4 text-amber-300" />
+                        <Sparkles className="w-4 h-4 text-slate-950" />
                         <span>Submit Answer for AI Review</span>
                       </>
                     )}
@@ -935,32 +935,32 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 15 }}
-                    className="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-slate-900 via-indigo-950/20 to-slate-900 border border-indigo-500/30 shadow-2xl space-y-5"
+                    className="p-5 sm:p-6 rounded-2xl bg-gradient-to-br from-card via-cyan-950/10 to-card border border-cyan-500/30 shadow-2xl space-y-5"
                   >
                     {/* Score Bar */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-slate-950/80 border border-slate-800">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-card/90 border border-white/[0.08]">
                       <div className="flex items-center gap-3.5">
-                        <div className="relative w-14 h-14 rounded-2xl bg-slate-900 border border-indigo-500/30 flex flex-col items-center justify-center">
+                        <div className="relative w-14 h-14 rounded-2xl bg-card border border-cyan-500/30 flex flex-col items-center justify-center shadow-inner">
                           <span className={`text-xl font-extrabold ${getScoreBadge(currentMockEval.score).color}`}>
                             {currentMockEval.score}
                           </span>
-                          <span className="text-[9px] text-slate-500 uppercase font-bold">/ 100</span>
+                          <span className="text-[9px] text-muted-foreground uppercase font-bold">/ 100</span>
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
                             <span className={`px-2 py-0.5 rounded-md text-xs font-bold border ${getScoreBadge(currentMockEval.score).bg} ${getScoreBadge(currentMockEval.score).color}`}>
                               {getScoreBadge(currentMockEval.score).label}
                             </span>
-                            <span className="text-xs font-bold text-white">AI Evaluation Summary</span>
+                            <span className="text-xs font-bold text-foreground">AI Evaluation Summary</span>
                           </div>
-                          <p className="text-xs text-slate-400 mt-0.5">Scored based on relevance, STAR structure, and technical depth.</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">Scored based on relevance, STAR structure, and technical depth.</p>
                         </div>
                       </div>
 
                       <Button
                         type="button"
                         onClick={handleNextMockQuestion}
-                        className="h-9 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-md"
+                        className="h-9 text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold rounded-xl shadow-md"
                       >
                         <span>Next Question</span>
                         <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
@@ -969,12 +969,12 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Strengths */}
-                      <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2.5">
+                      <div className="p-4 rounded-xl bg-card/90 border border-white/[0.06] space-y-2.5">
                         <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
                           <CheckCircle2 className="w-4 h-4" />
                           <span>What You Did Great</span>
                         </div>
-                        <ul className="text-xs text-slate-300 space-y-1.5 pl-4 list-disc leading-relaxed">
+                        <ul className="text-xs text-foreground/90 space-y-1.5 pl-4 list-disc leading-relaxed">
                           {currentMockEval.strengths?.map((s, sIdx) => (
                             <li key={sIdx}>{s}</li>
                           ))}
@@ -982,12 +982,12 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                       </div>
 
                       {/* Improvements */}
-                      <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2.5">
+                      <div className="p-4 rounded-xl bg-card/90 border border-white/[0.06] space-y-2.5">
                         <div className="flex items-center gap-2 text-amber-400 text-xs font-bold uppercase tracking-wider">
                           <Lightbulb className="w-4 h-4" />
                           <span>How to Level Up</span>
                         </div>
-                        <ul className="text-xs text-slate-300 space-y-1.5 pl-4 list-disc leading-relaxed">
+                        <ul className="text-xs text-foreground/90 space-y-1.5 pl-4 list-disc leading-relaxed">
                           {currentMockEval.improvements?.map((imp, iIdx) => (
                             <li key={iIdx}>{imp}</li>
                           ))}
@@ -998,8 +998,8 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                     {/* Missing Elements / Unsupported Claims */}
                     {((currentMockEval.missingElements && currentMockEval.missingElements.length > 0) ||
                       (currentMockEval.unsupportedClaims && currentMockEval.unsupportedClaims.length > 0)) && (
-                      <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 space-y-2">
-                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                      <div className="p-4 rounded-xl bg-card/90 border border-white/[0.06] space-y-2">
+                        <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider block">
                           Missing Keywords & Verification Signals:
                         </span>
                         <div className="flex flex-wrap gap-1.5">
@@ -1019,12 +1019,12 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
 
                     {/* Follow-Up Question Probing */}
                     {currentMockEval.followUpQuestion && (
-                      <div className="p-4 rounded-xl bg-indigo-950/30 border border-indigo-500/30 space-y-2">
-                        <div className="flex items-center gap-2 text-indigo-300 text-xs font-bold uppercase">
-                          <MessageSquare className="w-4 h-4 text-indigo-400" />
+                      <div className="p-4 rounded-xl bg-cyan-950/20 border border-cyan-500/20 space-y-2">
+                        <div className="flex items-center gap-2 text-cyan-300 text-xs font-bold uppercase">
+                          <MessageSquare className="w-4 h-4 text-cyan-400" />
                           <span>Interviewer Follow-Up Probe:</span>
                         </div>
-                        <p className="text-xs sm:text-sm font-semibold text-white pl-6 leading-relaxed">
+                        <p className="text-xs sm:text-sm font-semibold text-foreground pl-6 leading-relaxed">
                           &ldquo;{currentMockEval.followUpQuestion}&rdquo;
                         </p>
                       </div>
@@ -1042,31 +1042,31 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
             <div className="space-y-6">
               {isGeneratingReport ? (
                 <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
-                  <Loader2 className="w-10 h-10 animate-spin text-indigo-400" />
-                  <p className="text-xs text-slate-400">Compiling your comprehensive Interview Readiness Scorecard...</p>
+                  <Loader2 className="w-10 h-10 animate-spin text-cyan-400" />
+                  <p className="text-xs text-muted-foreground">Compiling your comprehensive Interview Readiness Scorecard...</p>
                 </div>
               ) : readinessReport ? (
                 <div className="space-y-6">
                   {/* Hero Readiness Banner */}
-                  <div className="p-6 rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-900 to-violet-950 border border-indigo-500/30 shadow-2xl space-y-4 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-6">
+                  <div className="p-6 rounded-3xl bg-gradient-to-br from-cyan-950/40 via-card to-emerald-950/30 border border-cyan-500/30 shadow-2xl space-y-4 text-center sm:text-left flex flex-col sm:flex-row items-center justify-between gap-6">
                     <div className="space-y-1.5">
                       <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
                         <Trophy className="w-3.5 h-3.5" />
                         <span>Mock Interview Completed</span>
                       </div>
-                      <h3 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+                      <h3 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">
                         Overall Interview Readiness Score
                       </h3>
-                      <p className="text-xs text-slate-300 max-w-md">
+                      <p className="text-xs text-muted-foreground max-w-md">
                         Based on your answered responses, STAR structure, and role alignment for {targetJob}.
                       </p>
                     </div>
 
-                    <div className="relative p-6 rounded-3xl bg-slate-950/80 border border-indigo-500/30 shadow-inner flex flex-col items-center justify-center shrink-0">
-                      <span className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-indigo-300 to-violet-400">
+                    <div className="relative p-6 rounded-3xl bg-card border border-cyan-500/30 shadow-inner flex flex-col items-center justify-center shrink-0">
+                      <span className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400">
                         {readinessReport.overallScore}%
                       </span>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mt-1">
+                      <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider mt-1">
                         Readiness Level
                       </span>
                     </div>
@@ -1074,22 +1074,22 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
 
                   {/* Category Scores Breakdown */}
                   {readinessReport.categoryScores && (
-                    <div className="p-5 rounded-2xl bg-slate-900/70 border border-slate-800 space-y-4">
+                    <div className="p-5 rounded-2xl bg-card/70 border border-white/[0.08] space-y-4">
                       <div className="flex items-center gap-2">
-                        <BarChart3 className="w-4 h-4 text-indigo-400" />
-                        <h4 className="text-xs font-bold text-white uppercase tracking-wider">Performance Breakdown by Category</h4>
+                        <BarChart3 className="w-4 h-4 text-cyan-400" />
+                        <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">Performance Breakdown by Category</h4>
                       </div>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {Object.entries(readinessReport.categoryScores).map(([cat, score], idx) => (
-                          <div key={idx} className="p-4 rounded-xl bg-slate-950 border border-slate-800/80 space-y-2">
+                          <div key={idx} className="p-4 rounded-xl bg-card border border-white/[0.06] space-y-2">
                             <div className="flex items-center justify-between text-xs">
-                              <span className="font-semibold text-slate-300">{cat}</span>
-                              <span className="font-bold text-indigo-400">{score}%</span>
+                              <span className="font-semibold text-foreground/90">{cat}</span>
+                              <span className="font-bold text-cyan-400">{score}%</span>
                             </div>
-                            <div className="h-2 w-full bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+                            <div className="h-2 w-full bg-muted rounded-full overflow-hidden border border-white/[0.06]">
                               <div
-                                className="h-full bg-gradient-to-r from-indigo-500 to-emerald-400"
+                                className="h-full bg-gradient-to-r from-cyan-500 to-emerald-400"
                                 style={{ width: `${score}%` }}
                               />
                             </div>
@@ -1101,24 +1101,24 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
 
                   {/* Strengths & Critical Gaps Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="p-5 rounded-2xl bg-slate-900/70 border border-slate-800 space-y-3">
+                    <div className="p-5 rounded-2xl bg-card/70 border border-white/[0.08] space-y-3">
                       <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider">
                         <CheckCircle2 className="w-4 h-4" />
                         <span>Key Strengths Observed</span>
                       </div>
-                      <ul className="text-xs text-slate-300 space-y-2 pl-4 list-disc leading-relaxed">
+                      <ul className="text-xs text-foreground/90 space-y-2 pl-4 list-disc leading-relaxed">
                         {readinessReport.keyStrengths?.map((s, idx) => (
                           <li key={idx}>{s}</li>
                         ))}
                       </ul>
                     </div>
 
-                    <div className="p-5 rounded-2xl bg-slate-900/70 border border-slate-800 space-y-3">
+                    <div className="p-5 rounded-2xl bg-card/70 border border-white/[0.08] space-y-3">
                       <div className="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider">
                         <AlertTriangle className="w-4 h-4" />
                         <span>Critical Blind Spots</span>
                       </div>
-                      <ul className="text-xs text-slate-300 space-y-2 pl-4 list-disc leading-relaxed">
+                      <ul className="text-xs text-foreground/90 space-y-2 pl-4 list-disc leading-relaxed">
                         {readinessReport.criticalGaps?.map((g, idx) => (
                           <li key={idx}>{g}</li>
                         ))}
@@ -1127,18 +1127,18 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                   </div>
 
                   {/* Actionable 48-Hour Plan */}
-                  <div className="p-5 rounded-2xl bg-slate-900/70 border border-slate-800 space-y-3">
-                    <div className="flex items-center gap-2 text-indigo-300 font-bold text-xs uppercase tracking-wider">
-                      <TrendingUp className="w-4 h-4 text-indigo-400" />
+                  <div className="p-5 rounded-2xl bg-card/70 border border-white/[0.08] space-y-3">
+                    <div className="flex items-center gap-2 text-cyan-300 font-bold text-xs uppercase tracking-wider">
+                      <TrendingUp className="w-4 h-4 text-cyan-400" />
                       <span>Actionable 48-Hour Preparation Plan</span>
                     </div>
                     <div className="space-y-2">
                       {readinessReport.actionablePlan?.map((plan, idx) => (
-                        <div key={idx} className="flex items-start gap-2.5 p-3 rounded-xl bg-slate-950 border border-slate-800/80">
-                          <span className="w-5 h-5 rounded-full bg-indigo-600/20 text-indigo-400 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                        <div key={idx} className="flex items-start gap-2.5 p-3 rounded-xl bg-card border border-white/[0.06]">
+                          <span className="w-5 h-5 rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                             {idx + 1}
                           </span>
-                          <p className="text-xs text-slate-200 leading-relaxed">{plan}</p>
+                          <p className="text-xs text-foreground/90 leading-relaxed">{plan}</p>
                         </div>
                       ))}
                     </div>
@@ -1150,9 +1150,9 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                       type="button"
                       variant="outline"
                       onClick={() => setActiveTab("bank")}
-                      className="h-10 text-xs bg-slate-950 border-slate-800 text-slate-300 hover:text-white"
+                      className="h-10 text-xs bg-white/[0.04] border-white/[0.08] text-muted-foreground hover:text-foreground rounded-xl"
                     >
-                      <BookOpen className="w-3.5 h-3.5 mr-1.5 text-indigo-400" />
+                      <BookOpen className="w-3.5 h-3.5 mr-1.5 text-cyan-400" />
                       <span>Back to Question Bank</span>
                     </Button>
 
@@ -1166,7 +1166,7 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                         setTimerSeconds(120);
                         setIsTimerRunning(false);
                       }}
-                      className="h-10 text-xs bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/30"
+                      className="h-10 text-xs bg-gradient-to-r from-cyan-500 to-emerald-400 hover:from-cyan-400 hover:to-emerald-300 text-slate-950 font-extrabold rounded-xl shadow-md shadow-cyan-500/20 transition-all"
                     >
                       <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
                       <span>Retake Mock Interview</span>
@@ -1174,20 +1174,20 @@ export function InterviewPrepModal({ isOpen, onClose }: InterviewPrepModalProps)
                   </div>
                 </div>
               ) : (
-                <div className="p-8 rounded-2xl bg-slate-900/60 border border-slate-800 text-center space-y-4">
+                <div className="p-8 rounded-2xl bg-card/70 border border-white/[0.08] text-center space-y-4">
                   <Trophy className="w-10 h-10 text-amber-400 mx-auto" />
                   <div className="space-y-1 max-w-md mx-auto">
-                    <h3 className="text-base font-bold text-white">No Mock Round Completed Yet</h3>
-                    <p className="text-xs text-slate-400">
+                    <h3 className="text-base font-bold text-foreground">No Mock Round Completed Yet</h3>
+                    <p className="text-xs text-muted-foreground">
                       Answer questions in the Live AI Mock Simulator to generate your personalized Interview Readiness Scorecard.
                     </p>
                   </div>
                   <Button
                     type="button"
                     onClick={() => setActiveTab("mock")}
-                    className="h-10 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl"
+                    className="h-10 text-xs bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 font-extrabold rounded-xl shadow-md shadow-cyan-500/20"
                   >
-                    <Play className="w-3.5 h-3.5 mr-1.5 fill-white" />
+                    <Play className="w-3.5 h-3.5 mr-1.5 fill-slate-950" />
                     <span>Start Live Mock Interview</span>
                   </Button>
                 </div>

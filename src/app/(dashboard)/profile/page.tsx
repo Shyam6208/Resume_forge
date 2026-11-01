@@ -97,8 +97,8 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-4">
-        <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
+      <div className="min-h-screen bg-[#0B0F17] text-slate-100 flex items-center justify-center p-4">
+        <Loader2 className="w-8 h-8 text-cyan-400 animate-spin" />
       </div>
     );
   }
@@ -118,9 +118,9 @@ export default function ProfilePage() {
   const provider = user.app_metadata?.provider || "email";
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-[#0B0F17] text-slate-100 flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-30 w-full h-16 bg-slate-950/90 backdrop-blur border-b border-slate-800 px-4 sm:px-8 flex items-center justify-between">
+      <header className="sticky top-0 z-30 w-full h-16 bg-[#0B0F17]/90 backdrop-blur-xl border-b border-white/[0.08] px-4 sm:px-8 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link
             href="/dashboard"
@@ -137,7 +137,7 @@ export default function ProfilePage() {
       {/* Main Container */}
       <main className="max-w-2xl mx-auto w-full flex-1 p-4 sm:p-8 space-y-6">
         <div className="space-y-1">
-          <h1 className="text-2xl font-extrabold text-white tracking-tight">
+          <h1 className="text-2xl font-bold text-white tracking-tight">
             Account & Profile Settings
           </h1>
           <p className="text-xs text-slate-400">
@@ -146,10 +146,10 @@ export default function ProfilePage() {
         </div>
 
         {/* Profile Card */}
-        <div className="p-6 rounded-3xl bg-slate-900 border border-slate-800 space-y-6 shadow-xl">
+        <div className="p-6 sm:p-8 rounded-3xl bg-slate-900/60 border border-white/[0.08] backdrop-blur-xl space-y-6 shadow-2xl shadow-cyan-950/20">
           {/* Photo Upload */}
           <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-300">Profile Photo</label>
+            <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">Profile Photo</label>
             <PhotoUpload
               userId={user.id}
               currentPhotoUrl={photoUrl}
@@ -170,7 +170,7 @@ export default function ProfilePage() {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Your Name"
-                  className="w-full h-11 pl-10 pr-4 bg-slate-950 border border-slate-800 rounded-xl text-white text-xs sm:text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all"
+                  className="w-full h-11 pl-10 pr-4 bg-slate-950/80 border border-white/[0.08] rounded-xl text-white text-xs sm:text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
                   required
                 />
               </div>
@@ -187,7 +187,7 @@ export default function ProfilePage() {
                   type="email"
                   value={user.email || ""}
                   disabled
-                  className="w-full h-11 pl-10 pr-4 bg-slate-950/60 border border-slate-800/80 rounded-xl text-slate-400 text-xs sm:text-sm cursor-not-allowed"
+                  className="w-full h-11 pl-10 pr-4 bg-slate-950/40 border border-white/[0.05] rounded-xl text-slate-400 text-xs sm:text-sm cursor-not-allowed"
                 />
               </div>
             </div>
@@ -196,10 +196,10 @@ export default function ProfilePage() {
             <Button
               type="submit"
               disabled={isSaving}
-              className="h-11 px-6 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg flex items-center gap-2"
+              className="h-11 px-6 text-xs bg-gradient-to-r from-cyan-400 to-emerald-400 hover:opacity-90 text-slate-950 font-bold rounded-xl shadow-md shadow-cyan-500/20 flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50"
             >
               {isSaving ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
               ) : (
                 <Save className="w-4 h-4" />
               )}
@@ -209,19 +209,19 @@ export default function ProfilePage() {
         </div>
 
         {/* Account Meta Info */}
-        <div className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800 space-y-3">
-          <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+        <div className="p-6 rounded-3xl bg-slate-900/40 border border-white/[0.08] space-y-3">
+          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">
             Account Metadata
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-400">
-            <div className="flex items-center gap-2 p-3 rounded-xl bg-slate-950 border border-slate-800/80">
-              <Calendar className="w-4 h-4 text-indigo-400 shrink-0" />
+            <div className="flex items-center gap-2.5 p-3.5 rounded-xl bg-slate-950/60 border border-white/[0.06]">
+              <Calendar className="w-4 h-4 text-cyan-400 shrink-0" />
               <div>
                 <p className="text-[10px] text-slate-500 font-medium">Joined Date</p>
                 <p className="font-semibold text-white">{createdAt}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2 p-3 rounded-xl bg-slate-950 border border-slate-800/80">
+            <div className="flex items-center gap-2.5 p-3.5 rounded-xl bg-slate-950/60 border border-white/[0.06]">
               <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
               <div>
                 <p className="text-[10px] text-slate-500 font-medium">Authentication</p>

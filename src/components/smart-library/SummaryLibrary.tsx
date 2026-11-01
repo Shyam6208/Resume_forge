@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Check, Copy } from "lucide-react";
+import { BookOpen, Copy } from "lucide-react";
 import toast from "react-hot-toast";
 
 // Import summary JSON files
@@ -76,29 +76,33 @@ export function SummaryLibrary() {
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && closeLibrary()}>
-      <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
-        <SheetHeader className="border-b pb-3">
-          <div className="flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-indigo-600" />
-            <SheetTitle className="text-base">Summary Library</SheetTitle>
+      <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto bg-card/95 border-l border-white/[0.08] backdrop-blur-2xl text-foreground">
+        <SheetHeader className="border-b border-white/[0.08] pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-emerald-500/20 text-cyan-400 border border-cyan-500/30">
+              <BookOpen className="w-4 h-4 text-cyan-400" />
+            </div>
+            <div>
+              <SheetTitle className="text-base font-bold text-foreground">Summary Library</SheetTitle>
+              <SheetDescription className="text-xs text-muted-foreground">
+                Choose a pre-written, ATS-friendly professional summary template
+              </SheetDescription>
+            </div>
           </div>
-          <SheetDescription className="text-xs">
-            Choose a pre-written, ATS-friendly professional summary template
-          </SheetDescription>
         </SheetHeader>
 
         <div className="py-4 space-y-4">
           {/* Role Filter Dropdown */}
-          <div className="space-y-1">
-            <label className="text-xs font-medium text-slate-300">Filter by Target Role</label>
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-foreground">Filter by Target Role</label>
             <Select
               value={selectedRole}
               onValueChange={(val) => setSelectedRole(val as RoleCategory)}
             >
-              <SelectTrigger className="w-full text-xs">
+              <SelectTrigger className="w-full text-xs bg-card/80 border-white/[0.08] text-foreground rounded-xl">
                 <SelectValue placeholder="Select role category" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-card border-white/[0.08] text-foreground rounded-xl">
                 <SelectItem value="fresher">Fresh Graduate / Entry-Level</SelectItem>
                 <SelectItem value="student">Student / Intern</SelectItem>
                 <SelectItem value="software-engineer">Software Engineer (General)</SelectItem>
@@ -116,15 +120,15 @@ export function SummaryLibrary() {
             {summaries.map((item) => (
               <div
                 key={item.id}
-                className="p-3.5 border rounded-xl bg-card hover:border-indigo-500/50 transition-all space-y-2.5 shadow-2xs border-slate-800"
+                className="p-4 border rounded-2xl bg-card/70 hover:border-cyan-500/30 transition-all space-y-3 shadow-xs border-white/[0.08] backdrop-blur-md"
               >
                 <div className="flex items-center justify-between">
-                  <Badge variant="outline" className="text-[10px] bg-slate-800 text-indigo-300 border-indigo-500/30">
+                  <Badge variant="outline" className="text-[10px] bg-cyan-500/10 text-cyan-300 border-cyan-500/20 font-semibold">
                     {item.role}
                   </Badge>
                 </div>
 
-                <p className="text-xs text-slate-300 leading-relaxed text-justify">
+                <p className="text-xs text-foreground/90 leading-relaxed">
                   {item.text}
                 </p>
 
@@ -132,7 +136,7 @@ export function SummaryLibrary() {
                   type="button"
                   size="sm"
                   onClick={() => handleUseSummary(item.text)}
-                  className="w-full h-8 text-xs bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center gap-1.5"
+                  className="w-full h-8 text-xs bg-gradient-to-r from-cyan-500 to-emerald-400 hover:from-cyan-400 hover:to-emerald-300 text-slate-950 font-extrabold flex items-center justify-center gap-1.5 rounded-xl shadow-md shadow-cyan-500/20"
                 >
                   <Copy className="w-3.5 h-3.5" />
                   <span>Use This Summary</span>

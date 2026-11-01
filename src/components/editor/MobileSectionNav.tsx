@@ -100,13 +100,13 @@ export function MobileSectionNav() {
             type="button"
             data-section={sectionKey}
             onClick={() => handleSectionSelect(sectionKey)}
-            className={`shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-colors whitespace-nowrap ${
+            className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all whitespace-nowrap ${
               isActive
-                ? "bg-indigo-600 text-white shadow-sm"
-                : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                ? "bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 font-bold shadow-md shadow-cyan-500/20"
+                : "bg-white/[0.05] border border-white/[0.08] text-slate-300 hover:text-white hover:bg-white/[0.1]"
             }`}
           >
-            <IconComponent className="w-3 h-3 shrink-0" />
+            <IconComponent className="w-3.5 h-3.5 shrink-0" />
             <span>{shortLabel}</span>
             {!isEmpty && !isActive && (
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />

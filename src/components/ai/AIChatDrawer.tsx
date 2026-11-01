@@ -103,15 +103,15 @@ export function AIChatDrawer({ isOpen, onClose }: AIChatDrawerProps) {
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent side="right" className="w-full sm:max-w-md bg-slate-950 border-slate-800 text-slate-100 flex flex-col h-full p-0">
+      <SheetContent side="right" className="w-full sm:max-w-md bg-[#0B0F17] border-l border-white/[0.08] text-slate-100 flex flex-col h-full p-0 shadow-2xl">
         {/* Header */}
-        <SheetHeader className="p-4 border-b border-slate-800 bg-slate-900/90 backdrop-blur">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-indigo-600/20 text-indigo-400 border border-indigo-500/30">
+        <SheetHeader className="p-4 border-b border-white/[0.08] bg-slate-950/80 backdrop-blur-xl">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
               <Bot className="w-5 h-5" />
             </div>
             <div>
-              <SheetTitle className="text-base text-white font-bold">ResumeForge AI Assistant</SheetTitle>
+              <SheetTitle className="text-sm font-bold text-white">ResumeForge AI Assistant</SheetTitle>
               <SheetDescription className="text-xs text-slate-400">
                 Context-aware HR & Career Coach
               </SheetDescription>
@@ -120,15 +120,15 @@ export function AIChatDrawer({ isOpen, onClose }: AIChatDrawerProps) {
         </SheetHeader>
 
         {/* Quick Prompts Bar */}
-        <div className="p-3 border-b border-slate-800/80 bg-slate-900/40 space-y-1">
-          <span className="text-[10px] font-bold text-slate-400 uppercase block">Quick Suggestions:</span>
+        <div className="p-3 border-b border-white/[0.06] bg-slate-900/40 space-y-1.5">
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Quick Suggestions:</span>
           <div className="flex flex-wrap gap-1.5">
             {QUICK_PROMPTS.map((qp, i) => (
               <button
                 key={i}
                 type="button"
                 onClick={() => handleSendMessage(qp)}
-                className="text-[11px] px-2 py-0.5 rounded-md bg-slate-900 hover:bg-indigo-600/20 border border-slate-800 hover:border-indigo-500/30 text-slate-300 transition-colors text-left"
+                className="text-[11px] px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-cyan-500/10 border border-white/[0.06] hover:border-cyan-500/30 text-slate-300 hover:text-cyan-300 transition-colors text-left"
               >
                 💡 {qp}
               </button>
@@ -148,8 +148,8 @@ export function AIChatDrawer({ isOpen, onClose }: AIChatDrawerProps) {
               <div
                 className={`w-7 h-7 rounded-lg shrink-0 flex items-center justify-center text-xs font-bold ${
                   msg.role === "user"
-                    ? "bg-indigo-600 text-white"
-                    : "bg-slate-900 border border-slate-800 text-indigo-400"
+                    ? "bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950"
+                    : "bg-white/[0.05] border border-white/[0.08] text-cyan-400"
                 }`}
               >
                 {msg.role === "user" ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
@@ -158,8 +158,8 @@ export function AIChatDrawer({ isOpen, onClose }: AIChatDrawerProps) {
               <div
                 className={`max-w-[80%] p-3 rounded-2xl text-xs leading-relaxed space-y-1 ${
                   msg.role === "user"
-                    ? "bg-indigo-600 text-white rounded-tr-none"
-                    : "bg-slate-900 border border-slate-800 text-slate-200 rounded-tl-none"
+                    ? "bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 font-medium rounded-tr-none shadow-sm"
+                    : "bg-slate-900/80 border border-white/[0.08] text-slate-200 rounded-tl-none"
                 }`}
               >
                 <div className="whitespace-pre-wrap">{msg.content}</div>
@@ -168,7 +168,7 @@ export function AIChatDrawer({ isOpen, onClose }: AIChatDrawerProps) {
             </div>
           ))}
           {isSending && (
-            <div className="flex items-center gap-2 text-xs text-indigo-400 bg-slate-900/60 p-3 rounded-xl border border-slate-800 w-fit">
+            <div className="flex items-center gap-2 text-xs text-cyan-400 bg-slate-900/80 p-3 rounded-xl border border-white/[0.08] w-fit">
               <Loader2 className="w-4 h-4 animate-spin" />
               <span>AI is thinking...</span>
             </div>
@@ -177,19 +177,19 @@ export function AIChatDrawer({ isOpen, onClose }: AIChatDrawerProps) {
         </div>
 
         {/* Input Bar */}
-        <div className="p-3 border-t border-slate-800 bg-slate-950 flex items-center gap-2">
+        <div className="p-3 border-t border-white/[0.08] bg-[#0B0F17] flex items-center gap-2">
           <Input
             placeholder="Ask AI anything about your resume..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-            className="text-xs bg-slate-900 border-slate-800 text-white h-10"
+            className="text-xs bg-slate-900/80 border-white/[0.08] focus:border-cyan-500 focus:ring-cyan-500/20 text-white h-10 rounded-xl"
           />
           <Button
             type="button"
             disabled={isSending || !input.trim()}
             onClick={() => handleSendMessage()}
-            className="h-10 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl"
+            className="h-10 px-4 bg-gradient-to-r from-cyan-400 to-emerald-400 hover:opacity-90 text-slate-950 font-bold rounded-xl shadow-md shadow-cyan-500/20 transition-all active:scale-95 disabled:opacity-50"
           >
             <Send className="w-4 h-4" />
           </Button>

@@ -21,41 +21,41 @@ export function RoleRecommendations() {
   if (!relevance || !targetJob) return null;
 
   const {
-    resolvedProfile,
     matchedSkills,
     missingRecommendedSkills,
     rankedProjects,
-    sectionPriority
   } = relevance;
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-lg overflow-hidden flex flex-col mt-4">
+    <div className="bg-card/70 border border-white/[0.08] rounded-2xl overflow-hidden flex flex-col mt-4 shadow-sm backdrop-blur-md">
       <button 
-        className="w-full p-3 flex items-center justify-between hover:bg-slate-800/50 transition-colors"
+        type="button"
+        className="w-full p-3.5 flex items-center justify-between hover:bg-white/[0.04] transition-colors"
         onClick={() => setExpanded(!expanded)}
       >
-        <div className="flex items-center gap-2">
-          <Target className="w-4 h-4 text-indigo-400" />
+        <div className="flex items-center gap-2.5">
+          <div className="p-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+            <Target className="w-4 h-4 text-cyan-400" />
+          </div>
           <div className="text-left">
-            <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Optimized For</p>
-            <p className="text-xs font-bold text-slate-200">{targetJob}</p>
+            <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">Optimized Target</p>
+            <p className="text-xs font-bold text-foreground">{targetJob}</p>
           </div>
         </div>
-        {expanded ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />}
+        {expanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
       </button>
 
       {expanded && (
-        <div className="p-3 border-t border-slate-800 space-y-4 bg-slate-950/50">
-          
+        <div className="p-3.5 border-t border-white/[0.06] space-y-4 bg-card/40">
           {/* Matched Skills / Focus */}
           {matchedSkills.length > 0 && (
             <div className="space-y-1.5">
-              <h4 className="text-[11px] font-semibold text-slate-300">Recommended Focus</h4>
+              <h4 className="text-[11px] font-semibold text-foreground">Recommended Focus</h4>
               <div className="flex flex-wrap gap-1.5">
                 {matchedSkills.map(skill => (
-                  <div key={skill} className="flex items-center gap-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded text-[10px] font-medium">
-                    <CheckCircle2 className="w-3 h-3" />
-                    {skill}
+                  <div key={skill} className="flex items-center gap-1 bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 px-2 py-0.5 rounded-lg text-[10px] font-medium">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                    <span>{skill}</span>
                   </div>
                 ))}
               </div>
@@ -65,12 +65,12 @@ export function RoleRecommendations() {
           {/* Missing Skills */}
           {missingRecommendedSkills.length > 0 && (
             <div className="space-y-1.5">
-              <h4 className="text-[11px] font-semibold text-slate-300">Skills to Consider</h4>
+              <h4 className="text-[11px] font-semibold text-foreground">Skills to Consider</h4>
               <div className="flex flex-wrap gap-1.5">
                 {missingRecommendedSkills.map(skill => (
-                  <div key={skill} className="flex items-center gap-1 bg-slate-800 text-slate-400 border border-slate-700 px-1.5 py-0.5 rounded text-[10px] font-medium">
-                    <PlusCircle className="w-3 h-3" />
-                    {skill}
+                  <div key={skill} className="flex items-center gap-1 bg-white/[0.04] text-cyan-300 border border-cyan-500/20 px-2 py-0.5 rounded-lg text-[10px] font-medium">
+                    <PlusCircle className="w-3 h-3 text-cyan-400" />
+                    <span>{skill}</span>
                   </div>
                 ))}
               </div>
@@ -80,18 +80,17 @@ export function RoleRecommendations() {
           {/* Project Focus */}
           {rankedProjects.length > 0 && (
             <div className="space-y-1.5">
-              <h4 className="text-[11px] font-semibold text-slate-300">Project Focus</h4>
+              <h4 className="text-[11px] font-semibold text-foreground">Project Highlights</h4>
               <div className="space-y-1">
                 {rankedProjects.slice(0, 3).map((project, idx) => (
-                  <div key={project.id} className="text-[11px] text-slate-400 flex gap-2">
-                    <span className="text-slate-500">{idx + 1}.</span>
-                    <span className="truncate">{project.name}</span>
+                  <div key={project.id} className="text-[11px] text-muted-foreground flex gap-2">
+                    <span className="text-cyan-400 font-bold">{idx + 1}.</span>
+                    <span className="truncate text-foreground/90">{project.name}</span>
                   </div>
                 ))}
               </div>
             </div>
           )}
-
         </div>
       )}
     </div>

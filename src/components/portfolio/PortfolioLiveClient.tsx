@@ -127,13 +127,13 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-200">
+    <div className="min-h-screen bg-[#0B0F17] text-slate-200 relative overflow-hidden">
       {/* Top Floating Realtime Bar */}
-      <header className="sticky top-0 z-40 bg-slate-950/80 backdrop-blur-xl border-b border-white/10 px-4 py-3">
+      <header className="sticky top-0 z-40 bg-[#0B0F17]/90 backdrop-blur-xl border-b border-white/[0.08] px-4 py-3 shadow-lg">
         <div className="max-w-5xl mx-auto flex items-center justify-between gap-3">
           {/* Brand & Live Indicator */}
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="p-1.5 rounded-lg bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 font-bold text-xs">
+            <div className="p-1.5 rounded-lg bg-gradient-to-tr from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30 text-cyan-400 font-extrabold text-xs shadow-xs">
               RF
             </div>
             <div className="flex items-center gap-2 min-w-0">
@@ -157,25 +157,25 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
           <div className="flex items-center gap-2 shrink-0">
             <button
               onClick={() => setShowQRModal(true)}
-              className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 text-xs flex items-center gap-1.5 transition-colors"
+              className="p-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 hover:text-white border border-white/[0.08] text-xs flex items-center gap-1.5 transition-all shadow-sm"
               title="Show QR Code"
             >
-              <QrCode className="w-4 h-4 text-amber-400" />
-              <span className="hidden md:inline">QR Code</span>
+              <QrCode className="w-4 h-4 text-cyan-400" />
+              <span className="hidden md:inline font-semibold">QR Code</span>
             </button>
 
             <button
               onClick={handleCopyLink}
-              className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white border border-white/10 text-xs flex items-center gap-1.5 transition-colors"
+              className="p-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 hover:text-white border border-white/[0.08] text-xs flex items-center gap-1.5 transition-all shadow-sm"
               title="Copy Portfolio Link"
             >
               {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-cyan-400" />}
-              <span className="hidden md:inline">{copied ? "Copied" : "Share"}</span>
+              <span className="hidden md:inline font-semibold">{copied ? "Copied" : "Share"}</span>
             </button>
 
             <button
               onClick={handlePrint}
-              className="p-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs flex items-center gap-1.5 shadow-sm transition-colors"
+              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-emerald-400 hover:opacity-90 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-md shadow-cyan-500/20 transition-all active:scale-95"
               title="Print or Save PDF"
             >
               <Printer className="w-4 h-4" />
@@ -187,54 +187,54 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
 
       {/* Ambient Glows */}
       <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-10 left-1/4 w-96 h-96 bg-indigo-500/10 rounded-full blur-[140px]" />
-        <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-[140px]" />
+        <div className="absolute top-10 left-1/4 w-96 h-96 bg-cyan-500/8 rounded-full blur-[140px]" />
+        <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-emerald-500/8 rounded-full blur-[140px]" />
       </div>
 
       <main className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-6">
         {/* Header Hero Profile Card */}
-        <section className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-2xl">
-          <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-indigo-500/20 to-transparent rounded-bl-full pointer-events-none" />
+        <section className="bg-slate-900/60 backdrop-blur-xl border border-white/[0.08] rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-2xl shadow-cyan-950/20">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-cyan-500/10 to-transparent rounded-bl-full pointer-events-none" />
 
           <div className="flex flex-col sm:flex-row items-start gap-6 relative z-10">
             {/* Avatar */}
-            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white text-3xl sm:text-4xl font-extrabold shrink-0 shadow-xl shadow-indigo-500/25">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-tr from-cyan-400 via-teal-400 to-emerald-400 flex items-center justify-center text-slate-950 text-3xl sm:text-4xl font-black shrink-0 shadow-xl shadow-cyan-500/25">
               {candidateName.charAt(0).toUpperCase()}
             </div>
 
             <div className="flex-1 min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
                   {candidateName}
                 </h1>
-                <span className="px-2.5 py-0.5 text-[10px] font-bold bg-indigo-500/20 text-indigo-300 rounded-full border border-indigo-500/30">
+                <span className="px-2.5 py-0.5 text-[10px] font-bold bg-cyan-500/10 text-cyan-300 rounded-full border border-cyan-500/30">
                   Verified Candidate
                 </span>
               </div>
 
-              <p className="text-indigo-300 font-semibold text-sm sm:text-base mt-1">
+              <p className="text-cyan-300 font-semibold text-sm sm:text-base mt-1">
                 {professionalTitle}
               </p>
 
               {/* Contact Info Pills */}
-              <div className="flex flex-wrap gap-3 mt-3 text-xs text-slate-400">
+              <div className="flex flex-wrap gap-2.5 mt-3 text-xs text-slate-400">
                 {pi?.email && (
                   <a
                     href={`mailto:${pi.email}`}
-                    className="flex items-center gap-1.5 hover:text-indigo-300 transition-colors bg-white/5 px-2.5 py-1 rounded-lg border border-white/5"
+                    className="flex items-center gap-1.5 hover:text-white transition-colors bg-white/[0.05] px-2.5 py-1 rounded-lg border border-white/[0.08]"
                   >
-                    <Mail className="w-3.5 h-3.5 text-indigo-400" />
+                    <Mail className="w-3.5 h-3.5 text-cyan-400" />
                     <span>{pi.email}</span>
                   </a>
                 )}
                 {pi?.phone && (
-                  <span className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-lg border border-white/5">
+                  <span className="flex items-center gap-1.5 bg-white/[0.05] px-2.5 py-1 rounded-lg border border-white/[0.08]">
                     <Phone className="w-3.5 h-3.5 text-emerald-400" />
                     <span>{pi.phone}</span>
                   </span>
                 )}
                 {(pi?.city || pi?.country) && (
-                  <span className="flex items-center gap-1.5 bg-white/5 px-2.5 py-1 rounded-lg border border-white/5">
+                  <span className="flex items-center gap-1.5 bg-white/[0.05] px-2.5 py-1 rounded-lg border border-white/[0.08]">
                     <MapPin className="w-3.5 h-3.5 text-rose-400" />
                     <span>{[pi?.city, pi?.country].filter(Boolean).join(", ")}</span>
                   </span>
@@ -248,7 +248,7 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
                     href={pi.linkedin.startsWith("http") ? pi.linkedin : `https://${pi.linkedin}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2.5 rounded-xl bg-white/5 hover:bg-blue-600/20 text-slate-300 hover:text-blue-400 transition-all border border-white/10"
+                    className="p-2.5 rounded-xl bg-white/[0.05] hover:bg-cyan-500/20 text-slate-300 hover:text-cyan-300 transition-all border border-white/[0.08]"
                     title="LinkedIn"
                   >
                     <LinkedinIcon className="w-4 h-4" />
@@ -259,7 +259,7 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
                     href={pi.github.startsWith("http") ? pi.github : `https://${pi.github}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2.5 rounded-xl bg-white/5 hover:bg-slate-700 text-slate-300 hover:text-white transition-all border border-white/10"
+                    className="p-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-300 hover:text-white transition-all border border-white/[0.08]"
                     title="GitHub"
                   >
                     <GithubIcon className="w-4 h-4" />
@@ -270,7 +270,7 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
                     href={pi.website.startsWith("http") ? pi.website : `https://${pi.website}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2.5 rounded-xl bg-white/5 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-300 transition-all border border-white/10"
+                    className="p-2.5 rounded-xl bg-white/[0.05] hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-300 transition-all border border-white/[0.08]"
                     title="Portfolio / Website"
                   >
                     <Globe className="w-4 h-4" />
@@ -282,7 +282,7 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
 
           {/* Summary */}
           {resumeData.summary && (
-            <div className="mt-6 border-t border-white/10 pt-5">
+            <div className="mt-6 border-t border-white/[0.08] pt-5">
               <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
                 About & Executive Summary
               </h2>
@@ -295,9 +295,9 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
 
         {/* Experience Section */}
         {resumeData.experience && resumeData.experience.length > 0 && (
-          <section className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-8">
+          <section className="bg-slate-900/60 backdrop-blur-xl border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
             <h2 className="flex items-center gap-2.5 text-lg font-bold text-white mb-6">
-              <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+              <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
                 <Briefcase className="w-5 h-5" />
               </div>
               <span>Professional Experience</span>
@@ -305,16 +305,16 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
 
             <div className="space-y-6">
               {resumeData.experience.map((exp, i) => (
-                <div key={i} className="relative pl-6 border-l-2 border-indigo-500/30 last:border-transparent pb-2">
-                  <span className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-slate-950 border-2 border-indigo-500" />
+                <div key={i} className="relative pl-6 border-l-2 border-cyan-500/30 last:border-transparent pb-2">
+                  <span className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-slate-950 border-2 border-cyan-400" />
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                     <h3 className="font-bold text-white text-base">{exp.position}</h3>
                     <span className="text-xs text-slate-400 flex items-center gap-1 font-mono">
-                      <Calendar className="w-3.5 h-3.5 text-indigo-400" />
+                      <Calendar className="w-3.5 h-3.5 text-cyan-400" />
                       {exp.startDate} — {exp.isCurrentlyWorking ? "Present" : exp.endDate || ""}
                     </span>
                   </div>
-                  <p className="text-indigo-300 text-xs font-semibold mt-0.5">
+                  <p className="text-cyan-300 text-xs font-semibold mt-0.5">
                     {exp.company} {exp.location ? `· ${exp.location}` : ""}
                   </p>
 
@@ -322,7 +322,7 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
                     <ul className="mt-3 space-y-1.5">
                       {exp.responsibilities.map((r, j) => (
                         <li key={j} className="text-xs sm:text-sm text-slate-300 flex items-start gap-2 leading-relaxed">
-                          <span className="text-indigo-400 mt-1 shrink-0">•</span>
+                          <span className="text-cyan-400 mt-1 shrink-0">•</span>
                           <span>{r}</span>
                         </li>
                       ))}
@@ -336,7 +336,7 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
 
         {/* Projects Section */}
         {resumeData.projects && resumeData.projects.length > 0 && (
-          <section className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-8">
+          <section className="bg-slate-900/60 backdrop-blur-xl border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
             <h2 className="flex items-center gap-2.5 text-lg font-bold text-white mb-6">
               <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                 <Code2 className="w-5 h-5" />
@@ -348,7 +348,7 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
               {resumeData.projects.map((proj, i) => (
                 <div
                   key={i}
-                  className="bg-white/5 rounded-2xl p-5 border border-white/10 hover:border-indigo-500/40 transition-all flex flex-col justify-between"
+                  className="bg-slate-950/60 rounded-2xl p-5 border border-white/[0.06] hover:border-cyan-500/30 transition-all flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-start justify-between gap-2 mb-2">
@@ -382,11 +382,11 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
                   </div>
 
                   {proj.technologies && proj.technologies.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mt-4 pt-3 border-t border-white/5">
+                    <div className="flex flex-wrap gap-1.5 mt-4 pt-3 border-t border-white/[0.06]">
                       {proj.technologies.map((tech, j) => (
                         <span
                           key={j}
-                          className="px-2.5 py-0.5 text-[11px] bg-indigo-500/10 text-indigo-300 rounded-lg border border-indigo-500/20 font-medium"
+                          className="px-2.5 py-0.5 text-[11px] bg-cyan-500/10 text-cyan-300 rounded-lg border border-cyan-500/20 font-medium"
                         >
                           {tech}
                         </span>
@@ -401,7 +401,7 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
 
         {/* Skills Section */}
         {resumeData.skills && Object.values(resumeData.skills).some((arr) => arr && arr.length > 0) && (
-          <section className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-8">
+          <section className="bg-slate-900/60 backdrop-blur-xl border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
             <h2 className="flex items-center gap-2.5 text-lg font-bold text-white mb-6">
               <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
                 <Award className="w-5 h-5" />
@@ -413,7 +413,7 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
               {Object.entries(resumeData.skills).map(([category, skills]) => {
                 if (!skills || !Array.isArray(skills) || skills.length === 0) return null;
                 return (
-                  <div key={category} className="bg-white/5 rounded-2xl p-4 border border-white/5">
+                  <div key={category} className="bg-slate-950/60 rounded-2xl p-4 border border-white/[0.06]">
                     <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5 capitalize">
                       {category}
                     </h3>
@@ -421,7 +421,7 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
                       {skills.map((skill, j) => (
                         <span
                           key={j}
-                          className="px-3 py-1 text-xs bg-slate-900/80 text-slate-200 rounded-lg border border-white/10 font-medium hover:border-indigo-500/40 transition-colors"
+                          className="px-3 py-1 text-xs bg-white/[0.05] text-slate-200 rounded-lg border border-white/[0.08] font-medium hover:border-cyan-500/30 transition-colors"
                         >
                           {skill}
                         </span>
@@ -436,9 +436,9 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
 
         {/* Education Section */}
         {resumeData.education && resumeData.education.length > 0 && (
-          <section className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-8">
+          <section className="bg-slate-900/60 backdrop-blur-xl border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-xl">
             <h2 className="flex items-center gap-2.5 text-lg font-bold text-white mb-6">
-              <div className="p-2 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
+              <div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
                 <GraduationCap className="w-5 h-5" />
               </div>
               <span>Education</span>
@@ -446,18 +446,18 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
 
             <div className="space-y-4">
               {resumeData.education.map((edu, i) => (
-                <div key={i} className="bg-white/5 rounded-2xl p-4 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div key={i} className="bg-slate-950/60 rounded-2xl p-4 border border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
                     <h3 className="font-bold text-white text-sm sm:text-base">
                       {edu.degree} {edu.branch ? `— ${edu.branch}` : ""}
                     </h3>
-                    <p className="text-purple-300 text-xs sm:text-sm font-medium mt-0.5">{edu.institution}</p>
+                    <p className="text-cyan-300 text-xs sm:text-sm font-medium mt-0.5">{edu.institution}</p>
                   </div>
                   <div className="flex items-center gap-3 text-xs text-slate-400 shrink-0 font-mono">
                     <span>
                       {edu.startDate} — {edu.isCurrentlyStudying ? "Present" : edu.endDate || ""}
                     </span>
-                    {edu.grade && <span className="px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-300 border border-purple-500/20">Grade: {edu.grade}</span>}
+                    {edu.grade && <span className="px-2 py-0.5 rounded-md bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">Grade: {edu.grade}</span>}
                   </div>
                 </div>
               ))}
@@ -466,14 +466,14 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
         )}
 
         {/* Footer */}
-        <footer className="text-center py-10 text-xs text-slate-500 border-t border-white/5">
+        <footer className="text-center py-10 text-xs text-slate-500 border-t border-white/[0.08]">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="p-1 rounded bg-indigo-600/20 text-indigo-400 font-bold text-xs">RF</span>
+            <span className="p-1 rounded bg-gradient-to-tr from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30 text-cyan-400 font-extrabold text-xs">RF</span>
             <span>
-              Real-time Portfolio powered by <span className="text-indigo-400 font-semibold">ResumeForge</span>
+              Real-time Portfolio powered by <span className="text-cyan-400 font-semibold">ResumeForge</span>
             </span>
           </div>
-          <p className="text-[11px] text-slate-600" suppressHydrationWarning>
+          <p className="text-[11px] text-slate-500" suppressHydrationWarning>
             {isMounted && lastSyncTime
               ? `Last synchronized: ${new Date(lastSyncTime).toLocaleTimeString()}`
               : "Real-time sync active"}
@@ -483,19 +483,19 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
 
       {/* QR Code Modal */}
       {showQRModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-          <div className="bg-slate-950 border border-slate-800 rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-2xl text-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+          <div className="bg-[#0B0F17]/95 border border-white/[0.08] backdrop-blur-2xl rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-2xl text-center">
             <h3 className="text-base font-bold text-white">Scan Portfolio QR Code</h3>
             <p className="text-xs text-slate-400">
               Point your smartphone camera to open this portfolio instantly on mobile.
             </p>
-            <div className="bg-white rounded-xl p-4 inline-block mx-auto">
+            <div className="bg-white rounded-xl p-4 inline-block mx-auto shadow-md">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={qrCodeUrl} alt="QR Code" className="w-48 h-48 object-contain" />
             </div>
             <button
               onClick={() => setShowQRModal(false)}
-              className="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold transition-colors"
+              className="w-full py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-white text-xs font-semibold border border-white/[0.08] transition-colors"
             >
               Close
             </button>

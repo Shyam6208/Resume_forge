@@ -8,7 +8,6 @@ import { useResumeStore } from "@/store/resume.store";
 import { SECTION_ORDER_BY_USER_TYPE } from "@/config/sections.config";
 import type { UserType, SectionKey } from "@/types/resume.types";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { JobRoleCombobox } from "@/components/ui/job-role-combobox";
 import { TEMPLATES } from "@/config/templates.config";
@@ -98,7 +97,6 @@ const USER_TYPES: UserTypeOption[] = [
     description: "Freelancer, consultant, or career changer",
   },
 ];
-
 
 const RECOMMENDED_TEMPLATES: Record<UserType, string> = {
   student: "fresher-basic",
@@ -217,26 +215,31 @@ function OnboardingContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between p-4 sm:p-8">
+    <div className="min-h-screen bg-[#0B0F17] text-slate-100 flex flex-col justify-between p-4 sm:p-8 relative overflow-hidden">
+      {/* Background Ambient Glows */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-1/6 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-gradient-to-b from-cyan-500/10 via-emerald-500/5 to-transparent rounded-full blur-[140px] -z-10" />
+      </div>
+
       {/* Header & Step Indicator */}
-      <header className="max-w-4xl mx-auto w-full pt-4 space-y-4">
+      <header className="max-w-4xl mx-auto w-full pt-4 space-y-4 relative z-10">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="p-2 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-400 font-bold text-sm">
+          <div className="flex items-center gap-2.5">
+            <span className="p-2 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30 text-cyan-400 font-extrabold text-sm shadow-xs">
               RF
             </span>
             <span className="font-extrabold text-lg text-white tracking-tight">ResumeForge</span>
           </div>
 
           <div className="text-xs font-semibold text-slate-400">
-            Step <span className="text-indigo-400 font-bold">{step}</span> of 3
+            Step <span className="text-cyan-400 font-bold">{step}</span> of 3
           </div>
         </div>
 
         {/* Animated Progress Bar */}
-        <div className="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden">
+        <div className="w-full h-1.5 bg-slate-900/80 border border-white/[0.04] rounded-full overflow-hidden">
           <motion.div
-            className="h-full bg-indigo-500 rounded-full"
+            className="h-full bg-gradient-to-r from-cyan-400 to-emerald-400 rounded-full shadow-sm"
             initial={{ width: "33%" }}
             animate={{ width: step === 1 ? "33%" : step === 2 ? "66%" : "100%" }}
             transition={{ type: "spring", stiffness: 100, damping: 15 }}
@@ -245,7 +248,7 @@ function OnboardingContent() {
       </header>
 
       {/* Main Form Content Container */}
-      <main className="max-w-4xl mx-auto w-full my-auto py-8">
+      <main className="max-w-4xl mx-auto w-full my-auto py-8 relative z-10">
         <AnimatePresence mode="wait">
           {/* STEP 1: Who are you? */}
           {step === 1 && (
@@ -279,17 +282,21 @@ function OnboardingContent() {
                       onClick={() => handleUserTypeSelect(item.type)}
                       className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between gap-3 relative group ${
                         isSelected
-                          ? "bg-indigo-950/50 border-indigo-500 ring-2 ring-indigo-500/40 shadow-lg shadow-indigo-950/50"
-                          : "bg-slate-900/70 border-slate-800 hover:border-slate-700 hover:bg-slate-900"
+                          ? "bg-cyan-500/10 border-cyan-500 ring-2 ring-cyan-500/40 shadow-lg shadow-cyan-950/40"
+                          : "bg-slate-900/60 border-white/[0.08] hover:border-cyan-500/30 hover:bg-slate-850/80"
                       }`}
                     >
                       {isSelected && (
-                        <span className="absolute top-3 right-3 p-1 rounded-full bg-indigo-500 text-white shadow">
+                        <span className="absolute top-3 right-3 p-1 rounded-full bg-cyan-400 text-slate-950 font-bold shadow">
                           <Check className="w-3 h-3" />
                         </span>
                       )}
 
-                      <div className="p-2.5 rounded-xl w-fit bg-slate-950 border border-slate-800 text-indigo-400 group-hover:scale-105 transition-transform">
+                      <div className={`p-2.5 rounded-xl w-fit transition-transform group-hover:scale-105 ${
+                        isSelected 
+                          ? "bg-cyan-500/20 border border-cyan-500/40 text-cyan-300"
+                          : "bg-white/[0.05] border border-white/[0.08] text-slate-400 group-hover:text-cyan-400"
+                      }`}>
                         <Icon className="w-5 h-5" />
                       </div>
 
@@ -313,7 +320,7 @@ function OnboardingContent() {
                   type="button"
                   disabled={!selectedUserType}
                   onClick={() => setStep(2)}
-                  className="h-10 px-6 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl shadow-md flex items-center gap-2"
+                  className="h-10 px-6 text-xs bg-gradient-to-r from-cyan-400 to-emerald-400 hover:opacity-90 text-slate-950 font-bold rounded-xl shadow-md shadow-cyan-500/20 flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50"
                 >
                   <span>Next: Target Job</span>
                   <ArrowRight className="w-4 h-4" />
@@ -334,7 +341,7 @@ function OnboardingContent() {
             >
               <div className="text-center space-y-2">
                 <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center justify-center gap-2">
-                  <Target className="w-7 h-7 text-indigo-400" />
+                  <Target className="w-7 h-7 text-cyan-400" />
                   <span>What job are you targeting?</span>
                 </h1>
                 <p className="text-xs sm:text-sm text-slate-400">
@@ -343,8 +350,8 @@ function OnboardingContent() {
               </div>
 
               {/* Text Input */}
-              <div className="space-y-2 bg-slate-900/60 p-5 rounded-2xl border border-slate-800">
-                <label className="text-xs font-bold text-slate-300">Target Role Title</label>
+              <div className="space-y-2 bg-slate-900/60 p-5 rounded-2xl border border-white/[0.08] shadow-inner">
+                <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">Target Role Title</label>
                 <JobRoleCombobox 
                   value={targetJob}
                   onChange={setTargetJob}
@@ -357,7 +364,7 @@ function OnboardingContent() {
                   type="button"
                   variant="outline"
                   onClick={() => setStep(1)}
-                  className="h-10 px-5 text-xs bg-slate-900 border-slate-800 text-slate-300 hover:text-white"
+                  className="h-10 px-5 text-xs bg-white/[0.05] border-white/[0.08] text-slate-300 hover:text-white rounded-xl"
                 >
                   <ArrowLeft className="w-4 h-4 mr-1.5" />
                   <span>Back</span>
@@ -367,7 +374,7 @@ function OnboardingContent() {
                   type="button"
                   disabled={!targetJob.trim()}
                   onClick={() => setStep(3)}
-                  className="h-10 px-6 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl shadow-md flex items-center gap-2"
+                  className="h-10 px-6 text-xs bg-gradient-to-r from-cyan-400 to-emerald-400 hover:opacity-90 text-slate-950 font-bold rounded-xl shadow-md shadow-cyan-500/20 flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50"
                 >
                   <span>Next: Choose Template</span>
                   <ArrowRight className="w-4 h-4" />
@@ -403,17 +410,17 @@ function OnboardingContent() {
                   onClick={() => setStartMode("quick")}
                   className={`p-5 rounded-2xl border text-left flex flex-col justify-between gap-4 transition-all relative ${
                     startMode === "quick"
-                      ? "bg-indigo-950/60 border-indigo-500 ring-2 ring-indigo-500/40 shadow-lg"
-                      : "bg-slate-900/70 border-slate-800 hover:border-slate-700"
+                      ? "bg-cyan-500/10 border-cyan-500 ring-2 ring-cyan-500/40 shadow-lg"
+                      : "bg-slate-900/60 border-white/[0.08] hover:border-cyan-500/30"
                   }`}
                 >
-                  <div className="p-3 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/30 w-fit">
+                  <div className="p-3 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 w-fit">
                     <Zap className="w-5 h-5" />
                   </div>
                   <div className="space-y-1">
                     <div className="flex items-center gap-1.5">
                       <h3 className="text-sm font-bold text-white">⚡ Quick Start</h3>
-                      <Badge className="bg-amber-500/20 text-amber-300 text-[9px] border-amber-500/30">
+                      <Badge className="bg-amber-500/20 text-amber-300 text-[9px] border-amber-500/30 font-bold">
                         Recommended
                       </Badge>
                     </div>
@@ -429,17 +436,17 @@ function OnboardingContent() {
                   onClick={() => setStartMode("choose")}
                   className={`p-5 rounded-2xl border text-left flex flex-col justify-between gap-4 transition-all relative ${
                     startMode === "choose"
-                      ? "bg-indigo-950/60 border-indigo-500 ring-2 ring-indigo-500/40 shadow-lg"
-                      : "bg-slate-900/70 border-slate-800 hover:border-slate-700"
+                      ? "bg-cyan-500/10 border-cyan-500 ring-2 ring-cyan-500/40 shadow-lg"
+                      : "bg-slate-900/60 border-white/[0.08] hover:border-cyan-500/30"
                   }`}
                 >
-                  <div className="p-3 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 w-fit">
+                  <div className="p-3 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 w-fit">
                     <Palette className="w-5 h-5" />
                   </div>
                   <div className="space-y-1">
                     <h3 className="text-sm font-bold text-white">🎨 Choose Template</h3>
                     <p className="text-xs text-slate-400 leading-relaxed">
-                      Browse all 5 templates and select your favorite design.
+                      Browse all templates and select your favorite design.
                     </p>
                   </div>
                 </button>
@@ -450,11 +457,11 @@ function OnboardingContent() {
                   onClick={() => setStartMode("fresh")}
                   className={`p-5 rounded-2xl border text-left flex flex-col justify-between gap-4 transition-all relative ${
                     startMode === "fresh"
-                      ? "bg-indigo-950/60 border-indigo-500 ring-2 ring-indigo-500/40 shadow-lg"
-                      : "bg-slate-900/70 border-slate-800 hover:border-slate-700"
+                      ? "bg-cyan-500/10 border-cyan-500 ring-2 ring-cyan-500/40 shadow-lg"
+                      : "bg-slate-900/60 border-white/[0.08] hover:border-cyan-500/30"
                   }`}
                 >
-                  <div className="p-3 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 w-fit">
+                  <div className="p-3 rounded-xl bg-white/[0.05] text-slate-300 border border-white/[0.08] w-fit">
                     <FileText className="w-5 h-5" />
                   </div>
                   <div className="space-y-1">
@@ -473,7 +480,7 @@ function OnboardingContent() {
                   animate={{ opacity: 1, height: "auto" }}
                   className="space-y-3 pt-2"
                 >
-                  <span className="text-xs font-bold text-slate-300">Select Template:</span>
+                  <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">Select Template:</span>
                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
                     {allTemplates.map((tmpl) => {
                       const isSelected = selectedTemplateId === tmpl.id;
@@ -484,11 +491,11 @@ function OnboardingContent() {
                           onClick={() => setSelectedTemplateId(tmpl.id)}
                           className={`p-3 rounded-xl border text-left transition-all ${
                             isSelected
-                              ? "bg-indigo-600 text-white border-indigo-500 shadow"
-                              : "bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-700"
+                              ? "bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 font-bold shadow-md shadow-cyan-500/20"
+                              : "bg-slate-900/80 border-white/[0.08] text-slate-300 hover:border-cyan-500/30"
                           }`}
                         >
-                          <span className="text-[10px] font-bold block opacity-80 uppercase">
+                          <span className="text-[10px] font-bold block opacity-75 uppercase">
                             {tmpl.category}
                           </span>
                           <span className="text-xs font-semibold block truncate">
@@ -502,12 +509,12 @@ function OnboardingContent() {
               )}
 
               {/* Footer controls for Step 3 */}
-              <div className="flex items-center justify-between pt-4 border-t border-slate-800">
+              <div className="flex items-center justify-between pt-4 border-t border-white/[0.08]">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setStep(2)}
-                  className="h-10 px-5 text-xs bg-slate-900 border-slate-800 text-slate-300 hover:text-white"
+                  className="h-10 px-5 text-xs bg-white/[0.05] border-white/[0.08] text-slate-300 hover:text-white rounded-xl"
                 >
                   <ArrowLeft className="w-4 h-4 mr-1.5" />
                   <span>Back</span>
@@ -517,10 +524,10 @@ function OnboardingContent() {
                   type="button"
                   disabled={isCreating}
                   onClick={handleFinish}
-                  className="h-11 px-8 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/30 flex items-center gap-2"
+                  className="h-11 px-8 text-xs bg-gradient-to-r from-cyan-400 to-emerald-400 hover:opacity-90 text-slate-950 font-bold rounded-xl shadow-lg shadow-cyan-500/20 flex items-center gap-2 transition-all active:scale-95 disabled:opacity-50"
                 >
                   <span>Build My Resume Now</span>
-                  <Sparkles className="w-4 h-4 text-amber-300" />
+                  <Sparkles className="w-4 h-4 text-slate-950" />
                 </Button>
               </div>
             </motion.div>
@@ -529,8 +536,8 @@ function OnboardingContent() {
       </main>
 
       {/* Footer hint */}
-      <footer className="max-w-4xl mx-auto w-full text-center pb-4">
-        <p className="text-[11px] text-slate-500">
+      <footer className="max-w-4xl mx-auto w-full text-center pb-4 relative z-10">
+        <p className="text-[11px] text-slate-500 font-medium">
           Powered by ResumeForge ATS Optimization Engine
         </p>
       </footer>
@@ -542,8 +549,8 @@ export default function OnboardingPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400">
-          <Loader2 className="w-8 h-8 animate-spin text-indigo-500" />
+        <div className="min-h-screen bg-[#0B0F17] flex items-center justify-center text-slate-400">
+          <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
         </div>
       }
     >

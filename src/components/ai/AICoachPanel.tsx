@@ -11,7 +11,6 @@ import {
   setClientCached,
 } from "@/lib/ai/ai-client-cache";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Sparkles,
@@ -25,7 +24,6 @@ import {
   Award,
   Zap,
   Target,
-  ArrowRight,
   ChevronDown,
   ChevronUp,
   FileText,
@@ -118,10 +116,8 @@ export function AICoachPanel() {
       return;
     }
 
-    // Prevent duplicate concurrent requests
     if (analyzeInFlight.current) return;
 
-    // Input validation — check resume has content
     const data = currentResume.data;
     const hasContent =
       data.summary ||
@@ -134,7 +130,6 @@ export function AICoachPanel() {
       return;
     }
 
-    // Client-side cache check
     const cacheKey = generateClientCacheKey({
       resumeId: currentResume.id,
       operation: "analyze",
@@ -170,8 +165,6 @@ export function AICoachPanel() {
 
       const result: AIAnalysisResult = await res.json();
       setAnalysis(result);
-
-      // Cache the result
       setClientCached(cacheKey, result);
 
       toast.dismiss(toastId);
@@ -197,10 +190,8 @@ export function AICoachPanel() {
       return;
     }
 
-    // Prevent duplicate concurrent requests
     if (matchInFlight.current) return;
 
-    // Client-side cache check
     const cacheKey = generateClientCacheKey({
       resumeId: currentResume.id,
       operation: "jd-match",
@@ -240,7 +231,6 @@ export function AICoachPanel() {
       setLastAnalyzedJd(jobDescription);
       setLastAnalyzedResumeId(currentResume.id);
 
-      // Cache the result
       setClientCached(cacheKey, result);
 
       toast.dismiss(toastId);
@@ -257,42 +247,43 @@ export function AICoachPanel() {
   }, [currentResume, jobDescription, setJdMatch]);
 
   return (
-    <div className="space-y-4 text-slate-100">
+    <div className="space-y-4 text-foreground">
       {/* Header Tabs */}
-      <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
-            <Bot className="w-4 h-4" />
+      <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
+        <div className="flex items-center gap-2.5">
+          <div className="p-2 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-emerald-500/20 text-cyan-400 border border-cyan-500/30 shadow-md shadow-cyan-500/10">
+            <Bot className="w-4 h-4 text-cyan-400" />
           </div>
           <div>
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-              🤖 AI Resume Coach
+            <h3 className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
+              <span>AI Resume Coach</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             </h3>
-            <p className="text-[11px] text-slate-400">Powered by Gemini HR & ATS Scanner</p>
+            <p className="text-[11px] text-muted-foreground">Powered by Gemini HR & ATS Intelligence</p>
           </div>
         </div>
       </div>
 
       {/* Mode Switcher Pills */}
-      <div className="grid grid-cols-3 p-1 rounded-xl bg-slate-950 border border-slate-800 text-xs">
+      <div className="grid grid-cols-3 p-1 rounded-xl bg-card/80 border border-white/[0.08] text-xs">
         <button
           type="button"
           onClick={() => setActiveTab("analysis")}
           className={`py-1.5 rounded-lg font-semibold transition-all ${
             activeTab === "analysis"
-              ? "bg-indigo-600 text-white shadow-sm"
-              : "text-slate-400 hover:text-slate-200"
+              ? "bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 font-extrabold shadow-md shadow-cyan-500/20"
+              : "text-muted-foreground hover:text-foreground hover:bg-white/[0.04]"
           }`}
         >
-          Full AI Analysis
+          Full Analysis
         </button>
         <button
           type="button"
           onClick={() => setActiveTab("jd-match")}
           className={`py-1.5 rounded-lg font-semibold transition-all ${
             activeTab === "jd-match"
-              ? "bg-indigo-600 text-white shadow-sm"
-              : "text-slate-400 hover:text-slate-200"
+              ? "bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 font-extrabold shadow-md shadow-cyan-500/20"
+              : "text-muted-foreground hover:text-foreground hover:bg-white/[0.04]"
           }`}
         >
           JD Matcher
@@ -302,8 +293,8 @@ export function AICoachPanel() {
           onClick={() => setActiveTab("skill-gap")}
           className={`py-1.5 rounded-lg font-semibold transition-all ${
             activeTab === "skill-gap"
-              ? "bg-indigo-600 text-white shadow-sm"
-              : "text-slate-400 hover:text-slate-200"
+              ? "bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 font-extrabold shadow-md shadow-cyan-500/20"
+              : "text-muted-foreground hover:text-foreground hover:bg-white/[0.04]"
           }`}
         >
           Skill Gap
@@ -314,21 +305,21 @@ export function AICoachPanel() {
       {activeTab === "analysis" && (
         <div className="space-y-4">
           {!analysis && (
-            <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 text-center space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mx-auto">
+            <div className="p-5 rounded-2xl bg-card/70 border border-white/[0.08] text-center space-y-3 shadow-lg shadow-black/20">
+              <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30 text-cyan-400 flex items-center justify-center mx-auto shadow-md shadow-cyan-500/10">
                 <BrainCircuit className="w-6 h-6 animate-pulse" />
               </div>
               <div className="space-y-1">
-                <h4 className="text-sm font-bold text-white">Get Executive HR & ATS Feedback</h4>
-                <p className="text-xs text-slate-400 leading-relaxed max-w-xs mx-auto">
-                  Our Gemini HR Recruiter model will evaluate your resume, spot missing keywords, grammar gaps, and recruiter shortlist probability.
+                <h4 className="text-sm font-bold text-foreground">Get Executive HR & ATS Feedback</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed max-w-xs mx-auto">
+                  Our Gemini HR Recruiter model evaluates your resume for missing keywords, grammar gaps, and recruiter shortlist probability.
                 </p>
               </div>
               <Button
                 type="button"
                 disabled={isAnalyzing}
                 onClick={handleRunAnalysis}
-                className="w-full h-10 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-md flex items-center justify-center gap-2"
+                className="w-full h-10 text-xs bg-gradient-to-r from-cyan-500 to-emerald-400 hover:from-cyan-400 hover:to-emerald-300 text-slate-950 font-extrabold rounded-xl shadow-md shadow-cyan-500/20 flex items-center justify-center gap-2 transition-all"
               >
                 {isAnalyzing ? (
                   <>
@@ -337,7 +328,7 @@ export function AICoachPanel() {
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-4 h-4 text-amber-300" />
+                    <Sparkles className="w-4 h-4 text-slate-950" />
                     <span>Analyze Resume with AI</span>
                   </>
                 )}
@@ -349,12 +340,12 @@ export function AICoachPanel() {
             <div className="space-y-3.5">
               {/* Strengths */}
               {analysis.strengths?.length > 0 && (
-                <div className="p-3.5 rounded-2xl bg-emerald-950/20 border border-emerald-500/20 space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-bold text-emerald-400">
+                <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-bold text-emerald-300">
                     <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                     <span>Key Resume Strengths</span>
                   </div>
-                  <ul className="space-y-1.5 text-xs text-slate-300">
+                  <ul className="space-y-1.5 text-xs text-foreground/90">
                     {analysis.strengths.map((str, i) => (
                       <li key={i} className="flex items-start gap-1.5">
                         <span className="text-emerald-400 font-bold mt-0.5">•</span>
@@ -367,12 +358,12 @@ export function AICoachPanel() {
 
               {/* Weaknesses & Blindspots */}
               {analysis.weaknesses?.length > 0 && (
-                <div className="p-3.5 rounded-2xl bg-rose-950/20 border border-rose-500/20 space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-bold text-rose-400">
+                <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-bold text-rose-300">
                     <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
                     <span>Areas for Improvement</span>
                   </div>
-                  <ul className="space-y-1.5 text-xs text-slate-300">
+                  <ul className="space-y-1.5 text-xs text-foreground/90">
                     {analysis.weaknesses.map((weak, i) => (
                       <li key={i} className="flex items-start gap-1.5">
                         <span className="text-rose-400 font-bold mt-0.5">•</span>
@@ -385,15 +376,15 @@ export function AICoachPanel() {
 
               {/* ATS Shortlist Improvements */}
               {analysis.atsImprovements?.length > 0 && (
-                <div className="p-3.5 rounded-2xl bg-indigo-950/20 border border-indigo-500/20 space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-bold text-indigo-400">
-                    <Target className="w-4 h-4 text-indigo-400 shrink-0" />
+                <div className="p-3.5 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-bold text-cyan-300">
+                    <Target className="w-4 h-4 text-cyan-400 shrink-0" />
                     <span>ATS Shortlist Recommendations</span>
                   </div>
-                  <ul className="space-y-1.5 text-xs text-slate-300">
+                  <ul className="space-y-1.5 text-xs text-foreground/90">
                     {analysis.atsImprovements.map((tip, i) => (
                       <li key={i} className="flex items-start gap-1.5">
-                        <span className="text-indigo-400 font-bold mt-0.5">✓</span>
+                        <span className="text-cyan-400 font-bold mt-0.5">✓</span>
                         <span>{tip}</span>
                       </li>
                     ))}
@@ -403,23 +394,23 @@ export function AICoachPanel() {
 
               {/* Categorized Missing Keywords */}
               {analysis.missingKeywords && (
-                <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2.5">
+                <div className="p-3.5 rounded-2xl bg-card/80 border border-white/[0.08] space-y-2.5">
                   <div
                     className="flex items-center justify-between cursor-pointer"
                     onClick={() => toggleSection("keywords")}
                   >
                     <div className="flex items-center gap-2">
                       <Target className="w-4 h-4 text-amber-400" />
-                      <span className="text-xs font-bold text-white">Missing Skill Keywords</span>
+                      <span className="text-xs font-bold text-foreground">Missing Skill Keywords</span>
                     </div>
-                    {expandedSections.keywords ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                    {expandedSections.keywords ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
                   </div>
 
                   {expandedSections.keywords && (
                     <div className="space-y-2.5 pt-1">
                       {analysis.missingKeywords.technicalSkills?.length > 0 && (
                         <div>
-                          <span className="text-[10px] text-slate-400 font-bold uppercase block mb-1">Technical Skills</span>
+                          <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider block mb-1">Technical Skills</span>
                           <div className="flex flex-wrap gap-1.5">
                             {analysis.missingKeywords.technicalSkills.map((kw, i) => (
                               <span key={i} className="px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-300 border border-rose-500/20 text-[11px] font-mono">
@@ -431,7 +422,7 @@ export function AICoachPanel() {
                       )}
                       {analysis.missingKeywords.tools?.length > 0 && (
                         <div>
-                          <span className="text-[10px] text-slate-400 font-bold uppercase block mb-1">Tools & Platforms</span>
+                          <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider block mb-1">Tools & Platforms</span>
                           <div className="flex flex-wrap gap-1.5">
                             {analysis.missingKeywords.tools.map((kw, i) => (
                               <span key={i} className="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-300 border border-amber-500/20 text-[11px] font-mono">
@@ -443,7 +434,7 @@ export function AICoachPanel() {
                       )}
                       {analysis.missingKeywords.frameworks?.length > 0 && (
                         <div>
-                          <span className="text-[10px] text-slate-400 font-bold uppercase block mb-1">Frameworks & Libraries</span>
+                          <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider block mb-1">Frameworks & Libraries</span>
                           <div className="flex flex-wrap gap-1.5">
                             {analysis.missingKeywords.frameworks.map((kw, i) => (
                               <span key={i} className="px-2 py-0.5 rounded-md bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 text-[11px] font-mono">
@@ -455,10 +446,10 @@ export function AICoachPanel() {
                       )}
                       {analysis.missingKeywords.industryTerms?.length > 0 && (
                         <div>
-                          <span className="text-[10px] text-slate-400 font-bold uppercase block mb-1">Industry Terms</span>
+                          <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider block mb-1">Industry Terms</span>
                           <div className="flex flex-wrap gap-1.5">
                             {analysis.missingKeywords.industryTerms.map((kw, i) => (
-                              <span key={i} className="px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-300 border border-purple-500/20 text-[11px] font-mono">
+                              <span key={i} className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 text-[11px] font-mono">
                                 + {kw}
                               </span>
                             ))}
@@ -472,8 +463,8 @@ export function AICoachPanel() {
 
               {/* High-Impact Action Verbs */}
               {analysis.powerfulActionVerbs?.length > 0 && (
-                <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-bold text-white">
+                <div className="p-3.5 rounded-2xl bg-card/80 border border-white/[0.08] space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-bold text-foreground">
                     <Zap className="w-4 h-4 text-amber-400" />
                     <span>Recommended Power Verbs</span>
                   </div>
@@ -486,7 +477,7 @@ export function AICoachPanel() {
                           navigator.clipboard.writeText(verb);
                           toast.success(`Copied "${verb}" to clipboard!`);
                         }}
-                        className="px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 border border-white/[0.06] text-xs font-medium transition-colors"
+                        className="px-2.5 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-foreground border border-white/[0.08] text-xs font-medium transition-all"
                         title="Click to copy"
                       >
                         {verb}
@@ -498,17 +489,17 @@ export function AICoachPanel() {
 
               {/* Grammar & Phrasing Suggestions */}
               {analysis.grammarSuggestions?.length > 0 && (
-                <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2.5">
-                  <div className="flex items-center gap-2 text-xs font-bold text-white">
+                <div className="p-3.5 rounded-2xl bg-card/80 border border-white/[0.08] space-y-2.5">
+                  <div className="flex items-center gap-2 text-xs font-bold text-foreground">
                     <Sparkles className="w-4 h-4 text-cyan-400" />
                     <span>High-Impact Phrasing Upgrades</span>
                   </div>
                   <div className="space-y-2">
                     {analysis.grammarSuggestions.map((item, i) => (
-                      <div key={i} className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs space-y-1">
-                        <div className="text-slate-400 line-through text-[11px]">{item.original}</div>
+                      <div key={i} className="p-3 rounded-xl bg-card border border-white/[0.06] text-xs space-y-1">
+                        <div className="text-muted-foreground line-through text-[11px]">{item.original}</div>
                         <div className="text-emerald-300 font-semibold">{item.correction}</div>
-                        <div className="text-[10px] text-slate-500 italic">{item.reason}</div>
+                        <div className="text-[10px] text-muted-foreground italic">{item.reason}</div>
                       </div>
                     ))}
                   </div>
@@ -517,19 +508,19 @@ export function AICoachPanel() {
 
               {/* Section Suggestions */}
               {analysis.sectionSuggestions?.length > 0 && (
-                <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2.5">
-                  <div className="flex items-center gap-2 text-xs font-bold text-white">
-                    <FileCheck2 className="w-4 h-4 text-indigo-400" />
+                <div className="p-3.5 rounded-2xl bg-card/80 border border-white/[0.08] space-y-2.5">
+                  <div className="flex items-center gap-2 text-xs font-bold text-foreground">
+                    <FileCheck2 className="w-4 h-4 text-cyan-400" />
                     <span>Section-Specific Advice</span>
                   </div>
                   <div className="space-y-2">
                     {analysis.sectionSuggestions.map((sec, i) => (
-                      <div key={i} className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs space-y-1.5">
-                        <div className="font-bold text-white capitalize">{sec.title || sec.sectionKey}</div>
+                      <div key={i} className="p-3 rounded-xl bg-card border border-white/[0.06] text-xs space-y-1.5">
+                        <div className="font-bold text-foreground capitalize">{sec.title || sec.sectionKey}</div>
                         <div className="text-[11px] text-amber-300">{sec.currentIssue}</div>
-                        <div className="text-[11px] text-slate-300">{sec.suggestedImprovement}</div>
+                        <div className="text-[11px] text-muted-foreground">{sec.suggestedImprovement}</div>
                         {sec.exampleText && (
-                          <div className="p-2 rounded-lg bg-white/[0.02] border border-white/[0.04] text-[11px] text-indigo-300 font-mono">
+                          <div className="p-2.5 rounded-lg bg-cyan-500/5 border border-cyan-500/20 text-[11px] text-cyan-300 font-mono">
                             &ldquo;{sec.exampleText}&rdquo;
                           </div>
                         )}
@@ -541,16 +532,16 @@ export function AICoachPanel() {
 
               {/* Recommended Certifications */}
               {analysis.recommendedCertifications?.length > 0 && (
-                <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-bold text-white">
-                    <Award className="w-4 h-4 text-indigo-400" />
+                <div className="p-3.5 rounded-2xl bg-card/80 border border-white/[0.08] space-y-2">
+                  <div className="flex items-center gap-2 text-xs font-bold text-foreground">
+                    <Award className="w-4 h-4 text-cyan-400" />
                     <span>Recommended Certifications</span>
                   </div>
                   <div className="space-y-1.5">
                     {analysis.recommendedCertifications.map((cert, i) => (
-                      <div key={i} className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs">
-                        <div className="font-semibold text-white">{cert.name}</div>
-                        <div className="text-[11px] text-indigo-400">{cert.provider} — {cert.relevance}</div>
+                      <div key={i} className="p-2.5 rounded-xl bg-card border border-white/[0.06] text-xs">
+                        <div className="font-semibold text-foreground">{cert.name}</div>
+                        <div className="text-[11px] text-cyan-400">{cert.provider} — {cert.relevance}</div>
                       </div>
                     ))}
                   </div>
@@ -564,9 +555,9 @@ export function AICoachPanel() {
                 size="sm"
                 disabled={isAnalyzing}
                 onClick={handleRunAnalysis}
-                className="w-full h-10 text-xs bg-slate-900 border-slate-800 text-slate-200 hover:bg-slate-800 hover:text-white rounded-xl flex items-center justify-center gap-2"
+                className="w-full h-10 text-xs bg-white/[0.04] border-white/[0.08] text-foreground hover:bg-white/[0.08] rounded-xl flex items-center justify-center gap-2 transition-all"
               >
-                <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
                 <span>Re-analyze Resume with AI</span>
               </Button>
             </div>
@@ -578,10 +569,10 @@ export function AICoachPanel() {
       {activeTab === "jd-match" && (
         <div className="space-y-4">
           <div className="space-y-2">
-            <label className="text-xs font-bold text-white">Target Job Description</label>
+            <label className="text-xs font-bold text-foreground">Target Job Description</label>
             <Textarea
-              placeholder="Paste the job description here..."
-              className="min-h-[160px] text-xs leading-relaxed resize-none bg-slate-900 border-slate-800"
+              placeholder="Paste the target job description here..."
+              className="min-h-[160px] text-xs leading-relaxed resize-none bg-card/80 border-white/[0.08] focus-visible:ring-1 focus-visible:ring-cyan-500/50 rounded-xl"
               value={jobDescription}
               onChange={(e) => {
                 setJobDescription(e.target.value);
@@ -592,7 +583,7 @@ export function AICoachPanel() {
               type="button"
               disabled={isMatching || jobDescription.trim().length < 30}
               onClick={handleRunJDMatch}
-              className="w-full h-10 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-md flex items-center justify-center gap-2"
+              className="w-full h-10 text-xs bg-gradient-to-r from-cyan-500 to-emerald-400 hover:from-cyan-400 hover:to-emerald-300 text-slate-950 font-extrabold rounded-xl shadow-md shadow-cyan-500/20 flex items-center justify-center gap-2 transition-all"
             >
               {isMatching ? (
                 <>
@@ -601,7 +592,7 @@ export function AICoachPanel() {
                 </>
               ) : (
                 <>
-                  <Target className="w-4 h-4" />
+                  <Target className="w-4 h-4 text-slate-950" />
                   <span>Analyze Resume Against JD</span>
                 </>
               )}
@@ -613,8 +604,8 @@ export function AICoachPanel() {
               {/* Categorized Skills */}
               {jdMatch.missingSkills?.length > 0 && (
                 <div className="space-y-1.5">
-                  <span className="text-xs font-bold text-rose-400 flex items-center gap-1">
-                    <XCircle className="w-3.5 h-3.5" />
+                  <span className="text-xs font-bold text-rose-300 flex items-center gap-1">
+                    <XCircle className="w-3.5 h-3.5 text-rose-400" />
                     <span>Missing Job Skills</span>
                   </span>
                   <div className="flex flex-wrap gap-1.5">
@@ -629,8 +620,8 @@ export function AICoachPanel() {
 
               {jdMatch.matchedSkills?.length > 0 && (
                 <div className="space-y-1.5">
-                  <span className="text-xs font-bold text-emerald-400 flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span className="text-xs font-bold text-emerald-300 flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                     <span>Matched Requirements</span>
                   </span>
                   <div className="flex flex-wrap gap-1.5">
@@ -649,15 +640,15 @@ export function AICoachPanel() {
             <Button
               type="button"
               onClick={() => setIsCoverLetterModalOpen(true)}
-              className="w-full h-9 text-xs bg-slate-900 border border-indigo-500/30 text-indigo-300 font-semibold rounded-xl hover:bg-slate-800"
+              className="w-full h-9 text-xs bg-white/[0.04] border border-cyan-500/30 text-cyan-300 font-semibold rounded-xl hover:bg-cyan-500/10 transition-all"
             >
-              <FileText className="w-3.5 h-3.5 mr-1.5" />
+              <FileText className="w-3.5 h-3.5 mr-1.5 text-cyan-400" />
               <span>Cover Letter</span>
             </Button>
             <Button
               type="button"
               onClick={() => setIsInterviewPrepModalOpen(true)}
-              className="w-full h-9 text-xs bg-gradient-to-r from-emerald-600/20 to-indigo-600/20 border border-emerald-500/30 text-emerald-300 font-semibold rounded-xl hover:from-emerald-600/30 hover:to-indigo-600/30"
+              className="w-full h-9 text-xs bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-semibold rounded-xl hover:bg-emerald-500/20 transition-all"
             >
               <HelpCircle className="w-3.5 h-3.5 mr-1.5 text-emerald-400" />
               <span>AI Mock Interview</span>
@@ -670,28 +661,28 @@ export function AICoachPanel() {
       {activeTab === "skill-gap" && (
         <div className="space-y-4">
           {jobDescription.trim().length < 30 ? (
-            <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 text-center space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-slate-800/50 border border-slate-700/50 text-slate-400 flex items-center justify-center mx-auto">
+            <div className="p-5 rounded-2xl bg-card/70 border border-white/[0.08] text-center space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-white/[0.08] text-muted-foreground flex items-center justify-center mx-auto">
                 <Target className="w-5 h-5" />
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed max-w-[250px] mx-auto">
-                Add a valid job description to see your skill gaps.
+              <p className="text-xs text-muted-foreground leading-relaxed max-w-[250px] mx-auto">
+                Add a target job description to reveal your specific skill gaps and keyword discrepancies.
               </p>
               <Button
                 type="button"
                 onClick={() => setActiveTab("jd-match")}
-                className="w-full h-9 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl"
+                className="w-full h-9 text-xs bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 font-extrabold rounded-xl shadow-md shadow-cyan-500/20"
               >
                 Go to JD Matcher
               </Button>
             </div>
           ) : !skillGapData ? (
-            <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 text-center space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mx-auto">
+            <div className="p-5 rounded-2xl bg-card/70 border border-white/[0.08] text-center space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center mx-auto">
                 <LineChart className="w-6 h-6 animate-pulse" />
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed max-w-[250px] mx-auto">
-                Analyze the job description first to see your skill gaps.
+              <p className="text-xs text-muted-foreground leading-relaxed max-w-[250px] mx-auto">
+                Analyze the job description first to calculate your exact skill gap breakdown.
               </p>
               <Button
                 type="button"
@@ -700,7 +691,7 @@ export function AICoachPanel() {
                   setActiveTab("jd-match");
                   handleRunJDMatch();
                 }}
-                className="w-full h-10 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-md flex items-center justify-center gap-2"
+                className="w-full h-10 text-xs bg-gradient-to-r from-cyan-500 to-emerald-400 text-slate-950 font-extrabold rounded-xl shadow-md shadow-cyan-500/20 flex items-center justify-center gap-2"
               >
                 {isMatching ? <Loader2 className="w-4 h-4 animate-spin" /> : <Target className="w-4 h-4" />}
                 <span>Analyze Job</span>
@@ -710,8 +701,8 @@ export function AICoachPanel() {
             <div className="space-y-4">
               {/* Strong Match */}
               <div className="space-y-1.5">
-                <span className="text-xs font-bold text-emerald-400 flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
+                <span className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                   <span>Strong Match</span>
                 </span>
                 {skillGapData.strongMatch.length > 0 ? (
@@ -723,14 +714,14 @@ export function AICoachPanel() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-slate-400 italic">No strong matches identified yet.</p>
+                  <p className="text-xs text-muted-foreground italic">No strong matches identified yet.</p>
                 )}
               </div>
 
               {/* Not Found in Resume */}
               <div className="space-y-1.5">
-                <span className="text-xs font-bold text-rose-400 flex items-center gap-1.5">
-                  <AlertTriangle className="w-3.5 h-3.5" />
+                <span className="text-xs font-bold text-rose-300 flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
                   <span>Not Found in Resume</span>
                 </span>
                 {skillGapData.notFoundInResume.length > 0 ? (
@@ -742,17 +733,17 @@ export function AICoachPanel() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-slate-400 italic">No additional skills were identified as missing from the resume.</p>
+                  <p className="text-xs text-muted-foreground italic">No additional skills were identified as missing from the resume.</p>
                 )}
               </div>
 
               {/* Needs Review */}
               <div className="space-y-1.5">
-                <span className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
-                  <FileCheck2 className="w-3.5 h-3.5" />
+                <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                  <FileCheck2 className="w-3.5 h-3.5 text-amber-400" />
                   <span>Needs Review</span>
                 </span>
-                <p className="text-[10px] text-slate-400 mb-2 leading-relaxed">
+                <p className="text-[10px] text-muted-foreground mb-2 leading-relaxed">
                   Some evidence may be relevant, but the resume does not provide enough specific information to confidently classify it.
                 </p>
                 {skillGapData.needsReview.length > 0 ? (
@@ -764,7 +755,7 @@ export function AICoachPanel() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-slate-400 italic">No ambiguous skill matches require review.</p>
+                  <p className="text-xs text-muted-foreground italic">No ambiguous skill matches require review.</p>
                 )}
               </div>
             </div>
