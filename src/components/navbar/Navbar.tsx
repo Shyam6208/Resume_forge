@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/lib/supabase/client";
 import {
   FileText,
   LayoutDashboard,
@@ -11,6 +12,7 @@ import {
   User,
   Menu,
   X,
+  ShieldCheck,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -25,6 +27,25 @@ export function Navbar() {
   const { user, isLoading, isGuest, signOut } = useAuth();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (user?.id) {
+      supabase
+        .from("profiles")
+        .select("is_admin, role")
+        .eq("id", user.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          const p = data as { is_admin?: boolean | string | null; role?: string | null } | null;
+          if (p && (p.is_admin === true || p.is_admin === "true" || p.role === "admin")) {
+            setIsAdmin(true);
+          }
+        });
+    } else {
+      setIsAdmin(false);
+    }
+  }, [user?.id]);
 
   const isLoggedIn = !!user;
 
@@ -65,13 +86,24 @@ export function Navbar() {
             )}
 
             {isLoggedIn && (
-              <Link
-                href="/dashboard"
-                className="flex items-center gap-1.5 px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg"
-              >
-                <LayoutDashboard className="w-4 h-4" />
-                Dashboard
-              </Link>
+              <div className="flex items-center gap-1.5">
+                <Link
+                  href="/dashboard"
+                  className="flex items-center gap-1.5 px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg"
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  Dashboard
+                </Link>
+                {isAdmin && (
+                  <Link
+                    href="/admin"
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-400 bg-indigo-500/10 border border-indigo-500/20 rounded-lg hover:bg-indigo-500/20 hover:text-indigo-300 transition-all"
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    Admin Panel
+                  </Link>
+                )}
+              </div>
             )}
           </div>
 
@@ -118,6 +150,15 @@ export function Navbar() {
                     <LayoutDashboard className="w-4 h-4" />
                     Dashboard
                   </DropdownMenuItem>
+                  {isAdmin && (
+                    <DropdownMenuItem
+                      onClick={() => router.push("/admin")}
+                      className="flex items-center gap-2 cursor-pointer text-indigo-400 focus:text-indigo-300 focus:bg-indigo-500/10 font-semibold"
+                    >
+                      <ShieldCheck className="w-4 h-4 text-indigo-400" />
+                      Admin Panel
+                    </DropdownMenuItem>
+                  )}
                   {!isGuest && (
                     <DropdownMenuItem
                       onClick={() => router.push("/profile")}
@@ -202,14 +243,26 @@ export function Navbar() {
               </>
             )}
             {isLoggedIn && (
-              <Link
-                href="/dashboard"
-                className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <LayoutDashboard className="w-4 h-4" />
-                Dashboard
-              </Link>
+              <>
+                <Link
+                  href="/dashboard"
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-lg"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  Dashboard
+                </Link>
+                {isAdmin && (
+                  <Link
+                    href="/admin"
+                    className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-indigo-400 hover:text-indigo-300 transition-colors rounded-lg"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <ShieldCheck className="w-4 h-4" />
+                    Admin Panel
+                  </Link>
+                )}
+              </>
             )}
           </div>
         )}

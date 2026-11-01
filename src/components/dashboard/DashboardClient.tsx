@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useMemo, useSyncExternalStore } from "react";
+import { useState, useMemo, useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
+import toast from "react-hot-toast";
 import type { Resume, UserType } from "@/types/resume.types";
 import { ResumeCard } from "./ResumeCard";
 import { UploadResumeModal } from "./UploadResumeModal";
@@ -21,6 +22,7 @@ import {
   FileArchive,
   Upload,
   Briefcase,
+  ShieldAlert,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -35,6 +37,7 @@ import { calculateResumeScore } from "@/utils/score-calculator";
 interface DashboardClientProps {
   initialResumes: Resume[];
   userEmail?: string;
+  hasAdminError?: boolean;
 }
 
 type SortOption = "updated" | "created" | "score-high" | "score-low" | "name-asc" | "name-desc";
@@ -43,8 +46,18 @@ type FilterOption = "all" | "high-score" | "recent";
 export function DashboardClient({
   initialResumes = [],
   userEmail = "",
+  hasAdminError = false,
 }: DashboardClientProps) {
   const [resumes, setResumes] = useState<Resume[]>(initialResumes);
+
+  useEffect(() => {
+    if (hasAdminError) {
+      toast.error(
+        "Admin access restricted: Your account does not have admin privileges. Please sign in with an authorized admin account.",
+        { id: "admin-required-toast", duration: 6000 }
+      );
+    }
+  }, [hasAdminError]);
   
   // Controls state
   const [mainTab, setMainTab] = useState<"resumes" | "applications">("resumes");
@@ -159,6 +172,24 @@ export function DashboardClient({
           <UserMenu />
         </div>
       </header>
+
+      {/* Admin Access Required Warning Banner */}
+      {hasAdminError && (
+        <div className="bg-amber-500/10 border-b border-amber-500/20 px-4 sm:px-8 py-3 text-xs sm:text-sm text-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" />
+            <span>
+              <strong>Admin Access Required:</strong> Your current signed-in account does not have administrator privileges.
+            </span>
+          </div>
+          <Link
+            href="/admin/login"
+            className="inline-flex items-center justify-center px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 font-semibold rounded-lg border border-amber-500/30 transition-colors self-start sm:self-auto text-xs"
+          >
+            Sign in to Admin Portal &rarr;
+          </Link>
+        </div>
+      )}
 
       {/* Sub-Header Tab Navigation */}
       <div className="border-b border-white/[0.06] bg-background/60 px-4 sm:px-8">

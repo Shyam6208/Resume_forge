@@ -10,7 +10,11 @@ export const metadata: Metadata = {
   description: "Manage, edit, score, and export your ATS-optimized resume documents.",
 };
 
-export default async function DashboardPage() {
+export default async function DashboardPage(props: {
+  searchParams?: Promise<{ error?: string }>;
+}) {
+  const searchParams = await props.searchParams;
+  const hasAdminError = searchParams?.error === "admin_required";
   let resumes: Resume[] = [];
   let userEmail = "";
 
@@ -51,5 +55,11 @@ export default async function DashboardPage() {
     console.warn("Could not fetch user resumes from Supabase on dashboard server component:", err);
   }
 
-  return <DashboardClient initialResumes={resumes} userEmail={userEmail} />;
+  return (
+    <DashboardClient
+      initialResumes={resumes}
+      userEmail={userEmail}
+      hasAdminError={hasAdminError}
+    />
+  );
 }

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createAdminSupabaseClient } from "@/lib/supabase/admin";
 import type { Profile } from "@/types/database.types";
 import type { User } from "@supabase/supabase-js";
 
@@ -12,14 +13,23 @@ export interface AdminAuthResult {
 /**
  * Centralized helper to securely fetch and verify admin profile from public.profiles.
  * Checks by user.id first, then falls back to authenticated user.email.
+ * Prefers the Service Role client on the server to bypass RLS and avoid false rejections.
  * public.profiles.is_admin === true is the SINGLE SOURCE OF TRUTH.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function getAdminProfile(supabase: any, user: User): Promise<Profile | null> {
   if (!user) return null;
 
+  // Use service role client if available (server-side) to bypass RLS
+  let db = supabase;
+  try {
+    db = createAdminSupabaseClient();
+  } catch {
+    db = supabase;
+  }
+
   // 1. Primary lookup by auth.users.id = profiles.id
-  let { data: profile } = await supabase
+  let { data: profile } = await db
     .from("profiles")
     .select("*")
     .eq("id", user.id)
@@ -27,7 +37,7 @@ export async function getAdminProfile(supabase: any, user: User): Promise<Profil
 
   // 2. Secondary fallback lookup by authenticated user.email
   if (!profile && user.email) {
-    const { data: profileByEmail } = await supabase
+    const { data: profileByEmail } = await db
       .from("profiles")
       .select("*")
       .ilike("email", user.email)
@@ -39,7 +49,7 @@ export async function getAdminProfile(supabase: any, user: User): Promise<Profil
       // Sync id to match user.id if linked by email so future primary lookups succeed
       if (profileByEmail.id !== user.id) {
         try {
-          await supabase
+          await db
             .from("profiles")
             .update({ id: user.id })
             .eq("email", user.email);

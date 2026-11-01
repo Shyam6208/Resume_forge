@@ -21,6 +21,7 @@ export function FooterSection() {
               { label: "Templates", href: "/templates" },
               { label: "Free ATS Checker", href: "/ats-checker" },
               { label: "Dashboard", href: "/dashboard" },
+              { label: "Admin Portal", href: "/admin/login" },
               { label: "Privacy", href: "/dashboard" },
               { label: "Terms", href: "/dashboard" },
             ].map((link) => (

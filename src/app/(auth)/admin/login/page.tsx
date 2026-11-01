@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
-import { ShieldCheck, Mail, Lock, Eye, EyeOff, Loader2, ArrowLeft } from "lucide-react";
+import { ShieldCheck, Mail, Lock, Eye, EyeOff, Loader2, ArrowLeft, LogOut, CheckCircle2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 function AdminLoginFormContent() {
@@ -24,6 +24,30 @@ function AdminLoginFormContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [isResetLoading, setIsResetLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [activeSession, setActiveSession] = useState<{ email: string; isAdmin: boolean } | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (user?.id) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data: profile } = await (supabase.from("profiles") as any)
+          .select("is_admin, role")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        const isUserAdmin =
+          profile &&
+          (profile.is_admin === true ||
+            profile.is_admin === "true" ||
+            profile.role === "admin");
+
+        setActiveSession({
+          email: user.email || "",
+          isAdmin: !!isUserAdmin,
+        });
+      }
+    });
+  }, []);
 
   // Dedicated Admin Email + Password Login
   const handleAdminLogin = async (e: React.FormEvent) => {
@@ -156,6 +180,62 @@ function AdminLoginFormContent() {
           Sign in with your authorized admin credentials
         </p>
       </div>
+
+      {/* Active Session Status Notice */}
+      {activeSession?.isAdmin ? (
+        <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center space-y-3">
+          <div className="flex items-center justify-center gap-2 text-emerald-400 font-semibold text-xs sm:text-sm">
+            <CheckCircle2 className="w-4 h-4" />
+            <span>Authorized Admin Session Active</span>
+          </div>
+          <p className="text-xs text-slate-300">
+            Signed in as <strong className="text-white">{activeSession.email}</strong>
+          </p>
+          <div className="flex flex-col gap-2 pt-1">
+            <button
+              type="button"
+              onClick={() => {
+                window.location.href = redirectTo;
+              }}
+              className="w-full h-10 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-all shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2"
+            >
+              <span>Enter Admin Dashboard &rarr;</span>
+            </button>
+            <button
+              type="button"
+              onClick={async () => {
+                await supabase.auth.signOut();
+                setActiveSession(null);
+                toast.success("Signed out. You can now login with another account.");
+              }}
+              className="text-xs text-slate-400 hover:text-white transition-colors py-1"
+            >
+              Sign out / Use different account
+            </button>
+          </div>
+        </div>
+      ) : activeSession && !activeSession.isAdmin ? (
+        <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200 space-y-2">
+          <p>
+            Currently signed in as <strong className="text-white">{activeSession.email}</strong> (Non-admin).
+          </p>
+          <p className="text-slate-400 text-[11px]">
+            Please sign in below with an authorized admin account, or sign out first:
+          </p>
+          <button
+            type="button"
+            onClick={async () => {
+              await supabase.auth.signOut();
+              setActiveSession(null);
+              toast.success("Signed out successfully.");
+            }}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 rounded-lg transition-colors font-medium"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Sign out current account</span>
+          </button>
+        </div>
+      ) : null}
 
       {/* Primary Email + Password Login Form */}
       <form onSubmit={handleAdminLogin} className="space-y-4">

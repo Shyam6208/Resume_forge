@@ -4,12 +4,13 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabase/client";
-import { User, LayoutDashboard, UserCheck, LogOut, ChevronDown } from "lucide-react";
+import { User, LayoutDashboard, UserCheck, LogOut, ChevronDown, ShieldCheck } from "lucide-react";
 
 export function UserMenu() {
   const { user, signOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [dbAvatarUrl, setDbAvatarUrl] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [imgError, setImgError] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -24,18 +25,31 @@ export function UserMenu() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Fetch avatar from Supabase profiles table if updated in database
+  // Fetch avatar and admin status from Supabase profiles table
   useEffect(() => {
     if (user?.id) {
       supabase
         .from("profiles")
-        .select("avatar_url, name")
+        .select("avatar_url, name, is_admin, role")
         .eq("id", user.id)
         .maybeSingle()
         .then(({ data }) => {
-          const profile = data as { avatar_url?: string | null; name?: string | null } | null;
+          const profile = data as {
+            avatar_url?: string | null;
+            name?: string | null;
+            is_admin?: boolean | string | null;
+            role?: string | null;
+          } | null;
           if (profile?.avatar_url) {
             setDbAvatarUrl(profile.avatar_url);
+          }
+          if (
+            profile &&
+            (profile.is_admin === true ||
+              profile.is_admin === "true" ||
+              profile.role === "admin")
+          ) {
+            setIsAdmin(true);
           }
         });
     }
@@ -126,6 +140,17 @@ export function UserMenu() {
             <LayoutDashboard className="w-4 h-4 text-cyan-400" />
             <span>Dashboard</span>
           </Link>
+
+          {isAdmin && (
+            <Link
+              href="/admin"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 transition-colors"
+            >
+              <ShieldCheck className="w-4 h-4 text-indigo-400" />
+              <span>Admin Panel</span>
+            </Link>
+          )}
 
           <Link
             href="/profile"
