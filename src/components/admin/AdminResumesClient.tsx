@@ -5,6 +5,7 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import {
   Search,
   FileText,
+  User,
   MoreVertical,
   Eye,
   ChevronLeft,
@@ -615,13 +616,18 @@ function ResumeRow({
 
       {/* Owner */}
       <td className="p-4">
-        <div className="min-w-0">
-          <p className="text-xs font-semibold text-foreground truncate max-w-[120px]">
-            {resume.owner_name}
-          </p>
-          <p className="text-[10px] text-muted-foreground font-mono truncate max-w-[120px]">
-            {resume.owner_email}
-          </p>
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0">
+            <User className="w-3 h-3" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-xs font-semibold text-foreground truncate max-w-[120px]">
+              {resume.owner_name}
+            </p>
+            <p className="text-[10px] text-muted-foreground font-mono truncate max-w-[120px]">
+              {resume.owner_email}
+            </p>
+          </div>
         </div>
       </td>
 
@@ -707,8 +713,9 @@ function ResumeCard({
           </div>
           <div className="min-w-0">
             <p className="text-sm font-bold text-foreground truncate">{resume.title}</p>
-            <p className="text-[11px] text-muted-foreground truncate">
-              {resume.owner_name}
+            <p className="text-[11px] text-muted-foreground truncate flex items-center gap-1">
+              <User className="w-3 h-3 text-cyan-400 shrink-0" />
+              <span>{resume.owner_name}</span>
             </p>
           </div>
         </div>

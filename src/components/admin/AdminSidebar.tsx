@@ -19,7 +19,9 @@ import {
   Activity,
   ServerCrash,
   Zap,
+  User,
 } from "lucide-react";
+import { UserMenu } from "@/components/navigation/UserMenu";
 import { supabase } from "@/lib/supabase/client";
 import toast from "react-hot-toast";
 
@@ -69,19 +71,11 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
         </div>
 
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={handleAdminSignOut}
-            disabled={isLoggingOut}
-            className="p-2 text-rose-400 hover:text-rose-300 bg-rose-500/10 border border-rose-500/20 rounded-xl text-xs font-semibold flex items-center gap-1 transition-all hover:bg-rose-500/20"
-            title="Sign Out Admin"
-          >
-            <LogOut className="w-4 h-4" />
-          </button>
+          <UserMenu />
           <button
             type="button"
             onClick={() => setIsMobileOpen(!isMobileOpen)}
-            className="min-w-[44px] min-h-[44px] flex items-center justify-center p-2 text-muted-foreground hover:text-foreground rounded-xl bg-card/80 border border-white/[0.08] backdrop-blur-sm transition-all hover:bg-white/[0.06]"
+            className="min-w-[40px] min-h-[40px] flex items-center justify-center p-2 text-muted-foreground hover:text-foreground rounded-xl bg-card/80 border border-white/[0.08] backdrop-blur-sm transition-all hover:bg-white/[0.06]"
             aria-label="Toggle Navigation Drawer"
           >
             {isMobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -210,6 +204,22 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
           <div className="space-y-2 pt-4">
             <div className="h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent mb-3" />
 
+            {/* Admin User Profile Section */}
+            <div className="p-2.5 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center gap-2.5 mb-2">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30 text-cyan-300 flex items-center justify-center shrink-0">
+                <User className="w-4 h-4 text-cyan-400" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-bold text-foreground truncate">
+                  Admin System
+                </p>
+                <div className="flex items-center gap-1 text-[10px] text-emerald-400 font-semibold">
+                  <ShieldCheck className="w-3 h-3" />
+                  <span>Authorized Superadmin</span>
+                </div>
+              </div>
+            </div>
+
             <Link
               href="/dashboard"
               className="min-h-[44px] flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-[13px] font-medium text-muted-foreground hover:text-foreground transition-all duration-200 group relative overflow-hidden"
@@ -320,10 +330,40 @@ export function AdminSidebar({ children }: { children: React.ReactNode }) {
         )}
       </AnimatePresence>
 
-      {/* Main Content Viewport */}
-      <main className="flex-1 w-full max-w-full overflow-x-hidden p-4 sm:p-6 lg:p-8">
-        {children}
-      </main>
+      {/* Main Content Viewport with Desktop Header Bar */}
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="hidden md:flex sticky top-0 z-30 h-16 bg-background/80 backdrop-blur-xl border-b border-white/[0.08] px-6 lg:px-8 items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+              ResumeForge
+            </span>
+            <span className="text-xs text-muted-foreground/40">/</span>
+            <span className="text-xs font-bold text-foreground">
+              {NAV_ITEMS.find((item) =>
+                item.href === "/admin"
+                  ? pathname === "/admin"
+                  : pathname.startsWith(item.href)
+              )?.label || "Admin Console"}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <Link
+              href="/dashboard"
+              className="text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-white/[0.04]"
+            >
+              <ArrowLeft className="w-3.5 h-3.5 text-cyan-400" />
+              <span>User Dashboard</span>
+            </Link>
+            <div className="h-4 w-px bg-white/[0.08]" />
+            <UserMenu />
+          </div>
+        </header>
+
+        <main className="flex-1 w-full max-w-full overflow-x-hidden p-4 sm:p-6 lg:p-8">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

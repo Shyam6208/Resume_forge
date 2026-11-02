@@ -7,11 +7,11 @@ import { DynamicTemplateConfig } from "@/lib/templates/template-validator";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminResumeViewPage({ params }: { params: { id: string } }) {
+export default async function AdminResumeViewPage({ params }: { params: Promise<{ id: string }> | { id: string } }) {
   await requireAdminPage();
 
   const supabase = createAdminSupabaseClient();
-  const resumeId = params.id;
+  const { id: resumeId } = await Promise.resolve(params);
 
   // Fetch the resume securely using the service role
   const { data: rawResume, error } = await supabase

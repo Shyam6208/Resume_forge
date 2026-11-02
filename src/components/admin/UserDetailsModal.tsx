@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { TEMPLATES } from "@/config/templates.config";
 import Link from "next/link";
+import { AdminUserAvatar } from "./AdminUserAvatar";
 
 export interface UserForModal {
   id: string;
@@ -193,17 +194,11 @@ export function UserDetailsModal({
             
             {/* ── Profile Header ── */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-5 rounded-2xl bg-gradient-to-br from-cyan-500/10 via-slate-900/60 to-emerald-500/5 border border-cyan-500/20 shadow-inner">
-              <div className="w-16 h-16 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 flex items-center justify-center text-xl font-bold shrink-0 overflow-hidden shadow-md">
-                {displayUser.avatar_url ? (
-                  <img
-                    src={displayUser.avatar_url}
-                    alt={displayName}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <span>{initials}</span>
-                )}
-              </div>
+              <AdminUserAvatar
+                url={displayUser.avatar_url}
+                name={displayName}
+                size="lg"
+              />
               <div className="space-y-1.5 min-w-0 flex-1">
                 <p className="text-lg font-bold text-white truncate">
                   {displayName}

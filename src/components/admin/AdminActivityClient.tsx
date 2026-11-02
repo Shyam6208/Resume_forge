@@ -8,6 +8,7 @@ import {
   XCircle,
   AlertCircle,
   Activity,
+  User,
   UserPlus,
   FileText,
   Edit3,
@@ -427,9 +428,14 @@ export function AdminActivityClient() {
                         </div>
                       </td>
                       <td className="p-4">
-                        <div className="min-w-0">
-                          <p className="font-medium text-foreground truncate">{event.user?.name || "Unknown user"}</p>
-                          <p className="text-[10px] text-muted-foreground truncate">{event.user?.email || "Unknown email"}</p>
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-6 h-6 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center shrink-0">
+                            <User className="w-3 h-3" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-medium text-foreground truncate">{event.user?.name || "Unknown user"}</p>
+                            <p className="text-[10px] text-muted-foreground truncate">{event.user?.email || "Unknown email"}</p>
+                          </div>
                         </div>
                       </td>
                       <td className="p-4">
@@ -475,7 +481,11 @@ export function AdminActivityClient() {
                   <div className="bg-background/60 rounded-xl p-3 space-y-2 text-xs border border-white/[0.04]">
                     <div>
                       <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-wider mb-0.5">User</p>
-                      <p className="text-foreground truncate">{event.user?.name || "Unknown user"} <span className="text-muted-foreground">({event.user?.email})</span></p>
+                      <p className="text-foreground truncate flex items-center gap-1.5">
+                        <User className="w-3 h-3 text-cyan-400 shrink-0" />
+                        <span>{event.user?.name || "Unknown user"}</span>
+                        <span className="text-muted-foreground text-[11px]">({event.user?.email})</span>
+                      </p>
                     </div>
                     {event.resource && (
                       <div>

@@ -98,8 +98,6 @@ export function UserMenu() {
               onError={() => setImgError(true)}
               referrerPolicy="no-referrer"
             />
-          ) : initials ? (
-            <span>{initials}</span>
           ) : (
             <User className="w-3.5 h-3.5 text-cyan-400" />
           )}
@@ -120,10 +118,11 @@ export function UserMenu() {
                   src={rawAvatarUrl}
                   alt={fullName}
                   className="w-full h-full object-cover rounded-full"
+                  onError={() => setImgError(true)}
                   referrerPolicy="no-referrer"
                 />
               ) : (
-                <span>{initials}</span>
+                <User className="w-4 h-4 text-cyan-400" />
               )}
             </div>
             <div className="overflow-hidden">

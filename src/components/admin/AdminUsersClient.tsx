@@ -28,6 +28,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { UserDetailsModal, type UserForModal } from "./UserDetailsModal";
 import { UsersSkeleton } from "./UsersSkeleton";
+import { AdminUserAvatar } from "./AdminUserAvatar";
 
 // ── Types ──────────────────────────────────────────────────────
 
@@ -512,17 +513,11 @@ function UserRow({
       {/* Name + Avatar */}
       <td className="p-4">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30 text-cyan-300 flex items-center justify-center text-[10px] font-bold shrink-0 overflow-hidden">
-            {user.avatar_url ? (
-              <img
-                src={user.avatar_url}
-                alt={displayName}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <span>{initials}</span>
-            )}
-          </div>
+          <AdminUserAvatar
+            url={user.avatar_url}
+            name={displayName}
+            size="sm"
+          />
           <div className="min-w-0">
             <p className="font-bold text-foreground text-xs truncate max-w-[140px]">
               {displayName}
@@ -624,17 +619,11 @@ function UserCard({
     <div className="rounded-2xl bg-card/85 backdrop-blur-xl border border-white/[0.08] p-4 space-y-3 shadow-lg">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-emerald-500/20 border border-cyan-500/30 text-cyan-300 flex items-center justify-center text-xs font-bold shrink-0 overflow-hidden">
-            {user.avatar_url ? (
-              <img
-                src={user.avatar_url}
-                alt={displayName}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <span>{initials}</span>
-            )}
-          </div>
+          <AdminUserAvatar
+            url={user.avatar_url}
+            name={displayName}
+            size="md"
+          />
           <div className="min-w-0">
             <p className="text-sm font-bold text-foreground truncate">
               {displayName}
