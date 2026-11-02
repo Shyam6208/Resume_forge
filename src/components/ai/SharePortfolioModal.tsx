@@ -115,20 +115,20 @@ export function SharePortfolioModal({ isOpen, onClose }: SharePortfolioModalProp
     }
   };
 
-  const handleDownloadQR = async () => {
+  const handleDownloadQR = async (format: "svg" | "png" = "png") => {
     try {
-      const response = await fetch(qrCodeUrl);
-      const svgText = await response.text();
-      const blob = new Blob([svgText], { type: "image/svg+xml" });
+      const downloadUrl = `${qrCodeUrl}&format=${format}`;
+      const response = await fetch(downloadUrl);
+      const blob = await response.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${slug}-qr-code.svg`;
+      a.download = `${slug}-portfolio-qr.${format}`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      toast.success("📥 QR Code downloaded!");
+      toast.success(`📥 QR Code (${format.toUpperCase()}) downloaded!`);
     } catch {
       toast.error("Could not download QR code.");
     }
@@ -346,14 +346,24 @@ export function SharePortfolioModal({ isOpen, onClose }: SharePortfolioModalProp
                 <span className="text-[10px] text-muted-foreground">({showQR ? "hide" : "show"})</span>
               </button>
 
-              <Button
-                onClick={handleDownloadQR}
-                variant="outline"
-                size="sm"
-                className="h-7 text-xs bg-white/[0.04] border-white/[0.1] text-foreground hover:bg-white/[0.08] rounded-lg"
-              >
-                <Download className="w-3 h-3 mr-1" /> SVG
-              </Button>
+              <div className="flex items-center gap-1.5">
+                <Button
+                  onClick={() => handleDownloadQR("png")}
+                  variant="outline"
+                  size="sm"
+                  className="h-7 px-2.5 text-[11px] font-semibold bg-white/[0.04] border-white/[0.1] text-foreground hover:bg-white/[0.08] rounded-lg"
+                >
+                  <Download className="w-3 h-3 mr-1 text-cyan-400" /> PNG
+                </Button>
+                <Button
+                  onClick={() => handleDownloadQR("svg")}
+                  variant="outline"
+                  size="sm"
+                  className="h-7 px-2.5 text-[11px] font-semibold bg-white/[0.04] border-white/[0.1] text-foreground hover:bg-white/[0.08] rounded-lg"
+                >
+                  <Download className="w-3 h-3 mr-1 text-emerald-400" /> SVG
+                </Button>
+              </div>
             </div>
 
             {showQR && (
@@ -362,10 +372,13 @@ export function SharePortfolioModal({ isOpen, onClose }: SharePortfolioModalProp
                 <img
                   src={qrCodeUrl}
                   alt="Portfolio QR Code"
-                  className="w-40 h-40 object-contain"
+                  className="w-44 h-44 object-contain"
                 />
-                <p className="text-[11px] text-slate-600 font-mono text-center truncate max-w-full font-medium">
-                  Scan to view live portfolio
+                <p className="text-[11px] text-slate-700 font-semibold text-center truncate max-w-full">
+                  Scan with phone camera to open live portfolio
+                </p>
+                <p className="text-[10px] text-slate-500 font-mono text-center truncate max-w-full px-2">
+                  {getFullPortfolioUrl()}
                 </p>
               </div>
             )}

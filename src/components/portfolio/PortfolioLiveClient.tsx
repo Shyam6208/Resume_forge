@@ -69,7 +69,9 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
   const isMounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
 
   const slug = initialResume.slug;
-  const qrCodeUrl = `/api/portfolio/qr?slug=${encodeURIComponent(slug)}`;
+  const currentOrigin = useSyncExternalStore(emptySubscribe, () => window.location.origin, () => "");
+  const liveUrl = currentOrigin ? `${currentOrigin}/r/${slug}` : `/r/${slug}`;
+  const qrCodeUrl = `/api/portfolio/qr?slug=${encodeURIComponent(slug)}${currentOrigin ? `&baseUrl=${encodeURIComponent(currentOrigin)}` : ""}`;
 
   // Real-time Supabase subscription
   useEffect(() => {
@@ -483,19 +485,52 @@ export function PortfolioLiveClient({ initialResume }: PortfolioLiveClientProps)
 
       {/* QR Code Modal */}
       {showQRModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="bg-[#0B0F17]/95 border border-white/[0.08] backdrop-blur-2xl rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-2xl text-center">
-            <h3 className="text-base font-bold text-white">Scan Portfolio QR Code</h3>
-            <p className="text-xs text-slate-400">
-              Point your smartphone camera to open this portfolio instantly on mobile.
-            </p>
-            <div className="bg-white rounded-xl p-4 inline-block mx-auto shadow-md">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={qrCodeUrl} alt="QR Code" className="w-48 h-48 object-contain" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
+          <div className="bg-[#0B0F17]/95 border border-white/[0.08] backdrop-blur-2xl rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl text-center">
+            <div className="space-y-1">
+              <h3 className="text-base font-bold text-white flex items-center justify-center gap-2">
+                <QrCode className="w-5 h-5 text-cyan-400" />
+                <span>Scan Live Portfolio</span>
+              </h3>
+              <p className="text-xs text-slate-400">
+                Point any smartphone camera to open this portfolio live on mobile.
+              </p>
             </div>
+
+            <div className="bg-white rounded-2xl p-4 inline-block mx-auto shadow-xl shadow-black/40">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={qrCodeUrl} alt="Portfolio QR Code" className="w-48 h-48 object-contain" />
+            </div>
+
+            <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] text-left">
+              <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider mb-0.5">Live URL</p>
+              <p className="text-xs text-cyan-300 font-mono truncate">
+                {liveUrl}
+              </p>
+            </div>
+
+            <div className="flex gap-2 pt-1">
+              <a
+                href={qrCodeUrl}
+                download={`${slug}-portfolio-qr.svg`}
+                className="flex-1 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-white text-xs font-semibold border border-white/[0.08] transition-colors flex items-center justify-center gap-1.5"
+              >
+                <Download className="w-3.5 h-3.5 text-cyan-400" />
+                <span>Save QR</span>
+              </a>
+              <button
+                type="button"
+                onClick={handleCopyLink}
+                className="flex-1 py-2.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 text-xs font-semibold border border-cyan-500/20 transition-colors flex items-center justify-center gap-1.5"
+              >
+                {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copied ? "Copied" : "Copy URL"}</span>
+              </button>
+            </div>
+
             <button
               onClick={() => setShowQRModal(false)}
-              className="w-full py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-white text-xs font-semibold border border-white/[0.08] transition-colors"
+              className="w-full py-2 rounded-xl text-slate-400 hover:text-white text-xs font-medium transition-colors"
             >
               Close
             </button>
